@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using ButteRyBalance.Overrides;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
@@ -79,13 +80,19 @@ namespace ButteRyBalance.Network
                 Instance = this;
             }
             Plugin.Logger.LogDebug("Successfully spawned network handler.");
+
+            OverrideCoordinator.ApplyOnAllClients();
         }
 
         // --- NETWORKING ---
 
         void Start()
         {
-            UpdateConfig();
+            if (this != Instance || !IsSpawned)
+                return;
+
+            if (IsServer)
+                UpdateConfig();
         }
 
         // config
@@ -97,12 +104,37 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ManeaterLimitGrowth { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterWideTurns { get; private set; } = new();
         internal NetworkVariable<bool> MoonsKillSwitch { get; private set; } = new();
+        internal NetworkVariable<bool> FoggyRework { get; private set; } = new();
+        internal NetworkVariable<bool> ExperimentationNoEvents { get; private set; } = new();
+        internal NetworkVariable<bool> RandomIndoorFog { get; private set; } = new();
+        internal NetworkVariable<bool> VowMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> ShrinkMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> OffenseMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> MarchShrink { get; private set; } = new();
+        internal NetworkVariable<bool> MarchRainy { get; private set; } = new();
+        internal NetworkVariable<bool> MultiplayerWeather { get; private set; } = new();
+        internal NetworkVariable<bool> RendShrink { get; private set; } = new();
+        internal NetworkVariable<bool> RendMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> TitanMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> DineFloods { get; private set; } = new();
+        internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
+        internal NetworkVariable<bool> JetpackReduceBattery { get; private set; } = new();
+        internal NetworkVariable<bool> JetpackReduceDiscount { get; private set; } = new();
+        internal NetworkVariable<bool> TZPExpandCapacity { get; private set; } = new();
+        internal NetworkVariable<bool> JetpackInertia { get; private set; } = new();
+        internal NetworkVariable<bool> ArtificeInteriors { get; private set; } = new();
+        internal NetworkVariable<bool> ZapGunPrice { get; private set; } = new();
+        internal NetworkVariable<bool> RadarBoosterPrice { get; private set; } = new();
+        internal NetworkVariable<bool> StunGrenadePrice { get; private set; } = new();
+        internal NetworkVariable<bool> ScrapAdjustWeights { get; private set; } = new();
+        internal NetworkVariable<bool> EmbrionMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> EmbrionMega { get; private set; } = new();
 
-        internal static void ConfigUpdated()
+        /*internal static void ConfigUpdated()
         {
             if (Instance != null)
                 Instance.UpdateConfig();
-        }
+        }*/
 
         void UpdateConfig()
         {
@@ -118,15 +150,49 @@ namespace ButteRyBalance.Network
             ManeaterLimitGrowth.Value = Configuration.maneaterLimitGrowth.Value;
             ManeaterWideTurns.Value = Configuration.maneaterWideTurns.Value;
             MoonsKillSwitch.Value = Configuration.moonsKillSwitch.Value;
+            FoggyRework.Value = Configuration.foggyRework.Value;
+            ExperimentationNoEvents.Value = Configuration.experimentationNoEvents.Value;
+            RandomIndoorFog.Value = Configuration.randomIndoorFog.Value;
+            VowMineshafts.Value = Configuration.vowMineshafts.Value;
+            ShrinkMineshafts.Value = Configuration.shrinkMineshafts.Value;
+            OffenseMineshafts.Value = Configuration.offenseMineshafts.Value;
+            MarchShrink.Value = Configuration.marchShrink.Value;
+            MarchRainy.Value = Configuration.marchRainy.Value;
+            MultiplayerWeather.Value = Configuration.multiplayerWeather.Value;
+            RendShrink.Value = Configuration.rendShrink.Value;
+            RendMineshafts.Value = Configuration.rendMineshafts.Value;
+            TitanMineshafts.Value = Configuration.titanMineshafts.Value;
+            DineFloods.Value = Configuration.dineFloods.Value;
+            NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
+            JetpackReduceBattery.Value = Configuration.jetpackReduceBattery.Value;
+            JetpackReduceDiscount.Value = Configuration.jetpackReduceDiscount.Value;
+            TZPExpandCapacity.Value = Configuration.tzpExpandCapacity.Value;
+            JetpackInertia.Value = Configuration.jetpackInertia.Value;
+            ArtificeInteriors.Value = Configuration.artificeInteriors.Value;
+            ZapGunPrice.Value = Configuration.zapGunPrice.Value;
+            RadarBoosterPrice.Value = Configuration.radarBoosterPrice.Value;
+            StunGrenadePrice.Value = Configuration.stunGrenadePrice.Value;
+            ScrapAdjustWeights.Value = Configuration.scrapAdjustWeights.Value;
+            EmbrionMineshafts.Value = Configuration.embrionMineshafts.Value;
+            EmbrionMega.Value = Configuration.embrionMega.Value;
+
+            OverrideCoordinator.ApplyOnServer();
+            OverrideCoordinator.ApplyOnAllClients();
         }
 
         [ClientRpc]
-        internal void SyncKnifePriceClientRpc(NetworkObjectReference knife, int value)
+        internal void SyncScrapPriceClientRpc(NetworkObjectReference scrap, int value)
         {
-            if (knife.TryGet(out NetworkObject netObj))
+            if (scrap.TryGet(out NetworkObject netObj))
                 netObj.GetComponent<GrabbableObject>().SetScrapValue(value);
             else
-                Plugin.Logger.LogError("Failed to sync knife price from server");
+                Plugin.Logger.LogError("Failed to sync scrap price from server");
+        }
+
+        [ServerRpc]
+        internal void SyncScrapPriceServerRpc(NetworkObjectReference scrap, int value)
+        {
+            SyncScrapPriceClientRpc(scrap, value);
         }
     }
 }

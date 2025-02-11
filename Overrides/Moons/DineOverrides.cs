@@ -1,48 +1,115 @@
-﻿using ButteRyBalance.Network;
-using System.Linq;
+﻿using MonoMod.Utils;
+using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
     internal class DineOverrides
     {
-        static int rollbackButler = -1;
-
-        internal static void Overrides_BeforeSpawnWave()
+        internal static readonly Dictionary<string, int> infestations = new()
         {
-            if (RoundManager.Instance.currentLevel.name != "DineLevel")
-                return;
+            { "HoarderBug",           3 },
+            { "Nutcracker",           1 },
+            { "MaskedPlayerEnemy",   40 },
+            { "Butler",             300 },
+        };
 
-            if (Configuration.dineReduceButlers.Value || rollbackButler >= 0)
+        internal static void Setup(SelectableLevel level)
+        {
+            if (Configuration.dineBuffScrap.Value)
             {
-                if (Common.enemies.TryGetValue("Butler", out EnemyType butler))
-                {
-                    int butlerWeight = -1;
+                MoonOverrides.minScrap = 22; // vanilla: 22
+                MoonOverrides.maxScrap = 28; // vanilla: 28
 
-                    if (Configuration.dineReduceButlers.Value && !BRBNetworker.Instance.MoonsKillSwitch.Value)
-                        butlerWeight = 15; // 15 * 1.7 = 25 (rounded down)
-                    else if (rollbackButler >= 0)
-                        butlerWeight = rollbackButler; // as of v69
+                MoonOverrides.adjustedScrap.AddRange(new(){
+                    // v56
+                    { "Cog1", 15 },
+                    { "EnginePart1", 14 },
+                    { "BottleBin", 30 },
+                    { "FancyLamp", 54 },
+                    { "Ring", 26 },
+                    { "RobotToy", 26 },
+                    { "PerfumeBottle", 34 },
+                    //{ "Bell", 48 },
+                    { "Hairdryer", 22 },
+                    { "Airhorn", 16 },
+                    { "ClownHorn", 17 },
 
-                    if (butlerWeight >= 0)
-                    {
-                        SpawnableEnemyWithRarity butlerSpawns = RoundManager.Instance.currentLevel.Enemies.FirstOrDefault(enemy => enemy.enemyType == butler);
-                        if (butlerSpawns != null)
-                        {
-                            if (butlerWeight == rollbackButler)
-                                rollbackButler = -1;
-                            else
-                                rollbackButler = butlerSpawns.rarity;
+                    // v49
+                    { "FancyPainting", 50 },
+                    { "CashRegister", 12 },
+                    //{ "Candy", 16 },
+                    //{ "GiftBox", 21 },
+                    { "TragedyMask", 64 },
 
-                            if (butlerSpawns.rarity != butlerWeight)
-                                Plugin.Logger.LogDebug($"Dine: Butler weight -> {butlerWeight}");
+                    // v45
+                    { "GiftBox", 69 },
 
-                            butlerSpawns.rarity = butlerWeight;
-                        }
-                    }
-                }
-                else
-                    Plugin.Logger.LogWarning("Failed to reference Butler enemy type. This should never happen");
+                    // REND
+                    //{ "MagnifyingGlass", 35 },
+                    { "PillBottle", 4 },
+                    //{ "PerfumeBottle", 28 },
+                    { "Toothpaste", 24 },
+                    { "TeaKettle", 25 },
+                    //{ "7Ball", 23 },
+                    { "Candy", 15 },
+                    { "WhoopieCushion", 0 },
+                    //{ "ToiletPaperRolls", 13 },
+                            
+                    // TITAN
+                    { "Brush", 25 },
+
+                    // LIQUIDATION
+                    { "MagnifyingGlass", 37 },
+                    { "Bell", 49 },
+
+                    // get it?
+                    { "DustPan", 32 },
+                });
             }
+
+            if (Configuration.dineReduceButlers.Value)
+                MoonOverrides.adjustedEnemies.Add("Butler", 15); // vanilla: 24
+
+            if (Configuration.dineAdjustIndoor.Value)
+            {
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+					// v56
+                    { "DressGirl", 3 },
+                    { "SandSpider", 7 },
+                    { "Blob", 3 },
+                    { "HoarderBug", 8 },
+                    { "Jester", 5 },
+
+                    // v50 betas
+                    { "Centipede", 6 },
+                });
+
+                MoonOverrides.powerCount = 15; // vanilla: 16
+            }
+
+            if (Configuration.dineMasked.Value)
+                MoonOverrides.adjustedEnemies.Add("MaskedPlayerEnemy", 4);
+
+            if (Configuration.dineAdjustOutdoor.Value)
+            {
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+                    { "ForestGiant", 50 }, // vanilla: 100
+                    { "MouthDog", 28 }, // vanilla: 50
+                });
+
+                MoonOverrides.outsidePowerCount = 8; // vanilla: 7
+            }
+
+            if (Configuration.dineAdjustCurves.Value)
+            {
+                level.outsideEnemySpawnChanceThroughDay = new(
+                    new(-7.7369623E-07f, -2.8875f),
+                    new(0.47669196f, 0.6959345f),
+                    new(1.0052626f, 5.3594007f));
+                Plugin.Logger.LogDebug($"{level.name}.outsideEnemySpawnChanceThroughDay");
+            }
+
+            MoonOverrides.Apply(level);
         }
     }
 }

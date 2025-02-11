@@ -1,5 +1,5 @@
-﻿using LobbyCompatibility.Features;
-using LobbyCompatibility.Enums;
+﻿using LobbyCompatibility.Enums;
+using LobbyCompatibility.Features;
 
 namespace ButteRyBalance
 {

@@ -21,8 +21,11 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPostfix]
         static void GrabbableObject_Post_Start(GrabbableObject __instance)
         {
-            if (__instance.IsServer && !StartOfRound.Instance.inShipPhase && Configuration.butlerKnifePrice.Value && __instance is KnifeItem)
-                BRBNetworker.Instance.SyncKnifePriceClientRpc(__instance.GetComponent<NetworkObject>(), Random.Range(28, 84));
+            if (__instance.IsServer && !StartOfRound.Instance.inShipPhase && __instance.scrapValue == 35 && Configuration.butlerKnifePrice.Value && __instance is KnifeItem)
+            {
+                Plugin.Logger.LogInfo("Trying to sync knife price on server");
+                BRBNetworker.Instance.SyncScrapPriceClientRpc(__instance.GetComponent<NetworkObject>(), Random.Range(28, 84));
+            }
         }
 
         [HarmonyPatch(nameof(KnifeItem.EquipItem))]
@@ -49,7 +52,7 @@ namespace ButteRyBalance.Patches.Items
                 }
             }
 
-            return codes;
+            return instructions;
         }
 
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.OnEnable))]
@@ -63,7 +66,7 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPostfix]
         static void PlayerControllerB_Post_Update(PlayerControllerB __instance)
         {
-            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is KnifeItem knifeItem && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeAtLastSwing > 0.2f && Time.realtimeSinceStartup - knifeItem.timeAtLastDamageDealt > knifeCooldown)
+            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is KnifeItem knifeItem && Configuration.knifeAutoSwing.Value && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeAtLastSwing > 0.2f && Time.realtimeSinceStartup - knifeItem.timeAtLastDamageDealt > knifeCooldown)
             {
                 // prevents two swings when first clicking button
                 if (Time.realtimeSinceStartup - timeAtLastSwing <= 0.5f)
@@ -72,7 +75,7 @@ namespace ButteRyBalance.Patches.Items
                     __instance.currentlyHeldObjectServer.UseItemOnClient();
                     __instance.timeSinceSwitchingSlots = 0f;
                 }
-                timeAtLastSwing = Time.realtimeSinceStartup + Random.Range(0f, 0.1f);
+                timeAtLastSwing = Time.realtimeSinceStartup /*+ Random.Range(0f, 0.1f)*/;
             }
         }
     }

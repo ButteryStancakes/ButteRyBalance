@@ -1,4 +1,5 @@
 ﻿using ButteRyBalance.Network;
+using ButteRyBalance.Overrides;
 using HarmonyLib;
 
 namespace ButteRyBalance.Patches
@@ -17,6 +18,8 @@ namespace ButteRyBalance.Patches
         [HarmonyPostfix]
         public static void GameNetworkManager_Post_Disconnect()
         {
+            if (RoundManager.Instance != null && RoundManager.Instance.IsServer)
+                InfestationOverrides.EndInfestation();
             Common.Disconnect();
         }
     }

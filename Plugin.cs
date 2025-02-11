@@ -15,6 +15,9 @@ namespace ButteRyBalance
         internal static new ManualLogSource Logger;
 
         const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility";
+        const string GUID_ARTIFICE_BLIZZARD = "butterystancakes.lethalcompany.artificeblizzard";
+        const string GUID_BARBER_FIXES = "butterystancakes.lethalcompany.barberfixes";
+        const string GUID_VENT_SPAWN_FIX = "butterystancakes.lethalcompany.ventspawnfix";
 
         void Awake()
         {
@@ -26,6 +29,24 @@ namespace ButteRyBalance
             {
                 Logger.LogInfo("CROSS-COMPATIBILITY - Lobby Compatibility detected");
                 LobbyCompatibility.Init();
+            }
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_ARTIFICE_BLIZZARD))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Artifice Blizzard detected");
+                Common.INSTALLED_ARTIFICE_BLIZZARD = true;
+            }
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_BARBER_FIXES))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Barber Fixes detected");
+                Common.INSTALLED_BARBER_FIXES = true;
+            }
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_VENT_SPAWN_FIX))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Vent Spawn Fix detected");
+                Common.INSTALLED_VENT_SPAWN_FIX = true;
             }
 
             Configuration.Init(Config);

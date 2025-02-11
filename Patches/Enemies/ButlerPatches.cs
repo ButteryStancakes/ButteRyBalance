@@ -74,10 +74,18 @@ namespace ButteRyBalance.Patches.Enemies
         }
 
         [HarmonyPatch(nameof(ButlerEnemyAI.HitEnemy))]
+        [HarmonyPrefix]
+        static void ButlerEnemyAI_Pre_HitEnemy(ButlerEnemyAI __instance, ref int force)
+        {
+            if (__instance.IsOwner && force > 2 && Configuration.butlerSquishy.Value)
+                force += 3;
+        }
+
+        [HarmonyPatch(nameof(ButlerEnemyAI.HitEnemy))]
         [HarmonyPostfix]
         static void ButlerEnemyAI_Post_HitEnemy(ButlerEnemyAI __instance, PlayerControllerB playerWhoHit)
         {
-            if (BRBNetworker.Instance.ButlerLongCooldown.Value && playerWhoHit != null)
+            if (playerWhoHit != null && BRBNetworker.Instance.ButlerLongCooldown.Value)
                 __instance.timeAtLastButlerDamage = Time.realtimeSinceStartup;
         }
 
