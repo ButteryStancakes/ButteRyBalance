@@ -7,7 +7,7 @@ namespace ButteRyBalance
     {
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyRework, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, titanWeeds, dineMasked, giantSnowSight, giantForgetTargets, dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackReduceBattery, jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, titanWeeds, dineMasked, giantSnowSight, giantForgetTargets, dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider;
 
         internal static void Init(ConfigFile cfg)
         {
@@ -18,6 +18,8 @@ namespace ButteRyBalance
             EnemyConfig();
             ItemConfig();
             MoonConfig();
+
+            MigrateLegacyConfig();
 
             /*cfg.SettingChanged += delegate
             {
@@ -36,8 +38,14 @@ namespace ButteRyBalance
                 "Adjust Scrap Weights",
                 false,
                 "Makes some minor alterations to the weight of several scrap items.");
+            // Apparatus
+            apparatusPrice = configFile.Bind(
+                "Item.Apparatus",
+                "Randomize Price",
+                true,
+                "Randomizes the price of the apparatus once it has been unplugged.");
             // Jetpack
-            jetpackReduceBattery = configFile.Bind(
+            jetpackBattery = configFile.Bind(
                 "Item.Jetpack",
                 "Reduce Battery",
                 true,
@@ -63,13 +71,13 @@ namespace ButteRyBalance
                 "Auto-Swing",
                 true,
                 "(Client-side) Holding the attack button will automatically swing the knife. When damage is dealt, your swing speed will decrease to avoid wasting hits.");
-            // radar booster
+            // Radar booster
             radarBoosterPrice = configFile.Bind(
                 "Item.RadarBooster",
                 "Buff Price",
                 true,
                 "Reduces the cost of the radar booster from $60 to $50, like in v40.");
-            // stun grenade
+            // Stun grenade
             stunGrenadePrice = configFile.Bind(
                 "Item.StunGrenade",
                 "Nerf Price",
@@ -80,19 +88,24 @@ namespace ButteRyBalance
                 "Item.MetalSheet",
                 "Increase Value",
                 true,
-                "Increases the maximum sell value of metal sheets, so they are worth a bit more on average.");
+                "Increases the average sell value of metal sheets.");
             // TZP inhalant
             tzpExpandCapacity = configFile.Bind(
                 "Item.TZPInhalant",
                 "Expand Capacity",
                 true,
                 "Increases capacity of TZP inhalant from 22s to 34s.");
-            // zap gun
+            // Zap gun
             zapGunPrice = configFile.Bind(
                 "Item.ZapGun",
                 "Buff Price",
                 true,
                 "Reduces the cost of the zap gun from $400 to $200, like in v9.");
+            zapGunBattery = configFile.Bind(
+                "Item.ZapGun",
+                "Increase Battery",
+                true,
+                "Increases zap gun battery back to 120s (from 22s), like v9.");
         }
 
         static void EnemyConfig()
@@ -160,6 +173,13 @@ namespace ButteRyBalance
                 true,
                 "Fixes the bug(?) where Forest Keepers only forget about players when there is at least one other player in their line-of-sight.");
 
+            // Kidnapper Fox
+            foxSquishy = configFile.Bind(
+                "Enemy.KidnapperFox",
+                "Squishy",
+                true,
+                "Reduce kidnapper fox HP from 7 to 6, and shotgun deals bonus damasge. This allows the fox to be killed easier with a single explosion (like easter eggs) or both barrels from the shotgun.");
+
             // Jester
             jesterWalkThrough = configFile.Bind(
                 "Enemy.Jester",
@@ -212,6 +232,11 @@ namespace ButteRyBalance
                 "See Through Fog",
                 true,
                 "Old Birds can see through fog with their powerful searchlights.");
+            robotRider = configFile.Bind(
+                "Enemy.OldBird",
+                "Restore Mech Riding",
+                true,
+                "Lets you ride and drop items on top of Old Birds, like in v64.");
         }
 
         static void MoonConfig()
@@ -289,6 +314,11 @@ namespace ButteRyBalance
                 "Buff Scrap",
                 true,
                 "Swaps several items' rarities with the corresponding values from Assurance's loot pool.");
+            offenseBees = configFile.Bind(
+                "Moon.Offense",
+                "Circuit Bees",
+                true,
+                "Allow circuit bees to spawn on Offense, like Assurance.");
             offenseMineshafts = configFile.Bind(
                 "Moon.Offense",
                 "Mostly Mineshafts",
@@ -477,11 +507,11 @@ namespace ButteRyBalance
                 "Multiplayer Weather Multiplier",
                 true,
                 "Re-enable some unused code in vanilla to increase the frequency of random weather in multiplayer.");
-            foggyRework = configFile.Bind(
+            foggyLimit = configFile.Bind(
                 "Misc",
-                "Rework Foggy Weather",
+                "Nerf Foggy Weather",
                 true,
-                "Reworks the visuals of foggy weather on most vanilla moons to be slightly less obstructive and utilize a more varied palette.");
+                "Reduce the maximum intensity of foggy weather.");
             randomIndoorFog = configFile.Bind(
                 "Misc",
                 "Random Indoor Fog",
@@ -513,6 +543,23 @@ namespace ButteRyBalance
                 "Masked Infestations",
                 true,
                 "Allow \"masked\" to be selected as the subject of an infestation.");
+
+            infestationBarbers = configFile.Bind(
+                "Infestations",
+                "Barber Infestations",
+                true,
+                "Allow Barbers to be selected as the subject of an infestation. Other enemy spawns will be disabled. Won't occur inside mineshafts.");
+        }
+
+        static void MigrateLegacyConfig()
+        {
+            if (foggyLimit.Value)
+            {
+                if (!configFile.Bind("Misc", "Rework Foggy Weather", true, "Legacy setting, doesn't work").Value)
+                    foggyLimit.Value = false;
+
+                configFile.Remove(configFile["Misc", "Rework Foggy Weather"].Definition);
+            }
         }
     }
 }

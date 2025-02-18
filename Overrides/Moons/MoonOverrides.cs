@@ -107,6 +107,15 @@ namespace ButteRyBalance.Overrides.Moons
                             Plugin.Logger.LogDebug($"{level.name}: {enemyWeight.enemyType.enemyName} - {enemyWeight.rarity} => {adjustedEnemy.Value}");
                             enemyWeight.rarity = adjustedEnemy.Value;
                         }
+                        else if (enemy.isOutsideEnemy)
+                        {
+                            weightsList.Add(new()
+                            {
+                                enemyType = enemy,
+                                rarity = adjustedEnemy.Value
+                            });
+                            Plugin.Logger.LogDebug($"{level.name}: +({enemy.enemyName}, {adjustedEnemy.Value})");
+                        }
                     }
                 }
                 adjustedEnemies.Clear();

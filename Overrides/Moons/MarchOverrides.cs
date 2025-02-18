@@ -21,20 +21,30 @@ namespace ButteRyBalance.Overrides.Moons
                 MoonOverrides.maxScrap = 21; // vanilla: 17
 
                 MoonOverrides.adjustedScrap.AddRange(new(){
+                    // v9
+                    { "BigBolt", 59 },
+                    { "ToyCube", 24 },
+                    { "FlashLaserPointer", 8 },
+                    { "Remote", 16 },
+                    { "RobotToy", 6 },
+                    { "MagnifyingGlass", 21 },
+                    { "Mug", 12 },
+                    { "SodaCanRed", 12 },
+                    { "Phone", 7 },
+                    { "Hairdryer", 4 },
+
                     // VOW
-                    { "Cog1", 25 }, // v60
-                    { "EnginePart1", 25 }, // v60
-                    { "BottleBin", 30 },
-                    { "Flask", 49 }, // v56
+                    { "Cog1", 25 },
+                    { "EnginePart1", 25 },
+                    { "FishTestProp", 32 }, // v49
+                    { "EggBeater", 50 }, // v49
                     { "ToiletPaperRolls", 34 },
                     { "PlasticCup", 22 },
-                    { "Bell", 40 }, // v49
+                    { "Bell", 28 },
 
                     // OFFENSE
                     { "MetalSheet", 65 },
-
-                    // LIQUIDATION
-                    { "BigBolt", 55 },
+                    { "BottleBin", 46 },
                 });
 
                 MoonOverrides.adjustedEnemies.Add("RedLocustBees", 72);

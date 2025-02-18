@@ -6,6 +6,9 @@ namespace ButteRyBalance
 {
     internal class Common
     {
+        // Experimentation, Assurance, Vow, Gordion, March, Adamance, Rend, Dine, Offense, Titan, Artifice, Liquidation, Embrion
+        internal const int NUM_LEVELS = 13;
+
         internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_VENT_SPAWN_FIX;
         internal static GameObject artificeBlizzard;
 

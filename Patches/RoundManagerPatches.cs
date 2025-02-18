@@ -25,9 +25,8 @@ namespace ButteRyBalance.Patches
             {
                 if (__instance.IsServer && __instance.enemyRushIndex >= 0 && Configuration.infestationRework.Value)
                 {
-                    // don't override ClaySurgeonOverhaul infestations
-                    if (__instance.currentLevel.Enemies[__instance.enemyRushIndex].enemyType.name != "ClaySurgeon")
-                        InfestationOverrides.CustomInfestation();
+                    // don't override Clay Surgeon Overhaul infestations
+                    InfestationOverrides.CustomInfestation(__instance.currentLevel.Enemies[__instance.enemyRushIndex].enemyType.name == "ClaySurgeon" ? __instance.enemyRushIndex : -1);
                 }
 
                 if (__instance.indoorFog.gameObject.activeSelf && BRBNetworker.Instance.RandomIndoorFog.Value)
@@ -40,7 +39,7 @@ namespace ButteRyBalance.Patches
                 {
                     if (Common.enemies.TryGetValue("ClaySurgeon", out EnemyType barber))
                     {
-                        if (RoundManager.Instance.currentDungeonType == 4)
+                        if (RoundManager.Instance.currentDungeonType == 4 && InfestationOverrides.GetInfesterName() != "ClaySurgeon")
                         {
                             barber.MaxCount = 1;
                             barber.spawnInGroupsOf = 1;
@@ -57,7 +56,7 @@ namespace ButteRyBalance.Patches
                                     Plugin.Logger.LogDebug($"Barber - Dynamic Spawn Settings: 2/8 (Interior ID: {RoundManager.Instance.currentDungeonType})");
                                 }
                                 else
-                                    Plugin.Logger.LogWarning("Can't increase Barber spawn group because Vent Spawn Fixis not loaded. Please install it and make sure it works correctly");
+                                    Plugin.Logger.LogWarning("Can't increase Barber spawn group because Vent Spawn Fix is not loaded. Please install it and make sure it works correctly");
                             }
                             else
                                 Plugin.Logger.LogWarning("Can't increase Barber max count because Barber Fixes is not loaded. Please install it and make sure it works correctly, or disable \"Dynamic Spawn Settings\" in the \"Enemy.Barber\" config");
@@ -128,6 +127,53 @@ namespace ButteRyBalance.Patches
             }
         }
 
+        [HarmonyPatch(nameof(RoundManager.SpawnOutsideHazards))]
+        [HarmonyPrefix]
+        static void RoundManager_Pre_SpawnOutsideHazards(RoundManager __instance)
+        {
+            // don't alter custom levels
+            if (__instance.currentLevel.levelID >= Common.NUM_LEVELS)
+                return;
+
+            if (RoundManager.Instance?.mapPropsContainer == null)
+            {
+                Plugin.Logger.LogWarning("Can't create SpawnDenialPoint(s) because mapPropsContainer is missing, this *might* cause desync with other clients");
+                return;
+            }
+
+            foreach (EntranceTeleport entranceTeleport in Object.FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.None))
+            {
+                if (entranceTeleport.isEntranceToBuilding)
+                {
+                    CreateSpawnDenialPoint(entranceTeleport.entrancePoint.position);
+                    Plugin.Logger.LogDebug($"{__instance.currentLevel.name}: SpawnDenialPoint (Entrance)");
+                }
+            }
+
+            foreach (InteractTrigger interactTrigger in Object.FindObjectsByType<InteractTrigger>(FindObjectsSortMode.None))
+            {
+                if (interactTrigger.isLadder && interactTrigger.bottomOfLadderPosition != null)
+                {
+                    CreateSpawnDenialPoint(interactTrigger.bottomOfLadderPosition.position);
+                    Plugin.Logger.LogDebug($"{__instance.currentLevel.name}: SpawnDenialPoint (Ladder)");
+                }
+            }
+
+            // prevent stairs next to ship being blocked
+            /*if (__instance.currentLevel.sceneName == "Level9Titan")
+                CreateSpawnDenialPoint(new(-15.5352612f, -3.74099994f, 6.6187892f));*/
+        }
+
+        static void CreateSpawnDenialPoint(Vector3 pos)
+        {
+            Transform spawnDenialPoint = new GameObject("SpawnDenialPointBRB")
+            {
+                tag = "SpawnDenialPoint"
+            }.transform;
+            spawnDenialPoint.SetParent(RoundManager.Instance.mapPropsContainer.transform);
+            spawnDenialPoint.position = pos;
+        }
+
         // so it runs after currentHour is incremented, but before cannotSpawnMoreInsideEnemies is set
         [HarmonyPatch(nameof(RoundManager.SpawnEnemiesOutside))]
         [HarmonyPostfix]
@@ -150,6 +196,34 @@ namespace ButteRyBalance.Patches
                         __instance.enemySpawnTimes.Add((int)enemyVent.spawnTime);
                 }
                 __instance.enemySpawnTimes.Sort();
+            }
+        }
+        // also run when enemies are first allowed to start spawning
+        [HarmonyPatch(nameof(RoundManager.BeginEnemySpawning))]
+        [HarmonyPrefix]
+        static void RoundManager_Pre_BeginEnemySpawning(RoundManager __instance)
+        {
+            if (__instance.IsServer)
+                InfestationOverrides.SpawnInfestationWave();
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
+        [HarmonyPrefix]
+        static void RoundManager_Pre_SpawnScrapInLevel(RoundManager __instance)
+        {
+            if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceBuffScrap.Value)
+            {
+                if (__instance.currentDungeonType != 4)
+                {
+                    __instance.currentLevel.minScrap = 19;
+                    __instance.currentLevel.maxScrap = 24;
+                }
+                else
+                {
+                    // vanilla values, because mineshaft is a bit *too* good...
+                    __instance.currentLevel.minScrap = 16;
+                    __instance.currentLevel.maxScrap = 19;
+                }
             }
         }
     }

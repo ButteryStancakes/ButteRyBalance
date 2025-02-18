@@ -14,6 +14,7 @@ namespace ButteRyBalance.Overrides.Moons
         internal static readonly Dictionary<string, int> infestations = new()
         {
             { "HoarderBug",         300 },
+            { "ClaySurgeon",        100 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -24,12 +25,15 @@ namespace ButteRyBalance.Overrides.Moons
                     // v56
                     { "Cog1", 30 },
                     { "EnginePart1", 31 },
+                    // v49
+                    { "Bell", 40 },
+                    { "Mug", 12 },
+                    { "ClownHorn", 10 },
+                    { "RubberDuck", 21 },
+                    { "Flask", 49 },
                     // MARCH
-                    { "Flask", 42 },
                     { "ToiletPaperRolls", 32 },
                     { "PlasticCup", 27 },
-                    // ASSURANCE
-                    { "Bell", 16 },
                     // REND
                     { "BottleBin", 46 },
                 });

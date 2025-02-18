@@ -9,7 +9,8 @@ namespace ButteRyBalance.Overrides.Moons
         {
             { "HoarderBug",         300 },
             { "Nutcracker",         100 },
-            { "MaskedPlayerEnemy",    1 },
+            { "MaskedPlayerEnemy",    3 },
+            { "ClaySurgeon",          1 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -20,28 +21,41 @@ namespace ButteRyBalance.Overrides.Moons
                 MoonOverrides.maxScrap = 16; // vanilla: 16
 
                 MoonOverrides.adjustedScrap.AddRange(new(){
-                    // OFFENSE
+                    // v9
                     { "Cog1", 94 },
                     { "EnginePart1", 80 },
-                    //{ "MetalSheet", 65 },
+                    { "MetalSheet", 100 },
                     { "BigBolt", 89 },
-                    { "ToyCube", 18 },
+                    { "ToyCube", 11 },
+                    { "FlashLaserPointer", 4 },
+                    { "BottleBin", 67 },
+                    { "Remote", 10 },
+                    { "RobotToy", 2 },
+                    { "MagnifyingGlass", 4 },
+                    { "Mug", 0 },
+                    { "SodaCanRed", 2 },
+                    { "Phone", 0 },
+                    { "Hairdryer", 0 },
+                    { "ClownHorn", 4 },
+                    { "Airhorn", 4 },
+
+                    // OFFENSE
+                    //{ "MetalSheet", 65 },
+                    //{ "ToyCube", 18 },
                     { "StopSign", 27 },
-                    { "Bell", 0 },
+                    //{ "Bell", 0 },
                     { "CashRegister", 0 },
                     { "YieldSign", 28 },
                     { "DiyFlashbang", 13 },
                     { "TragedyMask", 0 },
                     { "ToiletPaperRolls", 18 },
-                            
-                    // EMBRION
-                    { "MetalSheet", 100 },
 
                     // VOW
+                    { "Bell", 33 },
                     { "WhoopieCushion", 49 }, // v49
 
-                    // REND
-                    { "Candy", 15 },
+                    // DINE
+                    { "Candy", 16 }, // v50
                 });
             }
 

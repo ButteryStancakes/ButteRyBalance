@@ -17,7 +17,7 @@ namespace ButteRyBalance.Patches.Enemies
 
         [HarmonyPatch(nameof(JesterAI.SetJesterInitialValues))]
         [HarmonyPostfix]
-        static void JesterAI_PostSetJesterInitialValues(JesterAI __instance)
+        static void JesterAI_Post_SetJesterInitialValues(JesterAI __instance)
         {
             if (StartOfRound.Instance.connectedPlayersAmount < 4 && BRBNetworker.Instance.JesterLongCooldown.Value)
                 __instance.beginCrankingTimer = Mathf.Max(__instance.beginCrankingTimer, Random.Range(12f, 28f));

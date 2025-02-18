@@ -18,6 +18,8 @@ namespace ButteRyBalance.Overrides.Moons
             {
                 MoonOverrides.minScrap = 11; // vanilla: 8
                 MoonOverrides.maxScrap = 16; // vanilla: 12
+
+                MoonOverrides.adjustedScrap.Add("CashRegister", 6); // v9
             }
 
             if (Configuration.experimentationNoEggs.Value)

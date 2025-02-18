@@ -13,7 +13,7 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPostfix]
         static void JetpackItem_Post_EquipItem(JetpackItem __instance)
         {
-            if (BRBNetworker.Instance.JetpackReduceBattery.Value)
+            if (BRBNetworker.Instance.JetpackBattery.Value)
                 __instance.itemProperties.batteryUsage = 40f;
 
             if (BRBNetworker.Instance.JetpackInertia.Value || Configuration.jetpackInertia.Value)

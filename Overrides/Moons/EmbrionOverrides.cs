@@ -19,6 +19,7 @@ namespace ButteRyBalance.Overrides.Moons
         {
             { "HoarderBug",         300 },
             { "Nutcracker",         100 },
+            { "ClaySurgeon",        250 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -37,7 +38,7 @@ namespace ButteRyBalance.Overrides.Moons
                     { "EnginePart1", 40 },
 
                     // LIQUIDATION
-                    //{ "BigBolt", 55 },
+                    { "BigBolt", 55 },
                     { "FlashLaserPointer", 10 },
                     { "Ring", 15 },
                     { "BottleBin", 42 },
@@ -50,8 +51,7 @@ namespace ButteRyBalance.Overrides.Moons
                     { "ClownHorn", 31 },
                     //{ "DiyFlashbang", 13 },
 
-                    // replace with dust pan
-                    { "MetalSheet", 0 },
+                    { "MetalSheet", 40 },
                     { "DustPan", 83 },
                 });
             }

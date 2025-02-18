@@ -8,17 +8,18 @@ namespace ButteRyBalance.Overrides.Moons
         {
             { "HoarderBug",         300 },
             { "Nutcracker",         100 },
-            { "MaskedPlayerEnemy",    3 },
+            { "MaskedPlayerEnemy",   10 },
             { "Butler",               1 },
+            { "ClaySurgeon",          3 },
         };
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.adamanceBuffScrap.Value)
+            /*if (Configuration.adamanceBuffScrap.Value)
             {
                 MoonOverrides.minScrap = 19; // vanilla: 16
                 MoonOverrides.maxScrap = 24; // vanilla: 19
-            }
+            }*/
 
             if (Configuration.adamanceReduceChaos.Value)
             {

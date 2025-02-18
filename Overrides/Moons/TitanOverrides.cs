@@ -49,11 +49,13 @@ namespace ButteRyBalance.Overrides.Moons
             {
                 MoonOverrides.adjustedEnemies.AddRange(new(){
                     // v37
-                    { "Blob", 29 },
                     { "ForestGiant", 20 },
                     { "DressGirl", 28 },
                     // v50 betas
                     { "RadMech", 13 },
+                    // v9
+                    { "Blob", 41 },
+                    { "HoarderBug", 55 },
 
                     // REND
                     { "Jester", 60 },

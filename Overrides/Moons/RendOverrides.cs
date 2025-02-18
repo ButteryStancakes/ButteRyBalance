@@ -15,6 +15,7 @@ namespace ButteRyBalance.Overrides.Moons
             { "Nutcracker",         300 },
             { "MaskedPlayerEnemy",  150 },
             { "Butler",               4 },
+            { "ClaySurgeon",         75 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -59,6 +60,10 @@ namespace ButteRyBalance.Overrides.Moons
                     // ARTIFICE
                     { "DressGirl", 28 }, // v50 beta
                     { "ClaySurgeon", 20 }, // v55
+
+                    // v9
+                    { "Blob", 24 },
+                    { "Flowerman", 66 },
 
                     // counteract reduced coilhead curve
                     { "SpringMan", 70 },

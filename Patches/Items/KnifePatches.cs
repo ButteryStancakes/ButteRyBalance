@@ -66,7 +66,7 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPostfix]
         static void PlayerControllerB_Post_Update(PlayerControllerB __instance)
         {
-            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is KnifeItem knifeItem && Configuration.knifeAutoSwing.Value && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeAtLastSwing > 0.2f && Time.realtimeSinceStartup - knifeItem.timeAtLastDamageDealt > knifeCooldown)
+            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is KnifeItem knifeItem && Configuration.knifeAutoSwing.Value && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeAtLastSwing > 0.12f && Time.realtimeSinceStartup - knifeItem.timeAtLastDamageDealt > knifeCooldown)
             {
                 // prevents two swings when first clicking button
                 if (Time.realtimeSinceStartup - timeAtLastSwing <= 0.5f)

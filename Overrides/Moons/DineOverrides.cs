@@ -11,6 +11,7 @@ namespace ButteRyBalance.Overrides.Moons
             { "Nutcracker",           1 },
             { "MaskedPlayerEnemy",   40 },
             { "Butler",             300 },
+            { "ClaySurgeon",         14 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -35,7 +36,7 @@ namespace ButteRyBalance.Overrides.Moons
                     { "ClownHorn", 17 },
 
                     // v49
-                    { "FancyPainting", 50 },
+                    //{ "FancyPainting", 50 },
                     { "CashRegister", 12 },
                     //{ "Candy", 16 },
                     //{ "GiftBox", 21 },
@@ -52,7 +53,7 @@ namespace ButteRyBalance.Overrides.Moons
                     { "TeaKettle", 25 },
                     //{ "7Ball", 23 },
                     { "Candy", 15 },
-                    { "WhoopieCushion", 0 },
+                    //{ "WhoopieCushion", 0 },
                     //{ "ToiletPaperRolls", 13 },
                             
                     // TITAN
@@ -92,12 +93,9 @@ namespace ButteRyBalance.Overrides.Moons
 
             if (Configuration.dineAdjustOutdoor.Value)
             {
-                MoonOverrides.adjustedEnemies.AddRange(new(){
-                    { "ForestGiant", 50 }, // vanilla: 100
-                    { "MouthDog", 28 }, // vanilla: 50
-                });
+                MoonOverrides.adjustedEnemies.Add("ForestGiant", 28); // vanilla: 100
 
-                MoonOverrides.outsidePowerCount = 8; // vanilla: 7
+                MoonOverrides.outsidePowerCount = 10; // vanilla: 7
             }
 
             if (Configuration.dineAdjustCurves.Value)

@@ -6,9 +6,10 @@ namespace ButteRyBalance.Overrides
 {
     internal class InfestationOverrides
     {
-        internal static int infestationEnemyIndex = -1;
+        static int infestationEnemyIndex = -1;
         static EnemyType infestationEnemy;
         static float rollbackPowerLevel;
+        static int hourOfLastInfestationWave = -1;
 
         static List<string> compatibleEnemies = new()
         {
@@ -16,6 +17,7 @@ namespace ButteRyBalance.Overrides
             "Nutcracker",
             "Butler",
             "MaskedPlayerEnemy",
+            "ClaySurgeon"
         };
 
         static readonly Dictionary<string, Dictionary<string, int>> vanillaLevels = new()
@@ -52,58 +54,83 @@ namespace ButteRyBalance.Overrides
             }
             else
                 compatibleEnemies.Remove("MaskedPlayerEnemy");
+
+            if (Configuration.infestationBarbers.Value && RoundManager.Instance.currentDungeonType != 4)
+            {
+                if (!compatibleEnemies.Contains("ClaySurgeon"))
+                    compatibleEnemies.Add("ClaySurgeon");
+            }
+            else
+                compatibleEnemies.Remove("ClaySurgeon");
         }
 
-        internal static void CustomInfestation()
+        internal static void CustomInfestation(int forceIndex = -1)
         {
             SelectableLevel level = RoundManager.Instance.currentLevel;
 
             RoundManager.Instance.enemyRushIndex = -1;
-            RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
 
             infestationEnemies.Clear();
             vanillaLevels.TryGetValue(level.name, out Dictionary<string, int> availableEnemies);
 
-            for (int i = 0; i < level.Enemies.Count; i++)
-            {
-                if (!compatibleEnemies.Contains(level.Enemies[i].enemyType.name) || level.Enemies[i].rarity == 0)
-                    continue;
+            System.Random rand = new(StartOfRound.Instance.randomMapSeed + 5781);
 
-                if (availableEnemies != null)
+            if (forceIndex >= 0)
+                infestationEnemyIndex = forceIndex;
+            else
+            {
+                FilterInfestations();
+                for (int i = 0; i < level.Enemies.Count; i++)
                 {
-                    if (availableEnemies.TryGetValue(level.Enemies[i].enemyType.name, out int weight))
+                    if (!compatibleEnemies.Contains(level.Enemies[i].enemyType.name) || level.Enemies[i].rarity == 0)
+                        continue;
+
+                    if (availableEnemies != null)
+                    {
+                        if (availableEnemies.TryGetValue(level.Enemies[i].enemyType.name, out int weight))
+                        {
+                            infestationEnemies.Add(new()
+                            {
+                                id = i,
+                                rarity = weight
+                            });
+                        }
+                    }
+                    else
                     {
                         infestationEnemies.Add(new()
                         {
                             id = i,
-                            rarity = weight
+                            rarity = level.Enemies[i].rarity
                         });
                     }
                 }
-                else
-                {
-                    infestationEnemies.Add(new()
-                    {
-                        id = i,
-                        rarity = level.Enemies[i].rarity
-                    });
-                }
+
+                Plugin.Logger.LogDebug($"Infestation weights for \"{level.name}\":");
+                foreach (IntWithRarity intWithRarity in infestationEnemies)
+                    Plugin.Logger.LogDebug($"{level.Enemies[intWithRarity.id].enemyType.name} - {intWithRarity.rarity}");
+
+                infestationEnemyIndex = infestationEnemies[RoundManager.Instance.GetRandomWeightedIndex(infestationEnemies.Select(x => x.rarity).ToArray(), rand)].id;
             }
 
-            Plugin.Logger.LogDebug($"Infestation weights for \"{level.name}\":");
-            foreach (IntWithRarity intWithRarity in infestationEnemies)
-                Plugin.Logger.LogDebug($"{level.Enemies[intWithRarity.id].enemyType.name} - {intWithRarity.rarity}");
-
-            infestationEnemyIndex = infestationEnemies[RoundManager.Instance.GetRandomWeightedIndex(infestationEnemies.Select(x => x.rarity).ToArray(), new System.Random(StartOfRound.Instance.randomMapSeed + 5781))].id;
             infestationEnemy = level.Enemies[infestationEnemyIndex].enemyType;
 
             Plugin.Logger.LogDebug($"Starting {infestationEnemy.name} infestation");
             infestationEnemy.PowerLevel = 0f;
-            RoundManager.Instance.increasedInsideEnemySpawnRateIndex = infestationEnemyIndex;
+
+            if (infestationEnemy.name != "ClaySurgeon")
+            {
+                RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
+                RoundManager.Instance.increasedInsideEnemySpawnRateIndex = infestationEnemyIndex;
+            }
+            else
+                RoundManager.Instance.currentMaxInsidePower = 0;
         }
 
         internal static void EndInfestation()
         {
+            hourOfLastInfestationWave = -1;
+
             if (infestationEnemyIndex < 0)
                 return;
 
@@ -119,8 +146,10 @@ namespace ButteRyBalance.Overrides
 
         internal static void SpawnInfestationWave()
         {
-            if (infestationEnemyIndex < 0)
+            if (infestationEnemyIndex < 0 || RoundManager.Instance.currentHour == hourOfLastInfestationWave)
                 return;
+
+            hourOfLastInfestationWave = RoundManager.Instance.currentHour;
 
             RoundManager.Instance.currentEnemySpawnIndex = 0;
             if (RoundManager.Instance.firstTimeSpawningEnemies)
@@ -155,9 +184,21 @@ namespace ButteRyBalance.Overrides
                 infestationEnemy.numberSpawned++;
                 //RoundManager.Instance.enemySpawnTimes.Add(time);
                 Plugin.Logger.LogDebug("Added infestation enemy to vent");
+
+                // reduce scaling of barber infestation
+                if (infestationEnemy.name == "ClaySurgeon")
+                    break;
             }
 
             //RoundManager.Instance.enemySpawnTimes.Sort();
+        }
+
+        internal static string GetInfesterName()
+        {
+            if (infestationEnemyIndex < 0)
+                return string.Empty;
+
+            return RoundManager.Instance.currentLevel.Enemies[infestationEnemyIndex].enemyType.name;
         }
     }
 }

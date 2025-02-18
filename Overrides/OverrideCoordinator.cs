@@ -103,14 +103,14 @@ namespace ButteRyBalance.Overrides
                     case "MetalSheet":
                         if (Configuration.metalSheetPrice.Value)
                         {
+                            Plugin.Logger.LogDebug($"{item.name}.minValue: {item.minValue} -> 35");
+                            item.minValue = 35;
                             Plugin.Logger.LogDebug($"{item.name}.maxValue: {item.maxValue} -> 85");
                             item.maxValue = 85;
                         }
                         break;
                 }
             }
-
-            InfestationOverrides.FilterInfestations();
         }
 
         internal static void ApplyOnAllClients()
@@ -123,14 +123,16 @@ namespace ButteRyBalance.Overrides
                 { "ChemicalJug",      1.4f },   // vanilla: 1.3
                 { "Clock",            1.2f },   // vanilla: 1.25
                 { "Cog1",             1.2f },   // vanilla: 1.15
+                { "EnginePart1",     1.18f },   // vanilla: 1.15
                 { "FancyCup",         1.2f },   // vanilla: 1.15
                 { "FancyLamp",       1.25f },   // vanilla: 1.2
                 { "Flask",            1.1f },   // vanilla: 1.18
                 { "GarbageLid",       1.1f },   // vanilla: 1
-                { "EnginePart1",     1.18f },   // vanilla: 1.15
                 { "Hairdryer",        1.1f },   // vanilla: 1.07
+                { "MetalSheet",      1.23f },   // vanilla: 1.25
                 { "Ring",            1.08f },   // vanilla: 1.15
                 { "SoccerBall",      1.13f },   // vanilla: 1.18
+                { "StopSign",         1.2f },   // vanilla: 1.23
                 { "TeaKettle",       1.15f },   // vanilla: 1.2
                 { "YieldSign",        1.3f },   // vanilla: 1.4
             };
@@ -174,9 +176,9 @@ namespace ButteRyBalance.Overrides
                     Plugin.Logger.LogDebug($"{item.name}.weight: ${item.weight} -> {weight}");
                     item.weight = weight;
                 }
-
-                //StartOfRound.Instance.SetPlanetsWeather();
             }
+
+            //StartOfRound.Instance.SetPlanetsWeather();
         }
     }
 }

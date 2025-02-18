@@ -1,4 +1,5 @@
 ﻿using ButteRyBalance.Overrides;
+using GameNetcodeStuff;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -104,7 +105,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ManeaterLimitGrowth { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterWideTurns { get; private set; } = new();
         internal NetworkVariable<bool> MoonsKillSwitch { get; private set; } = new();
-        internal NetworkVariable<bool> FoggyRework { get; private set; } = new();
+        internal NetworkVariable<bool> FoggyLimit { get; private set; } = new();
         internal NetworkVariable<bool> ExperimentationNoEvents { get; private set; } = new();
         internal NetworkVariable<bool> RandomIndoorFog { get; private set; } = new();
         internal NetworkVariable<bool> VowMineshafts { get; private set; } = new();
@@ -118,7 +119,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> TitanMineshafts { get; private set; } = new();
         internal NetworkVariable<bool> DineFloods { get; private set; } = new();
         internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
-        internal NetworkVariable<bool> JetpackReduceBattery { get; private set; } = new();
+        internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
         internal NetworkVariable<bool> JetpackReduceDiscount { get; private set; } = new();
         internal NetworkVariable<bool> TZPExpandCapacity { get; private set; } = new();
         internal NetworkVariable<bool> JetpackInertia { get; private set; } = new();
@@ -129,6 +130,9 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ScrapAdjustWeights { get; private set; } = new();
         internal NetworkVariable<bool> EmbrionMineshafts { get; private set; } = new();
         internal NetworkVariable<bool> EmbrionMega { get; private set; } = new();
+        internal NetworkVariable<bool> ZapGunBattery { get; private set; } = new();
+        internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
+        internal NetworkVariable<bool> RobotRider { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -150,7 +154,7 @@ namespace ButteRyBalance.Network
             ManeaterLimitGrowth.Value = Configuration.maneaterLimitGrowth.Value;
             ManeaterWideTurns.Value = Configuration.maneaterWideTurns.Value;
             MoonsKillSwitch.Value = Configuration.moonsKillSwitch.Value;
-            FoggyRework.Value = Configuration.foggyRework.Value;
+            FoggyLimit.Value = Configuration.foggyLimit.Value;
             ExperimentationNoEvents.Value = Configuration.experimentationNoEvents.Value;
             RandomIndoorFog.Value = Configuration.randomIndoorFog.Value;
             VowMineshafts.Value = Configuration.vowMineshafts.Value;
@@ -164,7 +168,7 @@ namespace ButteRyBalance.Network
             TitanMineshafts.Value = Configuration.titanMineshafts.Value;
             DineFloods.Value = Configuration.dineFloods.Value;
             NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
-            JetpackReduceBattery.Value = Configuration.jetpackReduceBattery.Value;
+            JetpackBattery.Value = Configuration.jetpackBattery.Value;
             JetpackReduceDiscount.Value = Configuration.jetpackReduceDiscount.Value;
             TZPExpandCapacity.Value = Configuration.tzpExpandCapacity.Value;
             JetpackInertia.Value = Configuration.jetpackInertia.Value;
@@ -175,6 +179,9 @@ namespace ButteRyBalance.Network
             ScrapAdjustWeights.Value = Configuration.scrapAdjustWeights.Value;
             EmbrionMineshafts.Value = Configuration.embrionMineshafts.Value;
             EmbrionMega.Value = Configuration.embrionMega.Value;
+            ZapGunBattery.Value = Configuration.zapGunBattery.Value;
+            ApparatusPrice.Value = Configuration.apparatusPrice.Value;
+            RobotRider.Value = Configuration.robotRider.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
@@ -193,6 +200,22 @@ namespace ButteRyBalance.Network
         internal void SyncScrapPriceServerRpc(NetworkObjectReference scrap, int value)
         {
             SyncScrapPriceClientRpc(scrap, value);
+        }
+
+        [ServerRpc]
+        internal void SyncCrouchingServerRpc(int playerID, bool crouching)
+        {
+            SyncCrouchingClientRpc(playerID, crouching);
+        }
+
+        [ClientRpc]
+        internal void SyncCrouchingClientRpc(int playerID, bool crouching)
+        {
+            PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[playerID];
+            if (player.IsOwner)
+                return;
+
+            player.isCrouching = crouching;
         }
     }
 }
