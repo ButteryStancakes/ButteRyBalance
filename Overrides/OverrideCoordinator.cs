@@ -177,6 +177,15 @@ namespace ButteRyBalance.Overrides
                     item.weight = weight;
                 }
             }
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
+            {
+                switch (level.name)
+                {
+                    case "TitanLevel":
+                        level.timeToArrive = 4f;
+                        break;
+                }
+            }
 
             //StartOfRound.Instance.SetPlanetsWeather();
         }

@@ -1,6 +1,7 @@
 ﻿using ButteRyBalance.Overrides.Moons;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ButteRyBalance.Overrides
 {
@@ -117,14 +118,12 @@ namespace ButteRyBalance.Overrides
 
             Plugin.Logger.LogDebug($"Starting {infestationEnemy.name} infestation");
             infestationEnemy.PowerLevel = 0f;
+            RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
 
             if (infestationEnemy.name != "ClaySurgeon")
-            {
-                RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
                 RoundManager.Instance.increasedInsideEnemySpawnRateIndex = infestationEnemyIndex;
-            }
             else
-                RoundManager.Instance.currentMaxInsidePower = 0;
+                RoundManager.Instance.currentMaxInsidePower = Mathf.Floor(RoundManager.Instance.currentMaxInsidePower / 2f);
         }
 
         internal static void EndInfestation()

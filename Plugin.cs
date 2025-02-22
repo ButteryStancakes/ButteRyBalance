@@ -11,7 +11,7 @@ namespace ButteRyBalance
     [BepInDependency(GUID_LOBBY_COMPATIBILITY, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.2.0";
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.2.1";
         internal static new ManualLogSource Logger;
 
         const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility";

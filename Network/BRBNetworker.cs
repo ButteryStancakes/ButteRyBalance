@@ -133,6 +133,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ZapGunBattery { get; private set; } = new();
         internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> RobotRider { get; private set; } = new();
+        internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -182,6 +183,7 @@ namespace ButteRyBalance.Network
             ZapGunBattery.Value = Configuration.zapGunBattery.Value;
             ApparatusPrice.Value = Configuration.apparatusPrice.Value;
             RobotRider.Value = Configuration.robotRider.Value;
+            ButlerSquishy.Value = Configuration.butlerSquishy.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
@@ -196,13 +198,13 @@ namespace ButteRyBalance.Network
                 Plugin.Logger.LogError("Failed to sync scrap price from server");
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         internal void SyncScrapPriceServerRpc(NetworkObjectReference scrap, int value)
         {
             SyncScrapPriceClientRpc(scrap, value);
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         internal void SyncCrouchingServerRpc(int playerID, bool crouching)
         {
             SyncCrouchingClientRpc(playerID, crouching);

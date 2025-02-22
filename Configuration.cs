@@ -7,7 +7,7 @@ namespace ButteRyBalance
     {
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, titanWeeds, dineMasked, giantSnowSight, giantForgetTargets, dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, titanWeeds, dineMasked, giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider, jetpackShortCircuit;
 
         internal static void Init(ConfigFile cfg)
         {
@@ -167,11 +167,6 @@ namespace ButteRyBalance
                 "Treat Blizzard Like Fog",
                 true,
                 "On snowy moons, Forest Keepers will have their line-of-sight range reduced, the same way as in foggy weather.");
-            giantForgetTargets = configFile.Bind(
-                "Enemy.ForestKeeper",
-                "Forget Out-of-Sight Players",
-                true,
-                "Fixes the bug(?) where Forest Keepers only forget about players when there is at least one other player in their line-of-sight.");
 
             // Kidnapper Fox
             foxSquishy = configFile.Bind(

@@ -77,7 +77,7 @@ namespace ButteRyBalance.Patches.Enemies
         [HarmonyPrefix]
         static void ButlerEnemyAI_Pre_HitEnemy(ButlerEnemyAI __instance, ref int force)
         {
-            if (__instance.IsOwner && force > 2 && Configuration.butlerSquishy.Value)
+            if (force > 2 && BRBNetworker.Instance.ButlerSquishy.Value)
                 force += 3;
         }
 
