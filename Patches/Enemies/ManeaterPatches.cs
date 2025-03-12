@@ -58,7 +58,7 @@ namespace ButteRyBalance.Patches.Enemies
         [HarmonyPrefix]
         static void CaveDwellerAI_Pre_SetCryingLocalClient(CaveDwellerAI __instance, ref bool setCrying)
         {
-            if (__instance.currentBehaviourStateIndex == 0 && !playersHaveEnteredBuilding && BRBNetworker.Instance.ManeaterLimitGrowth.Value)
+            if (setCrying && !__instance.isOutside && __instance.currentBehaviourStateIndex == 0 && !playersHaveEnteredBuilding && BRBNetworker.Instance.ManeaterLimitGrowth.Value)
                 setCrying = false;
         }
 

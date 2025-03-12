@@ -69,6 +69,7 @@ namespace ButteRyBalance.Overrides
         {
             SelectableLevel level = RoundManager.Instance.currentLevel;
 
+            infestationEnemyIndex = RoundManager.Instance.enemyRushIndex; // allow defaulting to vanilla selection, if no additional types enabled
             RoundManager.Instance.enemyRushIndex = -1;
 
             infestationEnemies.Clear();
@@ -78,7 +79,7 @@ namespace ButteRyBalance.Overrides
 
             if (forceIndex >= 0)
                 infestationEnemyIndex = forceIndex;
-            else
+            else if (compatibleEnemies.Except(["HoardingBug", "Nutcracker"]).Any()) // default otherwise
             {
                 FilterInfestations();
                 for (int i = 0; i < level.Enemies.Count; i++)

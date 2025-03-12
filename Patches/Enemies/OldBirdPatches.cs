@@ -18,13 +18,13 @@ namespace ButteRyBalance.Patches.Enemies
                 headPhysicsRegion.transform.SetParent(__instance.flyingModeEye.parent, false);
                 headPhysicsRegion.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0f, -90f, 0f));
                 headPhysicsRegion.transform.localScale = Vector3.one;
-                headPhysicsRegion.gameObject.layer = 11; // Colliders
+                headPhysicsRegion.gameObject.layer = 13; // Zeekerss used 11 (Colliders) but this breaks flight behavior
 
                 Transform itemRegion = new GameObject("ItemRegion").transform;
                 itemRegion.transform.SetParent(headPhysicsRegion, false);
                 itemRegion.transform.SetLocalPositionAndRotation(new(0.0839999989f, 4.21999979f, -0.0160000008f), Quaternion.Euler(0f, -90f, 0f));
                 itemRegion.transform.localScale = new(2.65949273f, 2.36880684f, 6.71592999f);
-                itemRegion.gameObject.layer = 11; // Colliders
+                itemRegion.gameObject.layer = 13; // Triggers
 
                 BoxCollider headTrigger = headPhysicsRegion.gameObject.AddComponent<BoxCollider>();
                 headTrigger.isTrigger = true;
