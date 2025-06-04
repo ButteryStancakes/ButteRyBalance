@@ -7,6 +7,7 @@ namespace ButteRyBalance.Overrides.Moons
     {
         internal static readonly Dictionary<int, int> adjustedInteriors = new()
         {
+            { 1, 75 },  // manor,        vanilla: 57
             { 4, 69 },  // mineshaft,    vanilla: 115
         };
 

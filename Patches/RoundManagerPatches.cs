@@ -72,34 +72,37 @@ namespace ButteRyBalance.Patches
         [HarmonyPrefix]
         static void RoundManager_Pre_GenerateNewFloor(RoundManager __instance)
         {
-            switch (__instance.currentLevel.name)
+            if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
             {
-                case "VowLevel":
-                    if (BRBNetworker.Instance.VowMineshafts.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, VowOverrides.adjustedInteriors);
-                    break;
-                case "OffenseLevel":
-                    if (BRBNetworker.Instance.OffenseMineshafts.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, OffenseOverrides.adjustedInteriors);
-                    break;
-                case "RendLevel":
-                    if (BRBNetworker.Instance.RendMineshafts.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, RendOverrides.adjustedInteriors);
-                    break;
-                case "TitanLevel":
-                    if (BRBNetworker.Instance.TitanMineshafts.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, TitanOverrides.adjustedInteriors);
-                    break;
-                case "ArtificeLevel":
-                    if (BRBNetworker.Instance.ArtificeInteriors.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, ArtificeOverrides.adjustedInteriors);
-                    break;
-                case "EmbrionLevel":
-                    if (BRBNetworker.Instance.EmbrionMineshafts.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, EmbrionOverrides.adjustedInteriors);
-                    if (BRBNetworker.Instance.EmbrionMega.Value)
-                        MoonOverrides.AdjustInteriors(__instance.currentLevel, EmbrionOverrides.megaInteriors);
-                    break;
+                switch (__instance.currentLevel.name)
+                {
+                    case "VowLevel":
+                        if (BRBNetworker.Instance.VowMineshafts.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, VowOverrides.adjustedInteriors);
+                        break;
+                    case "OffenseLevel":
+                        if (BRBNetworker.Instance.OffenseMineshafts.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, OffenseOverrides.adjustedInteriors);
+                        break;
+                    case "RendLevel":
+                        if (BRBNetworker.Instance.RendMineshafts.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, RendOverrides.adjustedInteriors);
+                        break;
+                    case "TitanLevel":
+                        if (BRBNetworker.Instance.TitanMineshafts.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, TitanOverrides.adjustedInteriors);
+                        break;
+                    case "ArtificeLevel":
+                        if (BRBNetworker.Instance.ArtificeInteriors.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, ArtificeOverrides.adjustedInteriors);
+                        break;
+                    case "EmbrionLevel":
+                        if (BRBNetworker.Instance.EmbrionMineshafts.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, EmbrionOverrides.adjustedInteriors);
+                        if (BRBNetworker.Instance.EmbrionMega.Value)
+                            MoonOverrides.AdjustInteriors(__instance.currentLevel, EmbrionOverrides.megaInteriors);
+                        break;
+                }
             }
         }
 

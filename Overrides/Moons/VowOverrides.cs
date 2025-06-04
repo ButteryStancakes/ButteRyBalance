@@ -7,7 +7,7 @@ namespace ButteRyBalance.Overrides.Moons
     {
         internal static readonly Dictionary<int, int> adjustedInteriors = new()
         {
-            { 0, 75 },  // factory,     vanilla: 300
+            { 0, 50 },  // factory,     vanilla: 300
             { 4, 300 }, // mineshaft,   vanilla: 250
         };
 

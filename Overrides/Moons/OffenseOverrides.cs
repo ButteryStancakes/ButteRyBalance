@@ -53,7 +53,12 @@ namespace ButteRyBalance.Overrides.Moons
             }
 
             if (Configuration.offenseMasked.Value)
-                MoonOverrides.adjustedEnemies.Add("MaskedPlayerEnemy", 9);
+            {
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+                    { "MaskedPlayerEnemy", 9 },
+                    { "SpringMan", 16 }
+                });
+            }
 
             if (Configuration.offenseNerfEclipse.Value)
                 MoonOverrides.adjustedEclipse = 3; // vanilla: 4

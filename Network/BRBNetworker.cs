@@ -33,7 +33,7 @@ namespace ButteRyBalance.Network
 
                 // assign a unique hash so it can be network registered
                 NetworkObject netObj = prefab.AddComponent<NetworkObject>();
-                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Assembly.GetCallingAssembly().GetName().Name + prefab.name));
+                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(typeof(BRBNetworker).Assembly.GetName().Name + prefab.name));
                 netObj.GlobalObjectIdHash = System.BitConverter.ToUInt32(hash, 0);
 
                 // and now it holds our network handler!
@@ -121,7 +121,6 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
         internal NetworkVariable<bool> JetpackReduceDiscount { get; private set; } = new();
-        internal NetworkVariable<bool> TZPExpandCapacity { get; private set; } = new();
         internal NetworkVariable<bool> JetpackInertia { get; private set; } = new();
         internal NetworkVariable<bool> ArtificeInteriors { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunPrice { get; private set; } = new();
@@ -171,7 +170,6 @@ namespace ButteRyBalance.Network
             NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
             JetpackBattery.Value = Configuration.jetpackBattery.Value;
             JetpackReduceDiscount.Value = Configuration.jetpackReduceDiscount.Value;
-            TZPExpandCapacity.Value = Configuration.tzpExpandCapacity.Value;
             JetpackInertia.Value = Configuration.jetpackInertia.Value;
             ArtificeInteriors.Value = Configuration.artificeInteriors.Value;
             ZapGunPrice.Value = Configuration.zapGunPrice.Value;
