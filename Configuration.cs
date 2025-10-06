@@ -5,9 +5,26 @@ namespace ButteRyBalance
 {
     internal class Configuration
     {
+        internal enum DineScrap
+        {
+            DontChange,
+            Rollback,
+            AddV73,
+            Consolidate
+        }
+
+        internal enum SnowmanFrequency
+        {
+            None,
+            Rare,
+            Lots
+        }
+
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, titanWeeds, dineMasked, giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity,*/ jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider, jetpackShortCircuit;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, /*dineBuffScrap,*/ dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, /*titanWeeds,*/ dineMasked, giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity,*/ jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, /*embrionWeeds,*/ embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider, /*jetpackShortCircuit,*/ spikeTrapDistance;
+        internal static ConfigEntry<DineScrap> dineScrapPool;
+        internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
 
         internal static void Init(ConfigFile cfg)
         {
@@ -379,13 +396,18 @@ namespace ButteRyBalance
                 "Restore Earth Leviathans",
                 true,
                 "Allow Earth Leviathans, which were removed from Rend in v56, to spawn again.");
+            rendSnowmen = configFile.Bind(
+                "Moon.Rend",
+                "Snowmen",
+                SnowmanFrequency.Rare,
+                "Allow snowmen, which were removed in v70, to spawn again.");
 
             // Dine
-            dineBuffScrap = configFile.Bind(
+            dineScrapPool = configFile.Bind(
                 "Moon.Dine",
-                "Buff Scrap",
-                true,
-                "Significantly improves average quality of scrap on Dine. Also increases scrap counts from 22-25 to 22-27, like in v50 betas.");
+                "Scrap Pool",
+                DineScrap.Consolidate,
+                "What sort of scrap should spawn on Dine?\n\"DontChange\" will avoid making any changes, letting vanilla or other mods take priority.\n\"Rollback\" will revert the scrap pool to what it was in ButteRyBalance before v73.\n\"AddV73\" will use V72's spawn pool, with the new scrap from V73 added in.\n\"Consolidate\" will use V73's spawn pool, but half as many items will spawn with double value each.");
             dineReduceButlers = configFile.Bind(
                 "Moon.Dine",
                 "Reduce Butler Chance",
@@ -416,6 +438,11 @@ namespace ButteRyBalance
                 "Add Masked",
                 true,
                 "Allow \"Masked\" enemies to spawn on Dine, since Comedy and Tragedy spawn there.");
+            dineSnowmen = configFile.Bind(
+                "Moon.Dine",
+                "Snowmen",
+                SnowmanFrequency.Rare,
+                "Allow snowmen, which were removed in v70, to spawn again.");
 
             // Titan
             titanBuffScrap = configFile.Bind(
@@ -438,11 +465,11 @@ namespace ButteRyBalance
                 "Adjust Enemies",
                 true,
                 "Adjusts enemy balance, mainly to reduce Jesters and giants. Also slightly increases Old Birds.");
-            titanWeeds = configFile.Bind(
+            titanSnowmen = configFile.Bind(
                 "Moon.Titan",
-                "No Vain Shrouds",
-                true,
-                "Disable vain shroud growth on Titan, to prevent the Kidnapper Fox from camping the ship.");
+                "Snowmen",
+                SnowmanFrequency.Rare,
+                "Allow snowmen, which were removed in v70, to spawn again.");
 
             // Artifice
             artificeBuffScrap = configFile.Bind(
@@ -472,11 +499,6 @@ namespace ButteRyBalance
                 "Increase Mineshafts",
                 true,
                 "Significantly increase the chance of mineshafts on Embrion.");
-            embrionWeeds = configFile.Bind(
-                "Moon.Embrion",
-                "No Vain Shrouds",
-                true,
-                "Disable vain shroud growth on Embrion, since there is limited biological life on the surface.");
             embrionAdjustEnemies = configFile.Bind(
                 "Moon.Embrion",
                 "Adjust Indoor Enemies",
@@ -514,6 +536,12 @@ namespace ButteRyBalance
                 "Shrink Mineshafts",
                 true,
                 "Slightly reduce the overall size of mineshaft interiors.");
+
+            spikeTrapDistance = configFile.Bind(
+                "Misc",
+                "Safely Distance Spike Traps",
+                true,
+                "Spike traps are no longer allowed to spawn directly on top of building entrances.");
         }
 
         static void InfestationConfig()
@@ -557,6 +585,12 @@ namespace ButteRyBalance
             configFile.Remove(configFile["Enemy.ForestKeeper", "Forget Out-of-Sight Players"].Definition);
             configFile.Bind("Item.TZPInhalant", "Expand Capacity", true, "Legacy setting, doesn't work");
             configFile.Remove(configFile["Item.TZPInhalant", "Expand Capacity"].Definition);
+            configFile.Bind("Moon.Dine", "Buff Scrap", true, "Legacy setting, doesn't work");
+            configFile.Remove(configFile["Moon.Dine", "Buff Scrap"].Definition);
+            configFile.Bind("Moon.Titan", "No Vain Shrouds", true, "Legacy setting, doesn't work");
+            configFile.Remove(configFile["Moon.Titan", "No Vain Shrouds"].Definition);
+            configFile.Bind("Moon.Embrion", "No Vain Shrouds", true, "Legacy setting, doesn't work");
+            configFile.Remove(configFile["Moon.Embrion", "No Vain Shrouds"].Definition);
 
             configFile.Save();
         }

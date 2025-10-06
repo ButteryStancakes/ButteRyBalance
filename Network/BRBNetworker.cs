@@ -1,10 +1,10 @@
 ﻿using ButteRyBalance.Overrides;
 using GameNetcodeStuff;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ButteRyBalance.Network
 {
@@ -55,7 +55,7 @@ namespace ButteRyBalance.Network
             try
             {
                 if (NetworkManager.Singleton.IsServer && prefab != null)
-                    Instantiate(prefab).GetComponent<NetworkObject>().Spawn();
+                    Instantiate(prefab).GetComponent<NetworkObject>().Spawn(true);
             }
             catch
             {
@@ -133,6 +133,9 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> RobotRider { get; private set; } = new();
         internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
+        internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
+        internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
+        internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -182,40 +185,34 @@ namespace ButteRyBalance.Network
             ApparatusPrice.Value = Configuration.apparatusPrice.Value;
             RobotRider.Value = Configuration.robotRider.Value;
             ButlerSquishy.Value = Configuration.butlerSquishy.Value;
+            RendSnowmen.Value = (int)Configuration.rendSnowmen.Value;
+            DineSnowmen.Value = (int)Configuration.dineSnowmen.Value;
+            TitanSnowmen.Value = (int)Configuration.titanSnowmen.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
         }
 
-        [ClientRpc]
-        internal void SyncScrapPriceClientRpc(NetworkObjectReference scrap, int value)
+        [Rpc(SendTo.ClientsAndHost)]
+        internal void SyncScrapPriceRpc(NetworkObjectReference scrap, int value, bool node = true)
         {
             if (scrap.TryGet(out NetworkObject netObj))
-                netObj.GetComponent<GrabbableObject>().SetScrapValue(value);
+            {
+                GrabbableObject item = netObj.GetComponent<GrabbableObject>();
+                if (node)
+                    item.SetScrapValue(value);
+                else
+                    item.scrapValue = value;
+            }
             else
-                Plugin.Logger.LogError("Failed to sync scrap price from server");
+                Plugin.Logger.LogError("Failed to sync scrap price");
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        internal void SyncScrapPriceServerRpc(NetworkObjectReference scrap, int value)
+        [Rpc(SendTo.NotMe)]
+        internal void SyncCrouchingRpc(NetworkObjectReference player, bool crouching)
         {
-            SyncScrapPriceClientRpc(scrap, value);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        internal void SyncCrouchingServerRpc(int playerID, bool crouching)
-        {
-            SyncCrouchingClientRpc(playerID, crouching);
-        }
-
-        [ClientRpc]
-        internal void SyncCrouchingClientRpc(int playerID, bool crouching)
-        {
-            PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[playerID];
-            if (player.IsOwner)
-                return;
-
-            player.isCrouching = crouching;
+            if (player.TryGet(out NetworkObject netObj))
+                netObj.GetComponent<PlayerControllerB>().isCrouching = crouching;
         }
     }
 }

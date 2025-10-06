@@ -72,12 +72,6 @@ namespace ButteRyBalance.Overrides.Moons
                 });
             }
 
-            if (Configuration.embrionWeeds.Value)
-            {
-                Plugin.Logger.LogDebug($"{level.name}.canSpawnMold: {level.canSpawnMold} -> False");
-                level.canSpawnMold = false;
-            }
-
             MoonOverrides.Apply(level);
         }
     }

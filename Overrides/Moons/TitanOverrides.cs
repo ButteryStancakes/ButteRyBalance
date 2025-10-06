@@ -63,12 +63,6 @@ namespace ButteRyBalance.Overrides.Moons
                 });
             }
 
-            if (Configuration.titanWeeds.Value)
-            {
-                Plugin.Logger.LogDebug($"{level.name}.canSpawnMold: {level.canSpawnMold} -> False");
-                level.canSpawnMold = false;
-            }
-
             MoonOverrides.Apply(level);
         }
     }

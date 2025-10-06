@@ -72,7 +72,7 @@ namespace ButteRyBalance.Patches
             if (BRBNetworker.Instance.MultiplayerWeather.Value)
                 connectedPlayersOnServer = __instance.connectedPlayersAmount;
 
-            if (BRBNetworker.Instance.MarchRainy.Value)
+            if (BRBNetworker.Instance.MarchRainy.Value && !BRBNetworker.Instance.MoonsKillSwitch.Value)
             {
                 SelectableLevel marchLevel = __instance.levels.FirstOrDefault(level => level.name == "MarchLevel");
                 if (marchLevel != null)

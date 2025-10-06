@@ -24,7 +24,7 @@ namespace ButteRyBalance.Patches.Items
             if (__instance.IsServer && !StartOfRound.Instance.inShipPhase && __instance.scrapValue == 35 && Configuration.butlerKnifePrice.Value && __instance is KnifeItem)
             {
                 Plugin.Logger.LogInfo("Trying to sync knife price on server");
-                BRBNetworker.Instance.SyncScrapPriceClientRpc(__instance.GetComponent<NetworkObject>(), Random.Range(28, 84));
+                BRBNetworker.Instance.SyncScrapPriceRpc(__instance.NetworkObject, Random.Range(28, 84));
             }
         }
 

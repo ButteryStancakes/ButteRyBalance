@@ -2,6 +2,8 @@
 using ButteRyBalance.Overrides;
 using ButteRyBalance.Overrides.Moons;
 using HarmonyLib;
+using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace ButteRyBalance.Patches
@@ -116,13 +118,51 @@ namespace ButteRyBalance.Patches
                 if (Common.artificeBlizzard != null)
                     Plugin.Logger.LogDebug("Artifice Blizzard compatibility success");
             }
+
+            if (__instance.IsServer)
+            {
+                if (Configuration.spikeTrapDistance.Value)
+                {
+                    SpikeRoofTrap[] spikeRoofTraps = Object.FindObjectsByType<SpikeRoofTrap>(FindObjectsSortMode.None);
+                    EntranceTeleport[] entranceTeleports = Object.FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.None);
+                    foreach (SpikeRoofTrap spikeRoofTrap in spikeRoofTraps)
+                    {
+                        foreach (EntranceTeleport entranceTeleport in entranceTeleports)
+                        {
+                            if (entranceTeleport.isEntranceToBuilding || entranceTeleport.entrancePoint == null)
+                                continue;
+
+                            if (Vector3.Distance(spikeRoofTrap.spikeTrapAudio.transform.position, entranceTeleport.entrancePoint.position) < 4.5f)
+                            {
+                                NetworkObject netObj = spikeRoofTrap.GetComponentInParent<NetworkObject>();
+                                if (netObj != null && netObj.IsSpawned)
+                                {
+                                    Plugin.Logger.LogDebug($"Spike trap #{spikeRoofTrap.GetInstanceID()} was destroyed (too close to entrance \"{entranceTeleport.name}\")");
+                                    netObj.Despawn();
+                                }
+                                else
+                                    Plugin.Logger.LogWarning("Error occurred while despawning spike trap (could not find network object, or it was not network spawned yet)");
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if ((__instance.currentDungeonType == 0 || __instance.currentDungeonType == 2 || __instance.currentDungeonType == 3) && BRBNetworker.Instance.ApparatusPrice.Value)
+                {
+                    LungProp apparatus = __instance.mapPropsContainer.GetComponentInChildren<LungProp>();
+                    if (apparatus != null && apparatus.isLungDocked && apparatus.scrapValue == 80)
+                        BRBNetworker.Instance.SyncScrapPriceRpc(apparatus.NetworkObject, new System.Random(StartOfRound.Instance.randomMapSeed).Next(40, 131), false);
+                }
+            }
         }
 
         [HarmonyPatch(nameof(RoundManager.SetToCurrentLevelWeather))]
         [HarmonyPostfix]
         static void RoundManager_Post_SetToCurrentLevelWeather(RoundManager __instance)
         {
-            if (__instance.currentLevel.name == "DineLevel" && TimeOfDay.Instance.currentLevelWeather == LevelWeatherType.Flooded && BRBNetworker.Instance.DineFloods.Value)
+            if (!BRBNetworker.Instance.MoonsKillSwitch.Value && __instance.currentLevel.name == "DineLevel" && TimeOfDay.Instance.currentLevelWeather == LevelWeatherType.Flooded && BRBNetworker.Instance.DineFloods.Value)
             {
                 // use v50 beta values since main entrance was moved down in v60
                 TimeOfDay.Instance.currentWeatherVariable = -16f;
@@ -165,6 +205,20 @@ namespace ButteRyBalance.Patches
             // prevent stairs next to ship being blocked
             /*if (__instance.currentLevel.sceneName == "Level9Titan")
                 CreateSpawnDenialPoint(new(-15.5352612f, -3.74099994f, 6.6187892f));*/
+
+            if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
+            {
+                int snowmen = __instance.currentLevel.name switch
+                {
+                    "RendLevel" => BRBNetworker.Instance.RendSnowmen.Value,
+                    "DineLevel" => BRBNetworker.Instance.DineSnowmen.Value,
+                    "TitanLevel" => BRBNetworker.Instance.TitanSnowmen.Value,
+                    _ => 0
+                };
+
+                if (snowmen > 0)
+                    MoonOverrides.RestoreSnowmen(__instance.currentLevel, snowmen > 1);
+            }
         }
 
         static void CreateSpawnDenialPoint(Vector3 pos)
@@ -212,22 +266,44 @@ namespace ButteRyBalance.Patches
 
         [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
         [HarmonyPrefix]
-        static void RoundManager_Pre_SpawnScrapInLevel(RoundManager __instance)
+        static void RoundManager_Pre_SpawnScrapInLevel(RoundManager __instance, ref float[] __state)
         {
-            if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceBuffScrap.Value)
+            __state = [1f, 1f];
+            if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
             {
-                if (__instance.currentDungeonType != 4)
+                if (__instance.currentLevel.name == "AdamanceLevel")
                 {
-                    __instance.currentLevel.minScrap = 19;
-                    __instance.currentLevel.maxScrap = 24;
+                    if (Configuration.adamanceBuffScrap.Value)
+                    {
+                        if (__instance.currentDungeonType != 4)
+                        {
+                            __instance.currentLevel.minScrap = 19;
+                            __instance.currentLevel.maxScrap = 24;
+                        }
+                        else
+                        {
+                            // vanilla values, because mineshaft is a bit *too* good...
+                            __instance.currentLevel.minScrap = 16;
+                            __instance.currentLevel.maxScrap = 19;
+                        }
+                    }
                 }
-                else
+                else if (__instance.currentLevel.name == "DineLevel" && Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
                 {
-                    // vanilla values, because mineshaft is a bit *too* good...
-                    __instance.currentLevel.minScrap = 16;
-                    __instance.currentLevel.maxScrap = 19;
+                    __instance.scrapAmountMultiplier *= 0.5f;
+                    __state[0] *= 2f;
+                    __instance.scrapValueMultiplier *= 2f;
+                    __state[1] *= 0.5f;
                 }
             }
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_SpawnScrapInLevel(RoundManager __instance, float[] __state)
+        {
+            __instance.scrapAmountMultiplier *= __state[0];
+            __instance.scrapValueMultiplier *= __state[1];
         }
     }
 }

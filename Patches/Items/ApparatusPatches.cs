@@ -11,8 +11,8 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPrefix]
         static void LungProp_Pre_EquipItem(LungProp __instance)
         {
-            if (__instance.IsOwner && __instance.isLungDocked && __instance.scrapValue == 80 && BRBNetworker.Instance.ApparatusPrice.Value)
-                BRBNetworker.Instance.SyncScrapPriceServerRpc(__instance.GetComponent<NetworkObject>(), new System.Random(StartOfRound.Instance.randomMapSeed).Next(40, 131));
+            if (__instance.IsOwner && __instance.isLungDocked && BRBNetworker.Instance.ApparatusPrice.Value)
+                BRBNetworker.Instance.SyncScrapPriceRpc(__instance.NetworkObject, __instance.scrapValue); // to show value on scan
         }
     }
 }

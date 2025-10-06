@@ -28,7 +28,7 @@ namespace ButteRyBalance.Patches
                 if (__instance.isCrouching != wasCrouching)
                 {
                     wasCrouching = __instance.isCrouching;
-                    BRBNetworker.Instance.SyncCrouchingServerRpc((int)__instance.playerClientId, __instance.isCrouching);
+                    BRBNetworker.Instance.SyncCrouchingRpc(__instance.NetworkObject, __instance.isCrouching);
                 }
             }
         }
