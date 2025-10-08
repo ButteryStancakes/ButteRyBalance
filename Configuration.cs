@@ -10,6 +10,7 @@ namespace ButteRyBalance
             DontChange,
             Rollback,
             AddV73,
+            AddV73Extra,
             Consolidate
         }
 
@@ -407,7 +408,7 @@ namespace ButteRyBalance
                 "Moon.Dine",
                 "Scrap Pool",
                 DineScrap.Consolidate,
-                "What sort of scrap should spawn on Dine?\n\"DontChange\" will avoid making any changes, letting vanilla or other mods take priority.\n\"Rollback\" will revert the scrap pool to what it was in ButteRyBalance before v73.\n\"AddV73\" will use V72's spawn pool, with the new scrap from V73 added in.\n\"Consolidate\" will use V73's spawn pool, but half as many items will spawn with double value each.");
+                "What sort of scrap should spawn on Dine?\n\"DontChange\" will avoid making any changes, letting vanilla or other mods take priority.\n\"Rollback\" will revert the scrap pool to what it was in ButteRyBalance before v73.\n\"AddV73\" will use V72's spawn pool, with the new scrap from V73 added in.\n\"AddV73Extra\" is the same as previous, but spawns more items to offset the lower value scrap.\n\"Consolidate\" will use V73's spawn pool, but half as many items will spawn with double value each.");
             dineReduceButlers = configFile.Bind(
                 "Moon.Dine",
                 "Reduce Butler Chance",

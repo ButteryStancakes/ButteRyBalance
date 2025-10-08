@@ -93,10 +93,18 @@ namespace ButteRyBalance.Overrides.Moons
                         { "SeveredTongue", 32 },
                     });
 
-                    if (Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73)
+                    if (Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73 || Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73Extra)
                     {
-                        MoonOverrides.minScrap = 22;
-                        MoonOverrides.maxScrap = 26;
+                        if (Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73Extra)
+                        {
+                            MoonOverrides.minScrap = 28;
+                            MoonOverrides.maxScrap = 45;
+                        }
+                        else
+                        {
+                            MoonOverrides.minScrap = 22;
+                            MoonOverrides.maxScrap = 26;
+                        }
                         MoonOverrides.adjustedScrap.AddRange(new(){
                             { "Cog1", 19 },
                             { "EnginePart1", 19 },
