@@ -1,4 +1,5 @@
-﻿using GameNetcodeStuff;
+﻿using ButteRyBalance.Network;
+using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
 
@@ -13,6 +14,15 @@ namespace ButteRyBalance.Patches.Enemies
         {
             if (__instance.isOutside && !__instance.enemyType.canSeeThroughFog && range > 30 && __instance.IsOwner && __instance is ForestGiantAI && Configuration.giantSnowSight.Value && Common.IsSnowLevel())
                 range = 30;
+        }
+
+        [HarmonyPatch(nameof(ForestGiantAI.HitEnemy))]
+        [HarmonyPrefix]
+        static void ForestGiantAI_Pre_HitEnemy(ref int force)
+        {
+            // instant death from cruiser damage
+            if (force == 12 && BRBNetworker.Instance.GiantSquishy.Value)
+                force += 100;
         }
     }
 }

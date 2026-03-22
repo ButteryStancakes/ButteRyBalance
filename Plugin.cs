@@ -9,15 +9,20 @@ namespace ButteRyBalance
 {
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
     [BepInDependency(GUID_LOBBY_COMPATIBILITY, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_ARTIFICE_BLIZZARD, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_BARBER_FIXES, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_VENT_SPAWN_FIX, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_SPAWN_CYCLE_FIXES, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.3.1";
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.3.2";
         internal static new ManualLogSource Logger;
 
         const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility";
         const string GUID_ARTIFICE_BLIZZARD = "butterystancakes.lethalcompany.artificeblizzard";
         const string GUID_BARBER_FIXES = "butterystancakes.lethalcompany.barberfixes";
         const string GUID_VENT_SPAWN_FIX = "butterystancakes.lethalcompany.ventspawnfix";
+        const string GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes";
 
         void Awake()
         {
@@ -47,6 +52,12 @@ namespace ButteRyBalance
             {
                 Logger.LogInfo("CROSS-COMPATIBILITY - Vent Spawn Fix detected");
                 Common.INSTALLED_VENT_SPAWN_FIX = true;
+            }
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_SPAWN_CYCLE_FIXES))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Spawn Cycle Fixes detected");
+                Common.INSTALLED_SPAWN_CYCLE_FIXES = true;
             }
 
             Configuration.Init(Config);

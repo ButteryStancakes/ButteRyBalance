@@ -11,6 +11,7 @@ namespace ButteRyBalance.Overrides.Moons
             { "Nutcracker",         100 },
             { "MaskedPlayerEnemy",    3 },
             { "ClaySurgeon",          1 },
+            { "Crawler",             75 },
         };
 
         internal static void Setup(SelectableLevel level)

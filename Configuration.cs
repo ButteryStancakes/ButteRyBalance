@@ -23,7 +23,7 @@ namespace ButteRyBalance
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, /*dineBuffScrap,*/ dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, /*titanWeeds,*/ dineMasked, giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity,*/ jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, /*embrionWeeds,*/ embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider, /*jetpackShortCircuit,*/ spikeTrapDistance;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, experimentationNoNuts, experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, vowAdjustScrap, vowNoCoils, vowMineshafts, shrinkMineshafts, offenseBuffScrap, offenseMineshafts, offenseMasked, offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather, butlerSquishy, adamanceBuffScrap, adamanceReduceChaos, coilheadCurves, rendMineshafts, rendShrink, rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice, coilheadPower, dineAdjustIndoor, /*dineBuffScrap,*/ dineAdjustOutdoor, dineAdjustCurves, titanBuffScrap, titanAddGold, titanMineshafts, titanAdjustEnemies, /*titanWeeds,*/ dineMasked, giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity,*/ jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, embrionMineshafts, embrionBuffScrap, /*embrionWeeds,*/ embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, foxSquishy, zapGunBattery, offenseBees, apparatusPrice, robotRider, /*jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
 
@@ -172,6 +172,11 @@ namespace ButteRyBalance
                 "Increase Power Level",
                 true,
                 "Increase Coil-heads' power level from 1 to 2, to reduce the potential for forming bad enemy combos.");
+            coilheadPersistence = configFile.Bind(
+                "Enemy.Coilhead",
+                "Persistence",
+                false,
+                "Coil-heads no longer recharge from just chasing players, behaving akin to their pre-v60 iteration.");
 
             // Forest Keeper
             giantSnowSight = configFile.Bind(
@@ -179,6 +184,11 @@ namespace ButteRyBalance
                 "Treat Blizzard Like Fog",
                 true,
                 "On snowy moons, Forest Keepers will have their line-of-sight range reduced, the same way as in foggy weather.");
+            giantSquishy = configFile.Bind(
+                "Enemy.ForestKeeper",
+                "Squishy",
+                true,
+                "Forest Keepers are instantly killed if the Cruiser is rammed into them at high speeds, just like before v70.");
 
             // Kidnapper Fox
             foxSquishy = configFile.Bind(
@@ -408,7 +418,7 @@ namespace ButteRyBalance
                 "Moon.Dine",
                 "Scrap Pool",
                 DineScrap.Consolidate,
-                "What sort of scrap should spawn on Dine?\n\"DontChange\" will avoid making any changes, letting vanilla or other mods take priority.\n\"Rollback\" will revert the scrap pool to what it was in ButteRyBalance before v73.\n\"AddV73\" will use V72's spawn pool, with the new scrap from V73 added in.\n\"AddV73Extra\" is the same as previous, but spawns more items to offset the lower value scrap.\n\"Consolidate\" will use V73's spawn pool, but half as many items will spawn with double value each.");
+                "What sort of scrap should spawn on Dine?\n\"DontChange\" will avoid making any changes, letting vanilla or other mods take priority.\n\"Rollback\" will revert the scrap pool to what it was in ButteRyBalance before v73.\n\"AddV73\" will use V72's spawn pool, with the new scrap from V73 added in.\n\"AddV73Extra\" is the same as previous, but spawns more items to offset the lower value scrap.\n\"Consolidate\" will use V73's spawn pool, but 40% as many items will spawn with 1.75x value each.");
             dineReduceButlers = configFile.Bind(
                 "Moon.Dine",
                 "Reduce Butler Chance",
@@ -551,7 +561,7 @@ namespace ButteRyBalance
                 "Infestations",
                 "Rework Mechanics",
                 true,
-                "Infestations no longer override a moon's power level, and enemy spawn chances are no longer equalized. The \"infestation enemy\" takes up no power level during the event, and \"bonus spawns\" only occur until the infestation enemy hits their spawn cap.");
+                "(REQUIRES SPAWN CYCLE FIXES!) Infestations no longer override a moon's power level, and enemy spawn chances are no longer equalized. The \"infestation enemy\" takes up no power level during the event, and \"bonus spawns\" only occur until the infestation enemy hits their spawn cap.");
 
             infestationButlers = configFile.Bind(
                 "Infestations",
@@ -570,6 +580,12 @@ namespace ButteRyBalance
                 "Barber Infestations",
                 true,
                 "Allow Barbers to be selected as the subject of an infestation. Other enemy spawns will be disabled. Won't occur inside mineshafts.");
+
+            infestationThumpers = configFile.Bind(
+                "Infestations",
+                "Thumper Infestations",
+                true,
+                "Allow thumpers to be selected as the subject of an infestation.");
         }
 
         static void MigrateLegacyConfig()

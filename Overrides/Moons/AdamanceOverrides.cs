@@ -6,11 +6,12 @@ namespace ButteRyBalance.Overrides.Moons
     {
         internal static readonly Dictionary<string, int> infestations = new()
         {
-            { "HoarderBug",         300 },
-            { "Nutcracker",         100 },
+            { "HoarderBug",         225 },
+            { "Nutcracker",          75 },
             { "MaskedPlayerEnemy",   10 },
             { "Butler",               1 },
             { "ClaySurgeon",          3 },
+            { "Crawler",            300 },
         };
 
         internal static void Setup(SelectableLevel level)

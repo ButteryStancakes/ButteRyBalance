@@ -26,5 +26,20 @@ namespace ButteRyBalance.Patches.Enemies
             if (setTrue)
                 __instance.onCooldownPhase = Mathf.Max(__instance.onCooldownPhase, __instance.stunNormalizedTimer * __instance.enemyType.stunTimeMultiplier);
         }
+
+        [HarmonyPatch(nameof(SpringManAI.Update))]
+        [HarmonyPostfix]
+        static void SpringManAI_Post_Update(SpringManAI __instance)
+        {
+            if (!__instance.isEnemyDead && !__instance.setOnCooldown && __instance.currentBehaviourStateIndex == 0)
+            {
+                // revert walk speed from v70, when animation made better sense
+                if (__instance.creatureAnimator.GetFloat("walkSpeed") == 4.7f)
+                    __instance.creatureAnimator.SetFloat("walkSpeed", 2.5f);
+            }
+
+            if (__instance.IsServer && Configuration.coilheadPersistence.Value)
+                __instance.timeSpentMoving = 0f;
+        }
     }
 }

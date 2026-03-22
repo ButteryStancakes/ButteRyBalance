@@ -18,7 +18,8 @@ namespace ButteRyBalance.Overrides
             "Nutcracker",
             "Butler",
             "MaskedPlayerEnemy",
-            "ClaySurgeon"
+            "ClaySurgeon",
+            "Crawler"
         };
 
         static readonly Dictionary<string, Dictionary<string, int>> vanillaLevels = new()
@@ -63,6 +64,14 @@ namespace ButteRyBalance.Overrides
             }
             else
                 compatibleEnemies.Remove("ClaySurgeon");
+
+            if (Configuration.infestationThumpers.Value)
+            {
+                if (!compatibleEnemies.Contains("Crawler"))
+                    compatibleEnemies.Add("Crawler");
+            }
+            else
+                compatibleEnemies.Remove("Crawler");
         }
 
         internal static void CustomInfestation(int forceIndex = -1)
@@ -170,9 +179,7 @@ namespace ButteRyBalance.Overrides
                     break;
                 }
 
-                float minTime = TimeOfDay.Instance.lengthOfHours * RoundManager.Instance.currentHour;
-
-                int time = (int)(RoundManager.Instance.AnomalyRandom.Next(10, (int)(TimeOfDay.Instance.lengthOfHours * RoundManager.Instance.hourTimeBetweenEnemySpawnBatches)) + minTime);
+                int time = RoundManager.Instance.AnomalyRandom.Next((int)(TimeOfDay.Instance.lengthOfHours * TimeOfDay.Instance.hour) + 10, (int)(TimeOfDay.Instance.lengthOfHours * (RoundManager.Instance.currentHour + 1)));
                 EnemyVent vent = availableVents[RoundManager.Instance.AnomalyRandom.Next(availableVents.Count)];
 
                 vent.enemyType = infestationEnemy;
@@ -182,15 +189,14 @@ namespace ButteRyBalance.Overrides
                 if (TimeOfDay.Instance.hour - RoundManager.Instance.currentHour <= 0)
                     vent.SyncVentSpawnTimeClientRpc(time, infestationEnemyIndex);
                 infestationEnemy.numberSpawned++;
-                //RoundManager.Instance.enemySpawnTimes.Add(time);
                 Plugin.Logger.LogDebug("Added infestation enemy to vent");
 
                 // reduce scaling of barber infestation
                 if (infestationEnemy.name == "ClaySurgeon")
                     break;
-            }
 
-            //RoundManager.Instance.enemySpawnTimes.Sort();
+                availableVents.Remove(vent);
+            }
         }
 
         internal static string GetInfesterName()

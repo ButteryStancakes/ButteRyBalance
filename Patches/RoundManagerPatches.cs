@@ -2,7 +2,6 @@
 using ButteRyBalance.Overrides;
 using ButteRyBalance.Overrides.Moons;
 using HarmonyLib;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -25,7 +24,7 @@ namespace ButteRyBalance.Patches
             }
             else
             {
-                if (__instance.IsServer && __instance.enemyRushIndex >= 0 && Configuration.infestationRework.Value)
+                if (__instance.IsServer && __instance.enemyRushIndex >= 0 && Configuration.infestationRework.Value && Common.INSTALLED_SPAWN_CYCLE_FIXES)
                 {
                     // don't override Clay Surgeon Overhaul infestations
                     InfestationOverrides.CustomInfestation(__instance.currentLevel.Enemies[__instance.enemyRushIndex].enemyType.name == "ClaySurgeon" ? __instance.enemyRushIndex : -1);
@@ -231,17 +230,24 @@ namespace ButteRyBalance.Patches
             spawnDenialPoint.position = pos;
         }
 
-        // so it runs after currentHour is incremented, but before cannotSpawnMoreInsideEnemies is set
-        [HarmonyPatch(nameof(RoundManager.SpawnEnemiesOutside))]
-        [HarmonyPostfix]
-        static void RoundManager_Post_SpawnEnemiesOutside(RoundManager __instance)
+        [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
+        [HarmonyPrefix]
+        static void RoundManager_Pre_PlotOutEnemiesForNextHour(RoundManager __instance)
         {
             if (__instance.IsServer)
                 InfestationOverrides.SpawnInfestationWave();
         }
-        [HarmonyPatch(nameof(RoundManager.AdvanceHourAndSpawnNewBatchOfEnemies))]
+        [HarmonyPatch(nameof(RoundManager.SpawnEnemiesOutside))]
         [HarmonyPostfix]
-        static void RoundManager_Post_AdvanceHourAndSpawnNewBatchOfEnemies(RoundManager __instance)
+        static void RoundManager_Post_SpawnEnemiesOutside(RoundManager __instance)
+        {
+            // sometimes, during an infestation, cannotSpawnMoreInsideEnemies can be ignored
+            if (__instance.IsServer && __instance.allEnemyVents.Length > 0 && __instance.cannotSpawnMoreInsideEnemies)
+                InfestationOverrides.SpawnInfestationWave();
+        }
+        [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_PlotOutEnemiesForNextHour(RoundManager __instance)
         {
             // infestations will assign to this list before it gets cleared, causing spawns to "lock up"
             if (__instance.IsServer)
@@ -252,16 +258,12 @@ namespace ButteRyBalance.Patches
                     if (enemyVent.occupied)
                         __instance.enemySpawnTimes.Add((int)enemyVent.spawnTime);
                 }
-                __instance.enemySpawnTimes.Sort();
+                if (__instance.enemySpawnTimes.Count > 0)
+                {
+                    __instance.enemySpawnTimes.Sort();
+                    __instance.currentEnemySpawnIndex = 0;
+                }
             }
-        }
-        // also run when enemies are first allowed to start spawning
-        [HarmonyPatch(nameof(RoundManager.BeginEnemySpawning))]
-        [HarmonyPrefix]
-        static void RoundManager_Pre_BeginEnemySpawning(RoundManager __instance)
-        {
-            if (__instance.IsServer)
-                InfestationOverrides.SpawnInfestationWave();
         }
 
         [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
@@ -290,10 +292,10 @@ namespace ButteRyBalance.Patches
                 }
                 else if (__instance.currentLevel.name == "DineLevel" && Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
                 {
-                    __instance.scrapAmountMultiplier *= 0.5f;
-                    __state[0] *= 2f;
-                    __instance.scrapValueMultiplier *= 2f;
-                    __state[1] *= 0.5f;
+                    __instance.scrapAmountMultiplier *= 0.4f;
+                    __state[0] *= 0.4f;
+                    __instance.scrapValueMultiplier *= 1.75f;
+                    __state[1] *= 1.75f;
                 }
             }
         }
@@ -302,8 +304,8 @@ namespace ButteRyBalance.Patches
         [HarmonyPostfix]
         static void RoundManager_Post_SpawnScrapInLevel(RoundManager __instance, float[] __state)
         {
-            __instance.scrapAmountMultiplier *= __state[0];
-            __instance.scrapValueMultiplier *= __state[1];
+            __instance.scrapAmountMultiplier /= __state[0];
+            __instance.scrapValueMultiplier /= __state[1];
         }
     }
 }

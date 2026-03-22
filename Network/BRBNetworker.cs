@@ -133,6 +133,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> RobotRider { get; private set; } = new();
         internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
+        internal NetworkVariable<bool> GiantSquishy { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -188,6 +189,7 @@ namespace ButteRyBalance.Network
             RendSnowmen.Value = (int)Configuration.rendSnowmen.Value;
             DineSnowmen.Value = (int)Configuration.dineSnowmen.Value;
             TitanSnowmen.Value = (int)Configuration.titanSnowmen.Value;
+            GiantSquishy.Value = Configuration.giantSquishy.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
