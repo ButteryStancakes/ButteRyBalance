@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches
 {
     [HarmonyPatch(typeof(TimeOfDay))]
-    class TimeOfDayPatches
+    static class TimeOfDayPatches
     {
         [HarmonyPatch(nameof(TimeOfDay.SetWeatherBasedOnVariables))]
         [HarmonyPostfix]
@@ -33,17 +33,6 @@ namespace ButteRyBalance.Patches
         static bool TimeOfDay_Pre_DecideRandomDayEvents(TimeOfDay __instance)
         {
             return (!__instance.IsServer || !Configuration.experimentationNoEvents.Value || !BRBNetworker.Instance.MoonsKillSwitch.Value);
-        }
-
-        [HarmonyPatch(nameof(TimeOfDay.CalculateLuckValue))]
-        [HarmonyPrefix]
-        static void TimeOfDay_Pre_CalculateLuckValue(TimeOfDay __instance)
-        {
-            for (int i = 0; i < StartOfRound.Instance.unlockablesList.unlockables.Count; i++)
-            {
-                if (StartOfRound.Instance.unlockablesList.unlockables[i].luckValue < 0 && StartOfRound.Instance.unlockablesList.unlockables[i].hasBeenUnlockedByPlayer && !__instance.furniturePlacedAtQuotaStart.Contains(i))
-                    __instance.furniturePlacedAtQuotaStart.Add(i);
-            }
         }
     }
 }

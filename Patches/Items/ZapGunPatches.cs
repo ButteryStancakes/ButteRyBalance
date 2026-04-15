@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace ButteRyBalance.Patches.Items
 {
     [HarmonyPatch(typeof(PatcherTool))]
-    internal class ZapGunPatches
+    static class ZapGunPatches
     {
         [HarmonyPatch(nameof(PatcherTool.EquipItem))]
         [HarmonyPostfix]

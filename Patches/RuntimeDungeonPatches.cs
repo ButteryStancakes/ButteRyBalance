@@ -6,49 +6,16 @@ using UnityEngine;
 namespace ButteRyBalance.Patches
 {
     [HarmonyPatch(typeof(RuntimeDungeon))]
-    class RuntimeDungeonPatches
+    static class RuntimeDungeonPatches
     {
-        const float REND_DINE_DIFF = 1.2f / 1.3f;
-
         [HarmonyPatch(nameof(RuntimeDungeon.Generate))]
         [HarmonyPrefix]
         static void RuntimeDungeon_Pre_Generate(RuntimeDungeon __instance)
         {
-            bool shrinkMineshafts = RoundManager.Instance.currentDungeonType == 4 && BRBNetworker.Instance.ShrinkMineshafts.Value;
-            if (shrinkMineshafts)
-            {
-                __instance.Generator.LengthMultiplier *= 0.9f * 0.9f;
-                Plugin.Logger.LogDebug("Invert mineshaft MapTileSize");
-            }
-
             if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
             {
                 switch (RoundManager.Instance.currentLevel.name)
                 {
-                    case "MarchLevel":
-                        if (BRBNetworker.Instance.MarchShrink.Value)
-                        {
-                            __instance.Generator.LengthMultiplier *= 0.9f;
-                            Plugin.Logger.LogDebug("Shrunk March interior");
-                        }
-                        break;
-                    case "DineLevel":
-                        // if rend is generating 1.6x mineshafts...
-                        if (BRBNetworker.Instance.RendShrink.Value && shrinkMineshafts)
-                        {
-                            // reduce dineshaft from 1.8x to 1.66x
-                            __instance.Generator.LengthMultiplier *= REND_DINE_DIFF;
-                            Plugin.Logger.LogDebug("Shrunk Dine mineshaft");
-                        }
-                        break;
-                    case "TitanLevel":
-                        if (shrinkMineshafts)
-                        {
-                            // 2.2x -> 2x
-                            __instance.Generator.LengthMultiplier /= 1.1f;
-                            Plugin.Logger.LogDebug("Shrunk Titan mineshaft");
-                        }
-                        break;
                     case "ArtificeLevel":
                         if (RoundManager.Instance.currentDungeonType != 4 && BRBNetworker.Instance.ArtificeInteriors.Value)
                         {

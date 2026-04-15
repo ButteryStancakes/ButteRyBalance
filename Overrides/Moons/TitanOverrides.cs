@@ -5,45 +5,19 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class TitanOverrides
     {
-        internal static readonly Dictionary<int, int> adjustedInteriors = new()
-        {
-            { 1, 75 },  // manor,        vanilla: 57
-            { 4, 69 },  // mineshaft,    vanilla: 115
-        };
-
         internal static readonly Dictionary<string, int> infestations = new()
         {
-            { "HoarderBug",         135 }, // 40
-            { "Nutcracker",          45 }, // 140
+            { "HoarderBug",         135 },
+            { "Nutcracker",          45 },
             { "MaskedPlayerEnemy",  300 },
-            { "Crawler",            150 },
+            { "Crawler",            140 },
+            { "Centipede",           28 },
+            { "SpringMan",          100 },
+            { "Stingray",           150 },
         };
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.titanBuffScrap.Value)
-            {
-                MoonOverrides.minScrap = 28; // vanilla: 28
-                MoonOverrides.maxScrap = 36; // vanilla: 32
-
-                MoonOverrides.adjustedScrap.AddRange(new(){
-                    // DINE
-                    { "Cog1", 19 },
-                    { "EnginePart1", 19 },
-                    { "FancyLamp", 29 },
-                    { "FancyPainting", 44 },
-                    { "Brush", 18 },
-                    { "PerfumeBottle", 16 },
-                    { "Mug", 44 },
-                    { "7Ball", 30 }, // v49
-                    { "DiyFlashbang", 10 },
-                    { "WhoopieCushion", 18 },
-
-                    // v45
-                    { "GiftBox", 67 },
-                });
-            }
-
             if (Configuration.titanAddGold.Value)
                 MoonOverrides.adjustedScrap.Add("GoldBar", 9);
 
@@ -58,9 +32,6 @@ namespace ButteRyBalance.Overrides.Moons
                     // v9
                     { "Blob", 41 },
                     { "HoarderBug", 55 },
-
-                    // REND
-                    { "Jester", 60 },
                 });
             }
 

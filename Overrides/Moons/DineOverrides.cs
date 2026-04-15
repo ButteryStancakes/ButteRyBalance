@@ -5,6 +5,11 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class DineOverrides
     {
+        internal static readonly Dictionary<int, int> adjustedInteriors = new()
+        {
+            { 4, 140 },  // mineshaft,  vanilla: 17
+        };
+
         internal static readonly Dictionary<string, int> infestations = new()
         {
             { "HoarderBug",           3 },
@@ -13,6 +18,9 @@ namespace ButteRyBalance.Overrides.Moons
             { "Butler",             300 },
             { "ClaySurgeon",         14 },
             { "Crawler",             17 },
+            { "Centipede",            8 },
+            { "SpringMan",            4 },
+            { "Stingray",            94 },
         };
 
         internal static void Setup(SelectableLevel level)
@@ -68,120 +76,8 @@ namespace ButteRyBalance.Overrides.Moons
 
                         // get it?
                         { "DustPan", 32 },
-
-                        // remove v73 scrap
-                        { "SeveredHand", 0 },
-                        { "SeveredBone", 0 },
-                        { "SeveredBoneRib", 0 },
-                        { "SeveredEar", 0 },
-                        { "SeveredFoot", 0 },
-                        { "SeveredThigh", 0 },
-                        { "SeveredHeart", 0 },
-                        { "SeveredTongue", 0 },
-                    });
-                }
-                else
-                {
-                    // add v73 scrap
-                    MoonOverrides.adjustedScrap.AddRange(new(){
-                        { "SeveredHand", 100 },
-                        { "SeveredBone", 79 },
-                        { "SeveredBoneRib", 79 },
-                        { "SeveredEar", 41 },
-                        { "SeveredFoot", 100 },
-                        { "SeveredThigh", 55 },
-                        { "SeveredHeart", 6 },
-                        { "SeveredTongue", 32 },
-                    });
-
-                    if (Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73 || Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73Extra)
-                    {
-                        if (Configuration.dineScrapPool.Value == Configuration.DineScrap.AddV73Extra)
-                        {
-                            MoonOverrides.minScrap = 28;
-                            MoonOverrides.maxScrap = 45;
-                        }
-                        else
-                        {
-                            MoonOverrides.minScrap = 22;
-                            MoonOverrides.maxScrap = 26;
-                        }
-                        MoonOverrides.adjustedScrap.AddRange(new(){
-                            { "Cog1", 19 },
-                            { "EnginePart1", 19 },
-                            { "FancyLamp", 29 },
-                            { "Bell", 21 },
-                            { "Ring", 16 },
-                            { "RobotToy", 17 },
-                            { "Toothpaste", 41 },
-                            { "Brush", 18 },
-                            { "PillBottle", 29 },
-                            { "PerfumeBottle", 16 },
-                            { "BottleBin", 45 },
-                            { "MagnifyingGlass", 14 },
-                            { "Hairdryer", 14 },
-                            { "TeaKettle", 43 },
-                            { "Airhorn", 15 },
-                            { "ClownHorn", 12 },
-                            { "CashRegister", 14 },
-                            { "Candy", 50 },
-                            { "GiftBox", 11 },
-                            { "TragedyMask", 30 },
-                        });
-                    }
-                    else
-                    {
-                        MoonOverrides.minScrap = 200;
-                        MoonOverrides.maxScrap = 250;
-                        MoonOverrides.adjustedScrap.AddRange(new(){
-                            { "Cog1", 0 },
-                            { "EnginePart1", 0 },
-                            { "FishTestProp", 0 },
-                            { "BigBolt", 0 },
-                            { "FancyLamp", 0 },
-                            { "ToyCube", 0 },
-                            { "PickleJar", 0 },
-                            { "FlashLaserPointer", 0 },
-                            { "FancyCup", 0 },
-                            { "FancyPainting", 0 },
-                            { "Bell", 0 },
-                            { "Ring", 0 },
-                            { "RobotToy", 0 },
-                            { "Toothpaste", 0 },
-                            { "Brush", 0 },
-                            { "PillBottle", 0 },
-                            { "PerfumeBottle", 0 },
-                            { "Mug", 0 },
-                            { "BottleBin", 0 },
-                            { "MagnifyingGlass", 0 },
-                            { "Hairdryer", 0 },
-                            { "Phone", 0 },
-                            { "SodaCanRed", 0 },
-                            { "Dentures", 0 },
-                            { "7Ball", 0 },
-                            { "RubberDuck", 0 },
-                            { "TeaKettle", 0 },
-                            { "Airhorn", 0 },
-                            { "ClownHorn", 0 },
-                            { "CashRegister", 0 },
-                            { "Candy", 0 },
-                            { "DiyFlashbang", 0 },
-                            { "GiftBox", 0 },
-                            { "TragedyMask", 0 },
-                            { "ComedyMask", 0 },
-                            { "WhoopieCushion", 1 },
-                            { "EasterEgg", 1 },
-                            { "GarbageLid", 0 },
-                            { "ToiletPaperRolls", 0 },
-                            { "Zeddog", 0 },
-                        });
-                    }
-                }
-
-                if (Configuration.dineScrapPool.Value != Configuration.DineScrap.Consolidate)
-                {
-                    // unchanged in BRB v0.2.4
-                    MoonOverrides.adjustedScrap.AddRange(new(){
+                        
+                        // unchanged in BRB v0.2.4
                         { "FishTestProp", 5 },
                         { "BigBolt", 4 },
                         { "ToyCube", 33 },
@@ -202,47 +98,90 @@ namespace ButteRyBalance.Overrides.Moons
                         { "GarbageLid", 22 },
                         { "ToiletPaperRolls", 28 },
                         { "Zeddog", 1 },
+
+                        // remove v73 scrap
+                        { "SeveredHand", 0 },
+                        { "SeveredBone", 0 },
+                        { "SeveredBoneRib", 0 },
+                        { "SeveredEar", 0 },
+                        { "SeveredFoot", 0 },
+                        { "SeveredThigh", 0 },
+                        { "SeveredHeart", 0 },
+                        { "SeveredTongue", 0 },
+                    });
+                }
+                else
+                {
+                    MoonOverrides.minScrap = 200;
+                    MoonOverrides.maxScrap = 250;
+
+                    MoonOverrides.adjustedScrap.AddRange(new(){
+                        // add v73 scrap
+                        { "SeveredHand", 100 },
+                        { "SeveredBone", 79 },
+                        { "SeveredBoneRib", 79 },
+                        { "SeveredEar", 41 },
+                        { "SeveredFoot", 100 },
+                        { "SeveredThigh", 55 },
+                        { "SeveredHeart", 6 },
+                        { "SeveredTongue", 32 },
+                        
+                        // remove normal scrap
+                        { "Cog1", 0 },
+                        { "EnginePart1", 0 },
+                        { "FishTestProp", 0 },
+                        { "BigBolt", 0 },
+                        { "FancyLamp", 0 },
+                        { "ToyCube", 0 },
+                        { "PickleJar", 0 },
+                        { "FlashLaserPointer", 0 },
+                        { "FancyCup", 0 },
+                        { "FancyPainting", 0 },
+                        { "Bell", 0 },
+                        { "Ring", 0 },
+                        { "RobotToy", 0 },
+                        { "Toothpaste", 0 },
+                        { "Brush", 0 },
+                        { "PillBottle", 0 },
+                        { "PerfumeBottle", 0 },
+                        { "Mug", 0 },
+                        { "BottleBin", 0 },
+                        { "MagnifyingGlass", 0 },
+                        { "Hairdryer", 0 },
+                        { "Phone", 0 },
+                        { "SodaCanRed", 0 },
+                        { "Dentures", 0 },
+                        { "7Ball", 0 },
+                        { "RubberDuck", 0 },
+                        { "TeaKettle", 0 },
+                        { "Airhorn", 0 },
+                        { "ClownHorn", 0 },
+                        { "CashRegister", 0 },
+                        { "Candy", 0 },
+                        { "DiyFlashbang", 0 },
+                        { "GiftBox", 0 },
+                        { "TragedyMask", 0 },
+                        { "ComedyMask", 0 },
+                        { "WhoopieCushion", 1 },
+                        { "EasterEgg", 1 },
+                        { "GarbageLid", 0 },
+                        { "ToiletPaperRolls", 0 },
+                        { "Zeddog", 0 },
                     });
                 }
             }
 
             if (Configuration.dineReduceButlers.Value)
-                MoonOverrides.adjustedEnemies.Add("Butler", 15); // vanilla: 24
-
-            if (Configuration.dineAdjustIndoor.Value)
-            {
-                MoonOverrides.adjustedEnemies.AddRange(new(){
-					// v56
-                    { "DressGirl", 3 },
-                    { "SandSpider", 7 },
-                    { "Blob", 3 },
-                    { "HoarderBug", 8 },
-                    { "Jester", 5 },
-
-                    // v50 betas
-                    { "Centipede", 6 },
-                });
-
-                MoonOverrides.powerCount = 15; // vanilla: 16
-            }
-
-            if (Configuration.dineMasked.Value)
-                MoonOverrides.adjustedEnemies.Add("MaskedPlayerEnemy", 4);
+                MoonOverrides.adjustedEnemies.Add("Butler", 10); // vanilla: 17
 
             if (Configuration.dineAdjustOutdoor.Value)
             {
-                MoonOverrides.adjustedEnemies.Add("ForestGiant", 28); // vanilla: 100
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+                    { "ForestGiant", 28 }, // vanilla: 100
+                    { "RadMech", 13 }, // vanilla: 3
+                });
 
-                MoonOverrides.outsidePowerCount = 10; // vanilla: 7
-            }
-
-            if (Configuration.dineAdjustCurves.Value)
-            {
-                level.outsideEnemySpawnChanceThroughDay = new(
-                    new(-7.7369623E-07f, -2.8875f),
-                    new(0.47669196f, 0.6959345f),
-                    new(1.0052626f, 5.3594007f));
-                Plugin.Logger.LogDebug($"{level.name}.outsideEnemySpawnChanceThroughDay");
+                MoonOverrides.outsidePowerCount = 10; // vanilla: 9
             }
 
             MoonOverrides.Apply(level);

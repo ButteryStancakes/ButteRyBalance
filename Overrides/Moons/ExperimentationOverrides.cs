@@ -8,13 +8,13 @@ namespace ButteRyBalance.Overrides.Moons
         {
             { "HoarderBug",         300 },
             { "Nutcracker",         100 },
-            { "Crawler",             50 },
+            { "Crawler",             14 },
+            { "Centipede",          300 },
+            { "Stingray",            50 },
         };
 
         internal static void Setup(SelectableLevel level)
         {
-            level.riskLevel = "D"; // vanilla: B
-
             if (Configuration.experimentationBuffScrap.Value)
             {
                 MoonOverrides.minScrap = 11; // vanilla: 8
@@ -28,9 +28,6 @@ namespace ButteRyBalance.Overrides.Moons
 
             if (Configuration.experimentationNoGiants.Value)
                 MoonOverrides.adjustedEnemies.Add("ForestGiant", 0);
-
-            if (Configuration.experimentationNoNuts.Value)
-                MoonOverrides.adjustedEnemies.Add("Nutcracker", 0);
 
             MoonOverrides.Apply(level);
         }

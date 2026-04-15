@@ -111,13 +111,13 @@ namespace ButteRyBalance.Patches.Enemies
             {
                 if (__instance.leaping && !__instance.isOutside)
                 {
-                    __instance.agent.angularSpeed = 320f;
-                    __instance.agent.acceleration = 75f;
+                    __instance.agent.angularSpeed = 220f; //320
+                    //__instance.agent.acceleration = 75f;
                 }
                 else
                 {
                     __instance.agent.angularSpeed = 700f;
-                    __instance.agent.acceleration = 425f;
+                    //__instance.agent.acceleration = 425f;
                 }
             }
         }

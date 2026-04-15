@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 namespace ButteRyBalance.Patches.Items
 {
     [HarmonyPatch(typeof(JetpackItem))]
-    internal class JetpackPatches
+    static class JetpackPatches
     {
         [HarmonyPatch(nameof(JetpackItem.EquipItem))]
         [HarmonyPostfix]

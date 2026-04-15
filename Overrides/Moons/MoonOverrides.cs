@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -60,15 +59,13 @@ namespace ButteRyBalance.Overrides.Moons
                 {
                     foreach (KeyValuePair<string, int> itemID in adjustedScrap)
                     {
+                        // don't add new scraps to the pool at 0 weight
+                        if (itemID.Value <= 0)
+                            continue;
+
                         Item scrap = StartOfRound.Instance.allItemsList.itemsList.FirstOrDefault(item => item.name == itemID.Key);
                         if (scrap != null)
-                        {
-                            level.spawnableScrap.Add(new()
-                            {
-                                spawnableItem = scrap,
-                                rarity = itemID.Value
-                            });
-                        }
+                            level.spawnableScrap.Add(new(scrap, itemID.Value));
                         Plugin.Logger.LogDebug($"{level.name}.spawnableScrap: +({scrap.itemName}, {itemID.Value})");
                     }
                 }
@@ -114,11 +111,7 @@ namespace ButteRyBalance.Overrides.Moons
                         }
                         else if (enemy.isOutsideEnemy)
                         {
-                            weightsList.Add(new()
-                            {
-                                enemyType = enemy,
-                                rarity = adjustedEnemy.Value
-                            });
+                            weightsList.Add(new(enemy, adjustedEnemy.Value));
                             Plugin.Logger.LogDebug($"{level.name}: +({enemy.enemyName}, {adjustedEnemy.Value})");
                         }
                     }
@@ -173,15 +166,11 @@ namespace ButteRyBalance.Overrides.Moons
                 level.spawnableOutsideObjects =
                 [
                     .. level.spawnableOutsideObjects,
-                    new SpawnableOutsideObjectWithRarity()
-                    {
-                        spawnableObject = snowman,
-                        randomAmount = (jolly && snowmanCurve != null) ? snowmanCurve : new(
-                            new(0f, 1f),
-                            new(0.91526645f, 0.51239717f),
-                            new(0.9849292f, 2.1915612f),
-                            new(1f, 20.047966f))
-                    },
+                    new SpawnableOutsideObjectWithRarity(snowman, (jolly && snowmanCurve != null) ? snowmanCurve : new(
+                        new(0f, 1f),
+                        new(0.91526645f, 0.51239717f),
+                        new(0.9849292f, 2.1915612f),
+                        new(1f, 20.047966f)))
                 ];
                 Plugin.Logger.LogDebug($"{level.name}.spawnableOutsideObjects: {snowman.name}");
             }
@@ -191,15 +180,11 @@ namespace ButteRyBalance.Overrides.Moons
                 level.spawnableOutsideObjects =
                 [
                     .. level.spawnableOutsideObjects,
-                    new SpawnableOutsideObjectWithRarity()
-                    {
-                        spawnableObject = snowmanTall,
-                        randomAmount = (jolly && snowmanTallCurve != null) ? snowmanTallCurve : new(
-                            new(0f, 0f),
-                            new(0.5777875f, 0.1802702f),
-                            new(0.974945f, 0.6073564f),
-                            new(1f, 3.4162483f))
-                    },
+                    new SpawnableOutsideObjectWithRarity(snowmanTall, (jolly && snowmanTallCurve != null) ? snowmanTallCurve : new(
+                        new(0f, 0f),
+                        new(0.5777875f, 0.1802702f),
+                        new(0.974945f, 0.6073564f),
+                        new(1f, 3.4162483f)))
                 ];
                 Plugin.Logger.LogDebug($"{level.name}.spawnableOutsideObjects: {snowmanTall.name}");
             }

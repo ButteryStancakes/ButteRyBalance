@@ -6,7 +6,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches.Enemies
 {
     [HarmonyPatch(typeof(ButlerEnemyAI))]
-    class ButlerPatches
+    static class ButlerPatches
     {
         [HarmonyPatch(nameof(ButlerEnemyAI.OnCollideWithPlayer))]
         [HarmonyPrefix]
@@ -48,7 +48,7 @@ namespace ButteRyBalance.Patches.Enemies
                 if (berserk && BRBNetworker.Instance.ButlerStealthStab.Value)
                 {
                     // are any players (other than the one being stabbed) in vicinity?
-                    berserk = !player.NearOtherPlayers(player, 15f);
+                    berserk = !player.NearOtherPlayers(15f);
                     if (berserk)
                     {
                         for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
@@ -75,9 +75,10 @@ namespace ButteRyBalance.Patches.Enemies
 
         [HarmonyPatch(nameof(ButlerEnemyAI.HitEnemy))]
         [HarmonyPrefix]
-        static void ButlerEnemyAI_Pre_HitEnemy(ButlerEnemyAI __instance, ref int force)
+        static void ButlerEnemyAI_Pre_HitEnemy(ButlerEnemyAI __instance, ref int force, int hitID)
         {
-            if (force > 2 && BRBNetworker.Instance.ButlerSquishy.Value)
+            Common.DamageID damageID = (Common.DamageID)hitID;
+            if (force > 2 && BRBNetworker.Instance.ButlerSquishy.Value && damageID != Common.DamageID.Shovel)
                 force += 3;
         }
 

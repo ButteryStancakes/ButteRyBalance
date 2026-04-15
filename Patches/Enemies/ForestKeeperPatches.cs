@@ -1,12 +1,10 @@
 ﻿using ButteRyBalance.Network;
-using GameNetcodeStuff;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ButteRyBalance.Patches.Enemies
 {
     [HarmonyPatch(typeof(ForestGiantAI))]
-    class ForestKeeperPatches
+    static class ForestKeeperPatches
     {
         [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.GetAllPlayersInLineOfSight))]
         [HarmonyPrefix]
@@ -18,10 +16,11 @@ namespace ButteRyBalance.Patches.Enemies
 
         [HarmonyPatch(nameof(ForestGiantAI.HitEnemy))]
         [HarmonyPrefix]
-        static void ForestGiantAI_Pre_HitEnemy(ref int force)
+        static void ForestGiantAI_Pre_HitEnemy(ref int force, int hitID)
         {
+            Common.DamageID damageID = (Common.DamageID)hitID;
             // instant death from cruiser damage
-            if (force == 12 && BRBNetworker.Instance.GiantSquishy.Value)
+            if (force == 12 && BRBNetworker.Instance.GiantSquishy.Value && (damageID == Common.DamageID.Cruiser || (damageID != Common.DamageID.Shovel && damageID != Common.DamageID.Knife)))
                 force += 100;
         }
     }

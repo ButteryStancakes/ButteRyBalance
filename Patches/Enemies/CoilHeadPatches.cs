@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches.Enemies
 {
     [HarmonyPatch(typeof(SpringManAI))]
-    class CoilHeadPatches
+    static class CoilHeadPatches
     {
         [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.SetEnemyStunned))]
         [HarmonyPrefix]

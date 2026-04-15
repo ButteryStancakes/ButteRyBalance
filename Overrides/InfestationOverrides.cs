@@ -9,7 +9,8 @@ namespace ButteRyBalance.Overrides
     {
         static int infestationEnemyIndex = -1;
         static EnemyType infestationEnemy;
-        static float rollbackPowerLevel;
+        static float rollbackPowerLevel = -1f;
+        static int rollbackMaxCount = -1;
         static int hourOfLastInfestationWave = -1;
 
         static List<string> compatibleEnemies = new()
@@ -19,7 +20,9 @@ namespace ButteRyBalance.Overrides
             "Butler",
             "MaskedPlayerEnemy",
             "ClaySurgeon",
-            "Crawler"
+            "Crawler",
+            "SpringMan",
+            "Stingray"
         };
 
         static readonly Dictionary<string, Dictionary<string, int>> vanillaLevels = new()
@@ -72,6 +75,30 @@ namespace ButteRyBalance.Overrides
             }
             else
                 compatibleEnemies.Remove("Crawler");
+
+            if (Configuration.infestationSnareFlea.Value)
+            {
+                if (!compatibleEnemies.Contains("Centipede"))
+                    compatibleEnemies.Add("Centipede");
+            }
+            else
+                compatibleEnemies.Remove("Centipede");
+
+            if (Configuration.infestationCoilhead.Value)
+            {
+                if (!compatibleEnemies.Contains("SpringMan"))
+                    compatibleEnemies.Add("SpringMan");
+            }
+            else
+                compatibleEnemies.Remove("SpringMan");
+
+            if (Configuration.infestationGunkfish.Value)
+            {
+                if (!compatibleEnemies.Contains("Stingray"))
+                    compatibleEnemies.Add("Stingray");
+            }
+            else
+                compatibleEnemies.Remove("Stingray");
         }
 
         internal static void CustomInfestation(int forceIndex = -1)
@@ -99,22 +126,10 @@ namespace ButteRyBalance.Overrides
                     if (availableEnemies != null)
                     {
                         if (availableEnemies.TryGetValue(level.Enemies[i].enemyType.name, out int weight))
-                        {
-                            infestationEnemies.Add(new()
-                            {
-                                id = i,
-                                rarity = weight
-                            });
-                        }
+                            infestationEnemies.Add(new(i, weight, null));
                     }
                     else
-                    {
-                        infestationEnemies.Add(new()
-                        {
-                            id = i,
-                            rarity = level.Enemies[i].rarity
-                        });
-                    }
+                        infestationEnemies.Add(new(i, level.Enemies[i].rarity, null));
                 }
 
                 Plugin.Logger.LogDebug($"Infestation weights for \"{level.name}\":");
@@ -127,13 +142,31 @@ namespace ButteRyBalance.Overrides
             infestationEnemy = level.Enemies[infestationEnemyIndex].enemyType;
 
             Plugin.Logger.LogDebug($"Starting {infestationEnemy.name} infestation");
+            rollbackPowerLevel = infestationEnemy.PowerLevel;
             infestationEnemy.PowerLevel = 0f;
-            RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
+            switch (infestationEnemy.name)
+            {
+                case "HoardingBug":
+                    rollbackMaxCount = infestationEnemy.MaxCount;
+                    infestationEnemy.MaxCount = 8;
+                    break;
+                case "Crawler":
+                    rollbackMaxCount = infestationEnemy.MaxCount;
+                    infestationEnemy.MaxCount = Mathf.Min(infestationEnemy.MaxCount * 2, 8);
+                    break;
+                case "Centipede":
+                    rollbackMaxCount = infestationEnemy.MaxCount;
+                    infestationEnemy.MaxCount = 20;
+                    break;
+            }
 
             if (infestationEnemy.name != "ClaySurgeon")
+            {
+                RoundManager.Instance.currentMaxInsidePower = RoundManager.Instance.currentLevel.maxEnemyPowerCount;
                 RoundManager.Instance.increasedInsideEnemySpawnRateIndex = infestationEnemyIndex;
+            }
             else
-                RoundManager.Instance.currentMaxInsidePower = Mathf.Floor(RoundManager.Instance.currentMaxInsidePower / 2f);
+                RoundManager.Instance.currentMaxInsidePower = 0f;
         }
 
         internal static void EndInfestation()
@@ -146,8 +179,13 @@ namespace ButteRyBalance.Overrides
             RoundManager.Instance.increasedInsideEnemySpawnRateIndex = -1;
             if (rollbackPowerLevel > 0f)
             {
-                rollbackPowerLevel = -1f;
                 infestationEnemy.PowerLevel = rollbackPowerLevel;
+                rollbackPowerLevel = -1f;
+            }
+            if (rollbackMaxCount > 0)
+            {
+                infestationEnemy.MaxCount = rollbackMaxCount;
+                rollbackMaxCount = -1;
             }
             infestationEnemyIndex = -1;
             infestationEnemy = null;

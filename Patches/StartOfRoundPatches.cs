@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches
 {
     [HarmonyPatch(typeof(StartOfRound))]
-    class StartOfRoundPatches
+    static class StartOfRoundPatches
     {
         internal static bool skipWeatherPatch = true;
 
@@ -36,59 +36,28 @@ namespace ButteRyBalance.Patches
                 }
             }
 
-            // need to add masked enemies to indoors on all clients so vent sounds and infestations will sync
-            EnemyType masked = Common.enemies["MaskedPlayerEnemy"];
-            if (masked != null)
+            // need to add enemies to indoors on all clients so vent sounds and infestations will sync
+            EnemyType masked = Common.enemies["MaskedPlayerEnemy"], butler = Common.enemies["Butler"];
+            if (masked != null && butler != null)
             {
                 foreach (SelectableLevel level in __instance.levels)
                 {
-                    if ((level.sceneName == "Level2Assurance" || level.sceneName == "Level6Dine" || level.sceneName == "Level7Offense") && !level.Enemies.Any(enemy => enemy.enemyType == masked))
+                    if (masked != null && (level.sceneName == "Level2Assurance" /*|| level.sceneName == "Level6Dine"*/ || level.sceneName == "Level7Offense") && !level.Enemies.Any(enemy => enemy.enemyType == masked))
                     {
-                        level.Enemies.Add(new()
-                        {
-                            enemyType = masked,
-                            rarity = 0
-                        });
+                        level.Enemies.Add(new(masked, 0));
                         Plugin.Logger.LogDebug($"Added Masked to {level.name} pool on client (fallback)");
+                    }
+                    else if (butler != null && level.sceneName == "Level10Adamance" && !level.Enemies.Any(enemy => enemy.enemyType == butler))
+                    {
+                        level.Enemies.Add(new(butler, 0));
+                        Plugin.Logger.LogDebug($"Added butlers to {level.name} pool on client (fallback)");
                     }
                 }
             }
             else
-                Plugin.Logger.LogWarning("Failed to reference Masked enemy type. This should never happen");
+                Plugin.Logger.LogWarning("Failed to reference \"masked\" or butler enemy types. This should never happen");
 
             BRBNetworker.Create();
-        }
-
-        [HarmonyPatch(nameof(StartOfRound.SetPlanetsWeather))]
-        [HarmonyPrefix]
-        static void StartOfRound_Pre_SetPlanetsWeather(StartOfRound __instance, ref int connectedPlayersOnServer)
-        {
-            if (skipWeatherPatch)
-            {
-                skipWeatherPatch = false;
-                return;
-            }
-
-            if (BRBNetworker.Instance.MultiplayerWeather.Value)
-                connectedPlayersOnServer = __instance.connectedPlayersAmount;
-
-            if (BRBNetworker.Instance.MarchRainy.Value && !BRBNetworker.Instance.MoonsKillSwitch.Value)
-            {
-                SelectableLevel marchLevel = __instance.levels.FirstOrDefault(level => level.name == "MarchLevel");
-                if (marchLevel != null)
-                {
-                    marchLevel.overrideWeatherType = LevelWeatherType.Rainy;
-                    marchLevel.overrideWeather = true;
-                    if (!marchLevel.randomWeathers.Any(randomWeather => randomWeather.weatherType == LevelWeatherType.None))
-                    {
-                        marchLevel.randomWeathers.AddItem(new()
-                        {
-                            weatherType = LevelWeatherType.None
-                        });
-                        Plugin.Logger.LogDebug($"Added mild weather to {marchLevel.name} pool");
-                    }
-                }
-            }
         }
     }
 }

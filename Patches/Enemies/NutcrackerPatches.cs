@@ -32,9 +32,9 @@ namespace ButteRyBalance.Patches.Enemies
 
         [HarmonyPatch(typeof(NutcrackerEnemyAI), nameof(NutcrackerEnemyAI.HitEnemy))]
         [HarmonyPrefix]
-        static void NutcrackerEnemyAI_Pre_HitEnemy(NutcrackerEnemyAI __instance, ref int force)
+        static void NutcrackerEnemyAI_Pre_HitEnemy(NutcrackerEnemyAI __instance, ref int force, int hitID)
         {
-            if (__instance.IsOwner && force == 5 && Configuration.nutcrackerKevlar.Value)
+            if (__instance.IsOwner && force == 5 && Configuration.nutcrackerKevlar.Value && (Common.DamageID)hitID == Common.DamageID.Unknown)
                 force = 4;
         }
     }

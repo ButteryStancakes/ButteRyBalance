@@ -14,28 +14,26 @@ namespace ButteRyBalance.Overrides.Moons
 
         internal static readonly Dictionary<string, int> infestations = new()
         {
-            { "HoarderBug",         300 },
-            { "Nutcracker",         100 },
-            { "MaskedPlayerEnemy",  200 },
-            { "Butler",              69 },
+            { "HoarderBug",         207 },
+            { "Nutcracker",          69 },
+            { "MaskedPlayerEnemy",  151 },
+            { "Butler",             100 },
             { "ClaySurgeon",         64 },
-            { "Crawler",             50 },
+            { "Crawler",             48 },
+            { "Centipede",           50 },
+            { "SpringMan",            1 },
+            { "Stingray",            75 },
         };
 
         internal static void Setup(SelectableLevel level)
         {
             // v56
             if (Configuration.artificeBuffScrap.Value)
-            {
-                MoonOverrides.minScrap = 31; // vanilla: 26
-                MoonOverrides.maxScrap = 38; // vanilla: 31
-
                 MoonOverrides.adjustedScrap.Add("GoldBar", 36); // vanilla: 32
-            }
 
             if (Configuration.artificeTurrets.Value)
             {
-                SpawnableMapObject artificeTurrets = level.spawnableMapObjects.FirstOrDefault(spawnableMapObject => spawnableMapObject.prefabToSpawn?.name == "TurretContainer");
+                IndoorMapHazard artificeTurrets = level.indoorMapHazards.FirstOrDefault(indoorMapHazard => indoorMapHazard.hazardType?.prefabToSpawn?.name == "TurretContainer");
                 if (artificeTurrets != null)
                 {
                     // Artifice's old turret curve is duplicated in Liquidation's level file
@@ -43,7 +41,7 @@ namespace ButteRyBalance.Overrides.Moons
                     if (liquidationTurrets != null)
                     {
                         artificeTurrets.numberToSpawn = liquidationTurrets;
-                        Plugin.Logger.LogDebug($"{level.name}.spawnableMapObjects.{artificeTurrets.prefabToSpawn.name}");
+                        Plugin.Logger.LogDebug($"{level.name}.indoorMapHazards.{artificeTurrets.hazardType.name}");
                     }
                 }
             }

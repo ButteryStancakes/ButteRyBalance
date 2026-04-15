@@ -9,9 +9,10 @@ namespace ButteRyBalance.Overrides
     {
         internal static void ApplyOnServer()
         {
-            if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
+            List<IndoorMapHazardType> indoorMapHazardTypes = [];
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
-                foreach (SelectableLevel level in StartOfRound.Instance.levels)
+                if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
                 {
                     switch (level.name)
                     {
@@ -50,6 +51,12 @@ namespace ButteRyBalance.Overrides
                             break;
                     }
                 }
+
+                foreach (IndoorMapHazard indoorMapHazard in level.indoorMapHazards)
+                {
+                    if (indoorMapHazard.hazardType != null && !indoorMapHazardTypes.Contains(indoorMapHazard.hazardType))
+                        indoorMapHazardTypes.Add(indoorMapHazard.hazardType);
+                }
             }
 
             foreach (KeyValuePair<string, EnemyType> enemy in Common.enemies)
@@ -63,11 +70,25 @@ namespace ButteRyBalance.Overrides
                             Plugin.Logger.LogDebug("Butler: Increased chance in manors");
                         }
                         break;
+                    case "CadaverGrowths":
+                        if (Configuration.cadaversPower.Value)
+                        {
+                            Plugin.Logger.LogDebug($"Cadavers: Power level {enemy.Value.PowerLevel} -> 4");
+                            enemy.Value.PowerLevel = 4f;
+                        }
+                        break;
                     case "CaveDweller":
                         if (Configuration.maneaterPower.Value)
                         {
                             Plugin.Logger.LogDebug($"Maneater: Power level {enemy.Value.PowerLevel} -> 3");
                             enemy.Value.PowerLevel = 3f;
+                        }
+                        break;
+                    case "Puffer":
+                        if (Configuration.pufferPower.Value)
+                        {
+                            Plugin.Logger.LogDebug($"Spore lizard: Power level {enemy.Value.PowerLevel} -> 0.5");
+                            enemy.Value.PowerLevel = 0.5f;
                         }
                         break;
                     case "RadMech":
@@ -81,7 +102,7 @@ namespace ButteRyBalance.Overrides
                         if (Configuration.coilheadCurves.Value)
                         {
                             // ~60% spawn rate at 7 AM, 100% spawn rate by noon
-                            enemy.Value.probabilityCurve = AnimationCurve.EaseInOut(0.1f, 0.6142857f, 0.3333333f, 1f);
+                            enemy.Value.probabilityCurve = AnimationCurve.EaseInOut(0.1f, 0.5882353f, 0.3333333f, 1f);
                             Plugin.Logger.LogDebug("Coil-head: Time of day curve");
                             enemy.Value.numberSpawnedFalloff = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                             enemy.Value.useNumberSpawnedFalloff = true;
@@ -122,17 +143,17 @@ namespace ButteRyBalance.Overrides
                 { "Candy",              1f },   // vanilla: 1.1
                 { "ChemicalJug",      1.4f },   // vanilla: 1.3
                 { "Clock",            1.2f },   // vanilla: 1.25
-                { "Cog1",             1.2f },   // vanilla: 1.15
+                { "Cog1",            1.23f },   // vanilla: 1.15
                 { "EnginePart1",     1.18f },   // vanilla: 1.15
                 { "FancyCup",         1.2f },   // vanilla: 1.15
                 { "FancyLamp",       1.25f },   // vanilla: 1.2
                 { "Flask",            1.1f },   // vanilla: 1.18
                 { "GarbageLid",       1.1f },   // vanilla: 1
                 { "Hairdryer",        1.1f },   // vanilla: 1.07
-                { "MetalSheet",      1.23f },   // vanilla: 1.25
+                { "MetalSheet",       1.2f },   // vanilla: 1.25
                 { "Ring",            1.08f },   // vanilla: 1.15
                 { "SoccerBall",      1.13f },   // vanilla: 1.18
-                { "StopSign",         1.2f },   // vanilla: 1.23
+                { "StopSign",         1.2f },   // vanilla: 1.27
                 { "TeaKettle",       1.15f },   // vanilla: 1.2
                 { "YieldSign",        1.3f },   // vanilla: 1.4
             };
@@ -146,6 +167,18 @@ namespace ButteRyBalance.Overrides
                         {
                             Plugin.Logger.LogDebug($"{item.name}.highestSalePercentage: {item.highestSalePercentage}% -> 60%");
                             item.highestSalePercentage = 60;
+                        }
+                        if (BRBNetworker.Instance.JetpackUtility.Value && !item.disallowUtilitySlot)
+                        {
+                            item.disallowUtilitySlot = true;
+                            Plugin.Logger.LogDebug($"{item.name}.item.disallowUtilitySlot: False -> True");
+                        }
+                        break;
+                    case "ProFlashlight":
+                        if (BRBNetworker.Instance.ProFlashlightPrice.Value && item.creditsWorth != 32)
+                        {
+                            Plugin.Logger.LogDebug($"{item.name}.creditsWorth: ${item.creditsWorth} -> $32");
+                            item.creditsWorth = 32;
                         }
                         break;
                     case "RadarBooster":
@@ -175,15 +208,6 @@ namespace ButteRyBalance.Overrides
                 {
                     Plugin.Logger.LogDebug($"{item.name}.weight: ${item.weight} -> {weight}");
                     item.weight = weight;
-                }
-            }
-            foreach (SelectableLevel level in StartOfRound.Instance.levels)
-            {
-                switch (level.name)
-                {
-                    case "TitanLevel":
-                        level.timeToArrive = 4f;
-                        break;
                 }
             }
 

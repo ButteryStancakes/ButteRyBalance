@@ -1,11 +1,10 @@
 ﻿using ButteRyBalance.Network;
 using HarmonyLib;
-using Unity.Netcode;
 
 namespace ButteRyBalance.Patches.Items
 {
     [HarmonyPatch(typeof(LungProp))]
-    internal class ApparatusPatches
+    static class ApparatusPatches
     {
         [HarmonyPatch(nameof(LungProp.EquipItem))]
         [HarmonyPrefix]

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches.Enemies
 {
     [HarmonyPatch(typeof(JesterAI))]
-    class JesterPatches
+    static class JesterPatches
     {
         [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.SwitchToBehaviourStateOnLocalClient))]
         [HarmonyPostfix]
