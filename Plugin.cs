@@ -14,13 +14,15 @@ namespace ButteRyBalance
     [BepInDependency(GUID_SPAWN_CYCLE_FIXES, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.4.0";
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.4.2";
         internal static new ManualLogSource Logger;
 
-        const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility";
-        const string GUID_ARTIFICE_BLIZZARD = "butterystancakes.lethalcompany.artificeblizzard";
-        const string GUID_BARBER_FIXES = "butterystancakes.lethalcompany.barberfixes";
-        const string GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes";
+        const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility",
+                     GUID_ARTIFICE_BLIZZARD = "butterystancakes.lethalcompany.artificeblizzard",
+                     GUID_BARBER_FIXES = "butterystancakes.lethalcompany.barberfixes",
+                     GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes";
+        internal const string GUID_BUTTERY_FIXES = "butterystancakes.lethalcompany.butteryfixes",
+                              GUID_LETHAL_FIXES = "uk.1a3.lethalfixes";
 
         void Awake()
         {

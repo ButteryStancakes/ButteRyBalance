@@ -8,20 +8,21 @@ namespace ButteRyBalance.Patches
     static class TimeOfDayPatches
     {
         [HarmonyPatch(nameof(TimeOfDay.SetWeatherBasedOnVariables))]
+        [HarmonyPrefix]
+        static void TimeOfDay_Pre_SetWeatherBasedOnVariables(TimeOfDay __instance)
+        {
+            if (!StartOfRound.Instance.isChallengeFile && !BRBNetworker.Instance.MoonsKillSwitch.Value && RoundManager.Instance.currentLevel.name == "DineLevel" && __instance.currentLevelWeather == LevelWeatherType.Flooded && BRBNetworker.Instance.DineFloods.Value)
+            {
+                // use v50 beta values since main entrance was moved down in v60
+                TimeOfDay.Instance.currentWeatherVariable = -16f;
+                TimeOfDay.Instance.currentWeatherVariable2 = -5f;
+            }
+        }
+
+        [HarmonyPatch(nameof(TimeOfDay.SetWeatherBasedOnVariables))]
         [HarmonyPostfix]
         static void TimeOfDay_Post_SetWeatherBasedOnVariables(TimeOfDay __instance)
         {
-            string fogPath = "/Environment/Lighting/BrightDay/Local Volumetric Fog";
-
-            if (StartOfRound.Instance.currentLevel.sceneName == "Level5Rend")
-            {
-                GameObject localVolumetricFog2 = GameObject.Find(fogPath + " (2)");
-                // this fog is placed randomly next to the ship and makes the fire exit more dangerous than it needs to be
-                if (localVolumetricFog2 != null)
-                    localVolumetricFog2.SetActive(false);
-                return;
-            }
-
             if (StartOfRound.Instance.currentLevel.currentWeather != LevelWeatherType.Foggy || !__instance.foggyWeather.enabled || !BRBNetworker.Instance.FoggyLimit.Value)
                 return;
 

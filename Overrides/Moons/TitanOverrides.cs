@@ -25,7 +25,7 @@ namespace ButteRyBalance.Overrides.Moons
             {
                 MoonOverrides.adjustedEnemies.AddRange(new(){
                     // v37
-                    { "ForestGiant", 20 },
+                    //{ "ForestGiant", 20 },
                     { "DressGirl", 28 },
                     // v50 betas
                     { "RadMech", 13 },
@@ -34,6 +34,9 @@ namespace ButteRyBalance.Overrides.Moons
                     { "HoarderBug", 55 },
                 });
             }
+
+            if (Configuration.titanWeeds.Value)
+                level.canSpawnMold = false;
 
             MoonOverrides.Apply(level);
         }

@@ -1,7 +1,11 @@
-﻿using ButteRyBalance.Network;
+﻿using ButteRyBalance.Components;
+using ButteRyBalance.Network;
 using ButteRyBalance.Overrides.Moons;
+using GameNetcodeStuff;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace ButteRyBalance.Overrides
 {
@@ -173,6 +177,11 @@ namespace ButteRyBalance.Overrides
                             item.disallowUtilitySlot = true;
                             Plugin.Logger.LogDebug($"{item.name}.item.disallowUtilitySlot: False -> True");
                         }
+                        if (BRBNetworker.Instance.JetpackPrice.Value != 0)
+                        {
+                            Plugin.Logger.LogDebug($"{item.name}.creditsWorth: ${item.creditsWorth} -> ${BRBNetworker.Instance.JetpackPrice.Value}");
+                            item.creditsWorth = BRBNetworker.Instance.JetpackPrice.Value;
+                        }
                         break;
                     case "ProFlashlight":
                         if (BRBNetworker.Instance.ProFlashlightPrice.Value && item.creditsWorth != 32)
@@ -212,6 +221,114 @@ namespace ButteRyBalance.Overrides
             }
 
             //StartOfRound.Instance.SetPlanetsWeather();
+
+            if (BRBNetworker.Instance.NerfNightVision.Value)
+            {
+                foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
+                {
+                    HDAdditionalLightData nightVisionHDRP = player.nightVision.GetComponent<HDAdditionalLightData>();
+                    if (nightVisionHDRP != null)
+                    {
+                        nightVisionHDRP.intensity = 2488f;
+                        nightVisionHDRP.range = 8.3f;
+                    }
+                    else
+                    {
+                        player.nightVision.intensity = 197.98874f;
+                        player.nightVision.range = 8.3f;
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<string, EnemyType> enemy in Common.enemies)
+            {
+                switch (enemy.Key)
+                {
+                    case "CadaverBloom":
+                        if (BRBNetworker.Instance.CadaverTarget.Value && enemy.Value.enemyPrefab != null && enemy.Value.enemyPrefab.GetComponentInChildren<IVisibleThreat>() == null)
+                        {
+                            CadaverBloomAI cadaverBloomAI = enemy.Value.enemyPrefab.GetComponentInChildren<CadaverBloomAI>();
+                            if (cadaverBloomAI != null)
+                            {
+                                cadaverBloomAI.gameObject.AddComponent<CadaverBloomThreat>().cadaverBloomAI = cadaverBloomAI;
+                                Plugin.Logger.LogDebug($"Cadaver Bloom: Add IVisibleThreat");
+
+                                if (!cadaverBloomAI.GetComponent<Collider>())
+                                {
+                                    BoxCollider boxCollider = cadaverBloomAI.gameObject.AddComponent<BoxCollider>();
+                                    boxCollider.isTrigger = true;
+                                    boxCollider.center = new(0f, 0.4428673f, 0f);
+                                    boxCollider.size = new(0f, 0.4412155f, 0f);
+                                    Plugin.Logger.LogDebug($"Cadaver Bloom: Add collider");
+                                }
+                            }
+                        }
+                        break;
+                    case "CaveDweller":
+                        if (BRBNetworker.Instance.ManeaterTarget.Value && enemy.Value.enemyPrefab != null && enemy.Value.enemyPrefab.GetComponentInChildren<IVisibleThreat>() == null)
+                        {
+                            CaveDwellerAI caveDwellerAI = enemy.Value.enemyPrefab.GetComponentInChildren<CaveDwellerAI>();
+                            if (caveDwellerAI != null)
+                            {
+                                caveDwellerAI.gameObject.AddComponent<ManeaterThreat>().caveDwellerAI = caveDwellerAI;
+                                Plugin.Logger.LogDebug($"Maneater: Add IVisibleThreat");
+                            }
+                        }
+                        break;
+                    case "Crawler":
+                        if (BRBNetworker.Instance.StunLonger.Value)
+                        {
+                            Plugin.Logger.LogDebug($"Thumper: Stun multiplier {enemy.Value.stunTimeMultiplier} -> 1");
+                            enemy.Value.stunTimeMultiplier = 1f;
+                        }
+                        break;
+                    case "HoarderBug":
+                        if (BRBNetworker.Instance.StunLonger.Value)
+                        {
+                            Plugin.Logger.LogDebug($"Hoarding bug: Stun multiplier {enemy.Value.stunTimeMultiplier} -> 0.5");
+                            enemy.Value.stunTimeMultiplier = 0.5f;
+                        }
+                        break;
+                }
+            }
+
+            if (BRBNetworker.Instance.CruiserPrice.Value != 0 && Common.Terminal?.buyableVehicles != null)
+            {
+                BuyableVehicle cruiser = Common.Terminal.buyableVehicles.FirstOrDefault(buyableVehicle => buyableVehicle.vehicleDisplayName == "Cruiser");
+                if (cruiser != null)
+                {
+                    int price = cruiser.creditsWorth;
+                    cruiser.creditsWorth = BRBNetworker.Instance.CruiserPrice.Value;
+
+                    if (Common.Terminal.terminalNodes?.allKeywords != null)
+                    {
+                        TerminalKeyword buyKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "buy");
+                        TerminalKeyword cruiserKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "cruiser");
+                        if (buyKeyword?.compatibleNouns != null && cruiserKeyword != null)
+                        {
+                            TerminalNode buyCruiser = buyKeyword.compatibleNouns.FirstOrDefault(compatibleNoun => compatibleNoun.noun == cruiserKeyword)?.result;
+                            if (buyCruiser != null)
+                            {
+                                buyCruiser.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
+
+                                if (buyCruiser.terminalOptions != null)
+                                {
+                                    TerminalKeyword confirmKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "confirm");
+                                    if (confirmKeyword != null)
+                                    {
+                                        TerminalNode buyCruiser2 = buyCruiser.terminalOptions.FirstOrDefault(compatibleNoun => compatibleNoun.noun == confirmKeyword)?.result;
+                                        if (buyCruiser2 != null)
+                                        {
+                                            buyCruiser2.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
+                                            Plugin.Logger.LogDebug($"Cruiser: Price ${price} -> ${BRBNetworker.Instance.CruiserPrice.Value}");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

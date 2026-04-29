@@ -9,8 +9,6 @@ namespace ButteRyBalance.Patches
     [HarmonyPatch(typeof(StartOfRound))]
     static class StartOfRoundPatches
     {
-        internal static bool skipWeatherPatch = true;
-
         [HarmonyPatch(nameof(StartOfRound.Awake))]
         [HarmonyPostfix]
         static void StartOfRound_Post_Awake(StartOfRound __instance)

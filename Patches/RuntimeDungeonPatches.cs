@@ -16,6 +16,14 @@ namespace ButteRyBalance.Patches
             {
                 switch (RoundManager.Instance.currentLevel.name)
                 {
+                    case "RendLevel":
+                        if (BRBNetworker.Instance.RendShrink.Value)
+                        {
+                            // 1.8x -> 1.6x
+                            __instance.Generator.LengthMultiplier /= 1.125f;
+                            Plugin.Logger.LogDebug("Shrink Rend");
+                        }
+                        break;
                     case "ArtificeLevel":
                         if (RoundManager.Instance.currentDungeonType != 4 && BRBNetworker.Instance.ArtificeInteriors.Value)
                         {

@@ -31,11 +31,12 @@ namespace ButteRyBalance.Overrides.Moons
             if (Configuration.adamanceNerfEclipse.Value)
                 MoonOverrides.adjustedEclipse = 2; // vanilla: 3
 
-            /*if (Configuration.adamanceReduceCadavers.Value && level.specialEnemyRarity != null && level.specialEnemyRarity.overrideEnemy != null && level.specialEnemyRarity.overrideEnemy.name == "CadaverGrowths")
+            if (Configuration.adamanceReduceCadavers.Value && level.specialEnemyRarity != null && level.specialEnemyRarity.overrideEnemy != null && level.specialEnemyRarity.overrideEnemy.name == "CadaverGrowths")
             {
                 level.specialEnemyRarity.overrideEnemy = null;
                 level.specialEnemyRarity.percentageChance = 0f;
-            }*/
+                //MoonOverrides.adjustedEnemies.Add("CadaverGrowths", 100);
+            }
 
             if (Configuration.adamanceInteriors.Value)
                 MoonOverrides.adjustedEnemies.Add("Butler", 10);

@@ -1,4 +1,6 @@
-﻿using ButteRyBalance.Overrides;
+﻿using ButteRyBalance.Components;
+using ButteRyBalance.Overrides;
+using ButteRyBalance.Patches;
 using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
@@ -107,6 +109,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ExperimentationNoEvents { get; private set; } = new();
         internal NetworkVariable<bool> RandomIndoorFog { get; private set; } = new();
         internal NetworkVariable<bool> VowMineshafts { get; private set; } = new();
+        internal NetworkVariable<bool> RendShrink { get; private set; } = new();
         internal NetworkVariable<bool> DineFloods { get; private set; } = new();
         internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
@@ -127,9 +130,17 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> AdamanceInteriors { get; private set; } = new();
         internal NetworkVariable<bool> DineMineshafts { get; private set; } = new();
         internal NetworkVariable<bool> ProFlashlightPrice { get; private set; } = new();
+        internal NetworkVariable<bool> VowMisty { get; private set; } = new();
+        internal NetworkVariable<bool> NerfNightVision { get; private set; } = new();
+        internal NetworkVariable<bool> GunkfishSquishy { get; private set; } = new();
+        internal NetworkVariable<bool> StunLonger { get; private set; } = new();
+        internal NetworkVariable<bool> ManeaterTarget { get; private set; } = new();
+        internal NetworkVariable<bool> CadaverTarget { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
+        internal NetworkVariable<int> CruiserPrice { get; private set; } = new();
+        internal NetworkVariable<int> JetpackPrice { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -155,6 +166,7 @@ namespace ButteRyBalance.Network
             ExperimentationNoEvents.Value = Configuration.experimentationNoEvents.Value;
             RandomIndoorFog.Value = Configuration.randomIndoorFog.Value;
             VowMineshafts.Value = Configuration.vowMineshafts.Value;
+            RendShrink.Value = Configuration.rendShrink.Value;
             DineFloods.Value = Configuration.dineFloods.Value;
             NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
             JetpackBattery.Value = Configuration.jetpackBattery.Value;
@@ -178,6 +190,14 @@ namespace ButteRyBalance.Network
             AdamanceInteriors.Value = Configuration.adamanceInteriors.Value;
             DineMineshafts.Value = Configuration.dineMineshafts.Value;
             ProFlashlightPrice.Value = Configuration.proFlashlightPrice.Value;
+            VowMisty.Value = Configuration.vowMisty.Value;
+            NerfNightVision.Value = Configuration.nerfNightVision.Value;
+            GunkfishSquishy.Value = Configuration.gunkfishSquishy.Value;
+            StunLonger.Value = Configuration.stunLonger.Value;
+            CruiserPrice.Value = Configuration.cruiserPrice.Value;
+            JetpackPrice.Value = Configuration.jetpackPrice.Value;
+            ManeaterTarget.Value = Configuration.maneaterTarget.Value;
+            CadaverTarget.Value = Configuration.cadaverTarget.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
@@ -196,6 +216,12 @@ namespace ButteRyBalance.Network
             }
             else
                 Plugin.Logger.LogError("Failed to sync scrap price");
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        internal void SetScanValueMultiplierRpc(float value)
+        {
+            TerminalPatches.fakeValueMultiplier = value;
         }
     }
 }

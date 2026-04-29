@@ -1,6 +1,8 @@
 ﻿using ButteRyBalance.Network;
 using GameNetcodeStuff;
 using HarmonyLib;
+using System.Linq;
+using UnityEngine;
 
 namespace ButteRyBalance.Patches.Enemies
 {
@@ -118,6 +120,26 @@ namespace ButteRyBalance.Patches.Enemies
                 {
                     __instance.agent.angularSpeed = 700f;
                     //__instance.agent.acceleration = 425f;
+                }
+            }
+        }
+
+        [HarmonyPatch(nameof(CaveDwellerAI.StartTransformationAnim))]
+        [HarmonyPostfix]
+        static void CaveDwellerAI_Post_StartTransformationAnim(CaveDwellerAI __instance)
+        {
+            if (BRBNetworker.Instance.ManeaterTarget.Value)
+            {
+                __instance.gameObject.layer = LayerMask.NameToLayer("Enemies");
+
+                if (!__instance.GetComponents<Collider>().Any(collider => collider.isTrigger))
+                {
+                    float scalar = 1f / ((__instance.transform.localScale.x + __instance.transform.localScale.y + __instance.transform.localScale.z) / 3f);
+
+                    BoxCollider boxCollider = __instance.gameObject.AddComponent<BoxCollider>();
+                    boxCollider.isTrigger = true;
+                    boxCollider.center = new(0f, 2.13f * scalar, 0f);
+                    boxCollider.size = new Vector3(scalar, scalar, scalar);
                 }
             }
         }

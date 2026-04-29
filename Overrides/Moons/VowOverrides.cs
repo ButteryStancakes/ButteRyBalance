@@ -1,5 +1,4 @@
-﻿using MonoMod.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
@@ -38,6 +37,7 @@ namespace ButteRyBalance.Overrides.Moons
                 Plugin.Logger.LogDebug($"{level.name}.indoorMapHazards");
             }
 
+            MoonOverrides.adjustedScrap.Add("Zeddog", 5);
 
             MoonOverrides.Apply(level);
         }

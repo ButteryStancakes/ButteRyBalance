@@ -5,6 +5,8 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class DineOverrides
     {
+        internal const float CONSOLIDATE_AMOUNT = 0.4f, CONSOLIDATE_VALUE = 1.75f;
+
         internal static readonly Dictionary<int, int> adjustedInteriors = new()
         {
             { 4, 140 },  // mineshaft,  vanilla: 17
@@ -112,8 +114,8 @@ namespace ButteRyBalance.Overrides.Moons
                 }
                 else
                 {
-                    MoonOverrides.minScrap = 200;
-                    MoonOverrides.maxScrap = 250;
+                    //MoonOverrides.minScrap = 200;
+                    //MoonOverrides.maxScrap = 250;
 
                     MoonOverrides.adjustedScrap.AddRange(new(){
                         // add v73 scrap
@@ -172,7 +174,7 @@ namespace ButteRyBalance.Overrides.Moons
             }
 
             if (Configuration.dineReduceButlers.Value)
-                MoonOverrides.adjustedEnemies.Add("Butler", 10); // vanilla: 17
+                MoonOverrides.adjustedEnemies.Add("Butler", 12); // vanilla: 17
 
             if (Configuration.dineAdjustOutdoor.Value)
             {

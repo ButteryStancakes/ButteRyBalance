@@ -36,6 +36,15 @@ namespace ButteRyBalance.Overrides.Moons
                 MoonOverrides.adjustedEnemies.Add("RedLocustBees", 72);
             }
 
+            if (Configuration.marchAdjustEnemies.Value)
+            {
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+                    // v35
+                    { "ForestGiant", 81 },
+                    { "MouthDog", 38 },
+                });
+            }
+
             MoonOverrides.Apply(level);
         }
     }

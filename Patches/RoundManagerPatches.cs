@@ -1,9 +1,15 @@
 ﻿using ButteRyBalance.Network;
 using ButteRyBalance.Overrides;
 using ButteRyBalance.Overrides.Moons;
+using ButteRyBalance.Utilities;
 using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace ButteRyBalance.Patches
 {
@@ -113,6 +119,25 @@ namespace ButteRyBalance.Patches
                     Plugin.Logger.LogDebug("Artifice Blizzard compatibility success");
             }
 
+            string fogPath = "/Environment/Lighting/BrightDay/Local Volumetric Fog";
+
+            if (StartOfRound.Instance.currentLevel.sceneName == "Level3Vow")
+            {
+                if (BRBNetworker.Instance.VowMisty.Value)
+                {
+                    LocalVolumetricFog localVolumetricFog = GameObject.Find(fogPath)?.GetComponent<LocalVolumetricFog>();
+                    if (localVolumetricFog != null)
+                        localVolumetricFog.parameters.meanFreePath = 15.1f;
+                }
+            }
+            else if (StartOfRound.Instance.currentLevel.sceneName == "Level5Rend")
+            {
+                GameObject localVolumetricFog2 = GameObject.Find(fogPath + " (2)");
+                // this fog is placed randomly next to the ship and makes the fire exit more dangerous than it needs to be
+                if (localVolumetricFog2 != null)
+                    localVolumetricFog2.SetActive(false);
+            }
+
             if (__instance.IsServer)
             {
                 if (Configuration.spikeTrapDistance.Value)
@@ -164,18 +189,8 @@ namespace ButteRyBalance.Patches
                         BRBNetworker.Instance.SyncScrapPriceRpc(apparatus.NetworkObject, new System.Random(StartOfRound.Instance.randomMapSeed).Next(40, 131), false);
                 }
             }
-        }
 
-        [HarmonyPatch(nameof(RoundManager.SetToCurrentLevelWeather))]
-        [HarmonyPostfix]
-        static void RoundManager_Post_SetToCurrentLevelWeather(RoundManager __instance)
-        {
-            if (!BRBNetworker.Instance.MoonsKillSwitch.Value && __instance.currentLevel.name == "DineLevel" && TimeOfDay.Instance.currentLevelWeather == LevelWeatherType.Flooded && BRBNetworker.Instance.DineFloods.Value)
-            {
-                // use v50 beta values since main entrance was moved down in v60
-                TimeOfDay.Instance.currentWeatherVariable = -16f;
-                TimeOfDay.Instance.currentWeatherVariable2 = -5f;
-            }
+            Common.CacheCaveTiles();
         }
 
         [HarmonyPatch(nameof(RoundManager.SpawnOutsideHazards))]
@@ -241,11 +256,29 @@ namespace ButteRyBalance.Patches
 
         [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
         [HarmonyPrefix]
-        static void RoundManager_Pre_PlotOutEnemiesForNextHour(RoundManager __instance)
+        static void RoundManager_Pre_PlotOutEnemiesForNextHour(RoundManager __instance, ref bool __state)
         {
+            __state = false;
             if (__instance.IsServer)
+            {
                 InfestationOverrides.SpawnInfestationWave();
+                if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceReduceCadavers.Value && __instance.minEnemiesToSpawn < 1 && __instance.timeScript.hour > __instance.hourTimeBetweenEnemySpawnBatches && new System.Random(__instance.playersManager.randomMapSeed / Mathf.RoundToInt(__instance.timeScript.hour * __instance.timeScript.lengthOfHours)).NextDouble() < 0.8)
+                {
+                    __state = true;
+                    __instance.minEnemiesToSpawn = 1;
+                    Plugin.Logger.LogDebug($"Adamance: Force inside spawn this batch ({HUDManager.Instance.GetClockTimeFormatted(__instance.timeScript.normalizedTimeOfDay, __instance.timeScript.numberOfHours, false)})");
+                }
+            }
         }
+
+        [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_PlotOutEnemiesForNextHour(RoundManager __instance, bool __state)
+        {
+            if (__state)
+                __instance.minEnemiesToSpawn = 0;
+        }
+
         [HarmonyPatch(nameof(RoundManager.SpawnEnemiesOutside))]
         [HarmonyPostfix]
         static void RoundManager_Post_SpawnEnemiesOutside(RoundManager __instance)
@@ -298,12 +331,29 @@ namespace ButteRyBalance.Patches
                         }
                         break;
                     case "DineLevel":
-                        if (Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
+                        if (Configuration.dineScrapPool.Value != Configuration.DineScrap.Rollback)
                         {
-                            __state[0] *= 0.4f;
-                            __instance.scrapAmountMultiplier *= __state[0];
-                            __state[1] *= 1.75f;
-                            __instance.scrapValueMultiplier *= __state[1];
+                            if (__instance.currentLevel.minScrap >= 200)
+                            {
+                                if (__instance.currentDungeonType != 4 || !BRBNetworker.Instance.DineMineshafts.Value)
+                                {
+                                    // vanilla
+                                    __instance.currentLevel.minScrap = 200;
+                                    __instance.currentLevel.maxScrap = 250;
+                                }
+                                else
+                                {
+                                    __instance.currentLevel.minScrap = 220;
+                                    __instance.currentLevel.maxScrap = 270;
+                                }
+                            }
+                            if (Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
+                            {
+                                __state[0] *= DineOverrides.CONSOLIDATE_AMOUNT;
+                                __instance.scrapAmountMultiplier *= __state[0];
+                                __state[1] *= DineOverrides.CONSOLIDATE_VALUE;
+                                __instance.scrapValueMultiplier *= __state[1];
+                            }
                         }
                         break;
                     case "TitanLevel":
@@ -348,8 +398,33 @@ namespace ButteRyBalance.Patches
         [HarmonyPostfix]
         static void RoundManager_Post_SpawnScrapInLevel(RoundManager __instance, float[] __state)
         {
+            BRBNetworker.Instance.SetScanValueMultiplierRpc(__instance.scrapValueMultiplier);
             __instance.scrapAmountMultiplier /= __state[0];
             __instance.scrapValueMultiplier /= __state[1];
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SetLockedDoors))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> RoundManager_Trans_SetLockedDoors(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            for (int i = 5; i < codes.Count - 2; i++)
+            {
+                if (codes[i].opcode == OpCodes.Div && codes[i - 1].opcode == OpCodes.Ldc_I4_3 && codes[i - 3].opcode == OpCodes.Ldlen)
+                {
+                    codes.InsertRange(i + 2, [
+                        new(OpCodes.Ldloca_S, codes[i - 4].operand),
+                        new(OpCodes.Ldloca_S, codes[i + 1].operand),
+                        new(OpCodes.Call, AccessTools.Method(typeof(KeySpawner), nameof(KeySpawner.PostProcessKeyNodes)))
+                    ]);
+                    Plugin.Logger.LogDebug($"Transpiler (Locked doors): Post process key spawns");
+                    return codes;
+                }
+            }
+
+            Plugin.Logger.LogWarning($"Locked doors transpiler failed");
+            return instructions;
         }
     }
 }

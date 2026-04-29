@@ -1,0 +1,54 @@
+﻿using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+
+namespace ButteRyBalance.Patches
+{
+    [HarmonyPatch(typeof(Terminal))]
+    static class TerminalPatches
+    {
+        internal static float fakeValueMultiplier = 0.4f;
+
+        [HarmonyPatch(nameof(Terminal.TextPostProcess))]
+        [HarmonyPrefix]
+        [HarmonyBefore(Plugin.GUID_BUTTERY_FIXES, Plugin.GUID_LETHAL_FIXES)]
+        [HarmonyPriority(Priority.HigherThanNormal)]
+        static void Terminal_Pre_TextPostProcess(ref float __state)
+        {
+            __state = RoundManager.Instance.scrapValueMultiplier;
+            RoundManager.Instance.scrapValueMultiplier = fakeValueMultiplier; // for display purposes
+        }
+
+        [HarmonyPatch(nameof(Terminal.TextPostProcess))]
+        [HarmonyPostfix]
+        static void Terminal_Post_TextPostProcess(float __state)
+        {
+            RoundManager.Instance.scrapValueMultiplier = __state;
+        }
+
+        [HarmonyPatch(nameof(Terminal.SetItemSales))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> Terminal_Trans_SetItemSales(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            MethodInfo count = AccessTools.DeclaredPropertyGetter(typeof(List<int>), nameof(List<int>.Count));
+            MethodInfo next = AccessTools.Method(typeof(System.Random), nameof(System.Random.Next), [typeof(int), typeof(int)]);
+            for (int i = 4; i < codes.Count - 1; i++)
+            {
+                if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand as MethodInfo == next && codes[i - 1].opcode == OpCodes.Callvirt && codes[i - 1].operand as MethodInfo == count)
+                {
+                    codes.Insert(i + 1, new(OpCodes.Callvirt, AccessTools.DeclaredPropertyGetter(typeof(List<int>), "Item")));
+                    codes.Insert(i - 4, new(codes[i - 2].opcode, codes[i - 2].operand));
+                    Plugin.Logger.LogDebug($"Transpiler (Terminal): Fix discount calculations");
+                    return codes;
+                }
+            }
+
+            Plugin.Logger.LogWarning($"Terminal transpiler failed");
+            return instructions;
+        }
+    }
+}

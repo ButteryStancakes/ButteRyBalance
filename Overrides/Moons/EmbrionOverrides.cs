@@ -49,6 +49,21 @@ namespace ButteRyBalance.Overrides.Moons
                 });
             }
 
+            if (Configuration.embrionAdjustEnemies.Value)
+            {
+                MoonOverrides.adjustedEnemies.AddRange(new(){
+                    // non-biological
+                    { "Nutcracker", 37 },
+                    { "SpringMan", 42 },
+                    { "ClaySurgeon", 61 },
+
+                    { "HoarderBug", 57 },
+                });
+            }
+
+            if (Configuration.embrionWeeds.Value)
+                level.canSpawnMold = false;
+
             MoonOverrides.Apply(level);
         }
     }
