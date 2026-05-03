@@ -1,8 +1,10 @@
 ﻿using ButteRyBalance.Components;
 using ButteRyBalance.Network;
 using ButteRyBalance.Overrides.Moons;
+using ButteRyBalance.Patches;
 using GameNetcodeStuff;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -11,6 +13,8 @@ namespace ButteRyBalance.Overrides
 {
     internal class OverrideCoordinator
     {
+        const int VANILLA_CRUISER_PRICE = 370, VANILLA_JETPACK_PRICE = 900;
+
         internal static void ApplyOnServer()
         {
             List<IndoorMapHazardType> indoorMapHazardTypes = [];
@@ -177,7 +181,7 @@ namespace ButteRyBalance.Overrides
                             item.disallowUtilitySlot = true;
                             Plugin.Logger.LogDebug($"{item.name}.item.disallowUtilitySlot: False -> True");
                         }
-                        if (BRBNetworker.Instance.JetpackPrice.Value != 0)
+                        if (BRBNetworker.Instance.JetpackPrice.Value != 0 && BRBNetworker.Instance.JetpackPrice.Value != VANILLA_JETPACK_PRICE)
                         {
                             Plugin.Logger.LogDebug($"{item.name}.creditsWorth: ${item.creditsWorth} -> ${BRBNetworker.Instance.JetpackPrice.Value}");
                             item.creditsWorth = BRBNetworker.Instance.JetpackPrice.Value;
@@ -292,7 +296,7 @@ namespace ButteRyBalance.Overrides
                 }
             }
 
-            if (BRBNetworker.Instance.CruiserPrice.Value != 0 && Common.Terminal?.buyableVehicles != null)
+            if (BRBNetworker.Instance.CruiserPrice.Value != 0 && BRBNetworker.Instance.CruiserPrice.Value != VANILLA_CRUISER_PRICE && Common.Terminal?.buyableVehicles != null)
             {
                 BuyableVehicle cruiser = Common.Terminal.buyableVehicles.FirstOrDefault(buyableVehicle => buyableVehicle.vehicleDisplayName == "Cruiser");
                 if (cruiser != null)
@@ -328,6 +332,18 @@ namespace ButteRyBalance.Overrides
                         }
                     }
                 }
+            }
+            if (BRBNetworker.Instance.CruiserRegen.Value)
+            {
+                Plugin.Logger.LogDebug($"Cruiser: Regen ({VehicleControllerPatches.criticalDurability}, {VehicleControllerPatches.regenInterval}) => (7, 16)");
+                VehicleControllerPatches.criticalDurability = 7;
+                VehicleControllerPatches.regenInterval = 16f;
+            }
+            if (BRBNetworker.Instance.CruiserCrashDamage.Value)
+            {
+                Plugin.Logger.LogDebug($"Cruiser: Crash ({VehicleControllerPatches.scrapingStress}, {VehicleControllerPatches.adjustableCrashSpeed}) => (0.35, 27)");
+                VehicleControllerPatches.scrapingStress = 0.35f;
+                VehicleControllerPatches.adjustableCrashSpeed = 27f;
             }
         }
     }

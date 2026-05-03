@@ -114,7 +114,6 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
         internal NetworkVariable<bool> JetpackReduceDiscount { get; private set; } = new();
-        internal NetworkVariable<bool> JetpackInertia { get; private set; } = new();
         internal NetworkVariable<bool> ArtificeInteriors { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> RadarBoosterPrice { get; private set; } = new();
@@ -136,11 +135,18 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> StunLonger { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterTarget { get; private set; } = new();
         internal NetworkVariable<bool> CadaverTarget { get; private set; } = new();
+        internal NetworkVariable<bool> JetpackWarmUp { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserExhaust { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserRegen { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserTrees { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserEnemyDamage { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserCrashDamage { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
         internal NetworkVariable<int> CruiserPrice { get; private set; } = new();
         internal NetworkVariable<int> JetpackPrice { get; private set; } = new();
+        internal NetworkVariable<int> JetpackControls { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -171,7 +177,6 @@ namespace ButteRyBalance.Network
             NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
             JetpackBattery.Value = Configuration.jetpackBattery.Value;
             JetpackReduceDiscount.Value = Configuration.jetpackReduceDiscount.Value;
-            JetpackInertia.Value = Configuration.jetpackInertia.Value;
             ArtificeInteriors.Value = Configuration.artificeInteriors.Value;
             ZapGunPrice.Value = Configuration.zapGunPrice.Value;
             RadarBoosterPrice.Value = Configuration.radarBoosterPrice.Value;
@@ -198,6 +203,13 @@ namespace ButteRyBalance.Network
             JetpackPrice.Value = Configuration.jetpackPrice.Value;
             ManeaterTarget.Value = Configuration.maneaterTarget.Value;
             CadaverTarget.Value = Configuration.cadaverTarget.Value;
+            JetpackControls.Value = (int)Configuration.jetpackControls.Value;
+            JetpackWarmUp.Value = Configuration.jetpackWarmUp.Value;
+            CruiserExhaust.Value = Configuration.cruiserExhaust.Value;
+            CruiserRegen.Value = Configuration.cruiserRegen.Value;
+            CruiserTrees.Value = Configuration.cruiserTrees.Value;
+            CruiserEnemyDamage.Value = Configuration.cruiserEnemyDamage.Value;
+            CruiserCrashDamage.Value = Configuration.cruiserCrashDamage.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();

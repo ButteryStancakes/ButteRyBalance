@@ -37,6 +37,8 @@ namespace ButteRyBalance
 
         internal static List<Bounds> caveTiles = [];
 
+        internal static VehicleController vehicleController;
+
         internal static void Disconnect()
         {
             enemies.Clear();

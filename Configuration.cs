@@ -19,14 +19,22 @@ namespace ButteRyBalance
             Lots
         }
 
+        internal enum JetpackControls
+        {
+            Vanilla,
+            V49,
+            Dynamic
+        }
+
         internal const int MIN_PRICE = 10, MAX_PRICE = 250000;
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity,*/ jetpackInertia, artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, foxSlender, adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, foxSlender, adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
         internal static ConfigEntry<int> cruiserPrice, jetpackPrice;
+        internal static ConfigEntry<JetpackControls> jetpackControls;
 
         internal static void Init(ConfigFile cfg)
         {
@@ -81,12 +89,17 @@ namespace ButteRyBalance
                 "Item.Jetpack",
                 "Reduce Max Discount",
                 true,
-                "Jetpack price will never go beyond 60% off ($360)");
-            jetpackInertia = configFile.Bind(
+                "Jetpack price will never go beyond 60% off ($180 -> $360)");
+            jetpackControls = configFile.Bind(
                 "Item.Jetpack",
-                "v49 Controls",
-                false,
-                "Re-enables v49 jetpack controls, which had much greater inertia. This value can be enabled client-side, but will additionally be enforced for all players if enabled by the host.");
+                "Control Scheme",
+                JetpackControls.Dynamic,
+                "Controls how the jetpacks' speed and handling are set.\n\"Vanilla\" makes no changes.\n\"V49\" restores the classic control scheme, with much stronger inertia, meaning you must pre-emptively adjust your momentum.\n\"Dynamic\" adjusts speed and handling based on your carried weight (light weight = high speed, poor handling; heavy weight = low speed, smooth handling)");
+            jetpackWarmUp = configFile.Bind(
+                "Item.Jetpack",
+                "Warmup Period",
+                true,
+                "When first activated, jetpacks take a brief period of time to warm up to maximum thrust power, leaving you more vulnerable to enemies.");
             jetpackUtility = configFile.Bind(
                 "Item.Jetpack",
                 "No Utility Belt",
@@ -157,10 +170,40 @@ namespace ButteRyBalance
             cruiserPrice = configFile.Bind(
                 "Vehicle.Cruiser",
                 "Price",
-                400,
+                700,
                 new ConfigDescription(
                     "Alters the price of the Cruiser. $400 is the original price from v55 launch. $370 is the current vanilla price.",
                     new AcceptableValueRange<int>(MIN_PRICE, MAX_PRICE)));
+            cruiserRegen = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Reduced Regeneration",
+                true,
+                "Sharply decreases HP regen for the Cruiser, which makes weed killer more valuable as the only source of mid-round maintenance.");
+            cruiserTrees = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Nature Prevails",
+                true,
+                "The cruiser takes damage from destroying trees again. Does *not* affect snowmen.");
+            cruiserEnemyDamage = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Increase Enemy Damage",
+                true,
+                "The cruiser takes increased damage from collision with enemies. *Does not apply* when the Cruiser is left unattended, parked and with the engine off.");
+            cruiserCrashDamage = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Increase Crash Damage",
+                true,
+                "The cruiser takes increased damage from collision with terrain or walls.");
+            cruiserItemSafety = configFile.Bind(
+                "Vehicle.Cruiser",
+                "No Space Insurance",
+                true,
+                "When returning to orbit, items on top of the Cruiser, or in the back while the door is open, are lost.");
+            cruiserExhaust = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Rocking Costs Stamina",
+                true,
+                "When \"rocking\" the car (with the jump button), stamina will be deducted, and you are unable to rock the car when out of stamina. The stamina cost gets steeper the more the car is facing upward.");
         }
 
         static void EnemyConfig()
@@ -585,7 +628,7 @@ namespace ButteRyBalance
             nerfNightVision = configFile.Bind(
                 "Misc",
                 "Reduce Night Vision",
-                true,
+                false,
                 "Lower the distance you can see clearly in the dark without a light source, as it was in the original v80 beta.");
 
             foggyLimit = configFile.Bind(
@@ -709,6 +752,7 @@ namespace ButteRyBalance
                 ("Moon.Rend", "Adjust Indoor Enemies"),
                 ("Enemy.KidnapperFox", "Squishy"),
                 ("Moon.Titan", "Reduce Mineshafts"),
+                ("Item.Jetpack", "v49 Controls"),
             })
             {
                 try

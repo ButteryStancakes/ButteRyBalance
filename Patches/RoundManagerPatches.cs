@@ -137,6 +137,13 @@ namespace ButteRyBalance.Patches
                 if (localVolumetricFog2 != null)
                     localVolumetricFog2.SetActive(false);
             }
+            else if (StartOfRound.Instance.currentLevel.sceneName == "Level10Adamance")
+            {
+                if (__instance.mapPropsContainer == null)
+                    __instance.mapPropsContainer = GameObject.FindGameObjectWithTag("MapPropsContainer");
+
+                Object.Instantiate(__instance.quicksandPrefab, new(-117.796883f, -23.5f, 51.9545212f), Quaternion.identity, __instance.mapPropsContainer.transform);
+            }
 
             if (__instance.IsServer)
             {
@@ -424,6 +431,50 @@ namespace ButteRyBalance.Patches
             }
 
             Plugin.Logger.LogWarning($"Locked doors transpiler failed");
+            return instructions;
+        }
+
+        [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_DespawnPropsAtEndOfRound(RoundManager __instance)
+        {
+            if (__instance.IsServer && Configuration.cruiserItemSafety.Value && __instance.playersManager?.attachedVehicle != null && __instance.playersManager.attachedVehicle.vehicleID == 0)
+            {
+                Bounds onTopOfTruckBounds = __instance.playersManager.attachedVehicle.ontopOfTruckCollider.bounds;
+
+                GrabbableObject[] cruiserItems = __instance.playersManager.attachedVehicle?.GetComponentsInChildren<GrabbableObject>();
+                foreach (GrabbableObject cruiserItem in cruiserItems)
+                {
+                    if (__instance.playersManager.attachedVehicle.backDoorOpen || onTopOfTruckBounds.ClosestPoint(cruiserItem.transform.position) == cruiserItem.transform.position)
+                    {
+                        Plugin.Logger.LogDebug($"Cruiser item \"{cruiserItem.name}\" (#{cruiserItem.GetInstanceID()}) lost in orbit");
+                        if (cruiserItem.NetworkObject != null && cruiserItem.NetworkObject.IsSpawned)
+                            cruiserItem.NetworkObject.Despawn();
+                        else
+                            Object.Destroy(cruiserItem.gameObject);
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(nameof(RoundManager.DestroyTreeAtPosition))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> RoundManager_Trans_DestroyTreeAtPosition(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            FieldInfo breakTreeAudio2 = AccessTools.Field(typeof(RoundManager), nameof(RoundManager.breakTreeAudio2));
+            for (int i = 0; i < codes.Count - 2; i++)
+            {
+                if (codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == breakTreeAudio2)
+                {
+                    codes.Insert(i + 2, new(OpCodes.Call, AccessTools.Method(typeof(VehicleControllerPatches), nameof(VehicleControllerPatches.JustDestroyedTree))));
+                    Plugin.Logger.LogDebug($"Transpiler (Destroy tree): Send signal to Cruiser");
+                    return codes;
+                }
+            }
+
+            Plugin.Logger.LogWarning($"Destroy tree transpiler failed");
             return instructions;
         }
     }
