@@ -60,13 +60,29 @@ namespace ButteRyBalance.Patches
 
                 if (patchIndex && patchRemove)
                 {
-                    Plugin.Logger.LogDebug($"Transpiler (Terminal): Fix discount calculations");
+                    Plugin.Logger.LogDebug("Transpiler (Terminal): Fix discount calculations");
                     return codes;
                 }
             }
 
-            Plugin.Logger.LogWarning($"Terminal transpiler failed");
+            Plugin.Logger.LogWarning("Terminal transpiler failed");
             return instructions;
+        }
+
+        [HarmonyPatch(nameof(Terminal.RunTerminalEvents))]
+        [HarmonyPostfix]
+        static void Terminal_Post_RunTerminalEvents(Terminal __instance, TerminalNode node)
+        {
+            if (node.terminalEvent == "cheat_ResetCredits" && GameNetworkManager.Instance.localPlayerController.IsServer)
+            {
+                string username = GameNetworkManager.Instance.localPlayerController.playerUsername;
+                if (username == "Zeekerss" || username == "Blueray" || username == "Puffo")
+                    return; // don't run twice
+
+                __instance.useCreditsCooldown = true;
+                __instance.groupCredits = 2500;
+                __instance.SyncGroupCreditsServerRpc(__instance.groupCredits, __instance.numberOfItemsInDropship);
+            }
         }
     }
 }

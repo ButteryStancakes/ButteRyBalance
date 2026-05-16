@@ -1,6 +1,7 @@
-﻿using ButteRyBalance.Patches;
+﻿using ButteRyBalance.Network;
 using DunGen;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace ButteRyBalance
@@ -18,7 +19,7 @@ namespace ButteRyBalance
         // Experimentation, Assurance, Vow, Gordion, March, Adamance, Rend, Dine, Offense, Titan, Artifice, Liquidation, Embrion
         internal const int NUM_LEVELS = 13;
 
-        internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_SPAWN_CYCLE_FIXES;
+        internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_SPAWN_CYCLE_FIXES, INSTALLED_VERSION55_COMPANY_CRUISER, INSTALLED_FAIRER_FIRE_EXITS;
         internal static GameObject artificeBlizzard;
 
         internal static Dictionary<string, EnemyType> enemies = [];
@@ -39,10 +40,19 @@ namespace ButteRyBalance
 
         internal static VehicleController vehicleController;
 
+        internal static List<EntranceTeleport> extraFireExits = [];
+        internal static int fireExitCount = 0;
+
+        internal static List<NetworkObject> tempNetObjs = [];
+
+        internal static string lastSceneLoaded = string.Empty;
+
         internal static void Disconnect()
         {
             enemies.Clear();
             caveTiles.Clear();
+            extraFireExits.Clear();
+            CleanTemporaryNetworkObjects();
         }
 
         internal static bool IsSnowLevel()
@@ -75,6 +85,22 @@ namespace ButteRyBalance
                     }
                 }
             }
+        }
+
+        internal static void CleanTemporaryNetworkObjects()
+        {
+            if (BRBNetworker.Instance.IsServer)
+            {
+                foreach (NetworkObject netObj in tempNetObjs)
+                {
+                    if (netObj == null)
+                        continue;
+
+                    Plugin.Logger.LogDebug($"Despawning \"{netObj.name}\" on server (temporary network object)");
+                    netObj.Despawn(true);
+                }
+            }
+            tempNetObjs.Clear();
         }
     }
 }

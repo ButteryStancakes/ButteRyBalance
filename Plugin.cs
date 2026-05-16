@@ -1,9 +1,11 @@
 ﻿using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
+using ButteRyBalance.Overrides;
 using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ButteRyBalance
 {
@@ -12,17 +14,22 @@ namespace ButteRyBalance
     [BepInDependency(GUID_ARTIFICE_BLIZZARD, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(GUID_BARBER_FIXES, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(GUID_SPAWN_CYCLE_FIXES, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_VERSION55_COMPANY_CRUISER, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(GUID_FAIRER_FIRE_EXITS, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.5.0";
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.6.0";
         internal static new ManualLogSource Logger;
 
         const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility",
                      GUID_ARTIFICE_BLIZZARD = "butterystancakes.lethalcompany.artificeblizzard",
                      GUID_BARBER_FIXES = "butterystancakes.lethalcompany.barberfixes",
-                     GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes";
+                     GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes",
+                     GUID_VERSION55_COMPANY_CRUISER = "scandal.v55cruiser",
+                     GUID_FAIRER_FIRE_EXITS = "OreoM.FairerFireExits";
         internal const string GUID_BUTTERY_FIXES = "butterystancakes.lethalcompany.butteryfixes",
-                              GUID_LETHAL_FIXES = "uk.1a3.lethalfixes";
+                              GUID_LETHAL_FIXES = "uk.1a3.lethalfixes",
+                              GUID_LETHAL_LEVEL_LOADER = "imabatby.lethallevelloader";
 
         void Awake()
         {
@@ -54,9 +61,23 @@ namespace ButteRyBalance
                 Common.INSTALLED_SPAWN_CYCLE_FIXES = true;
             }
 
+            if (Chainloader.PluginInfos.ContainsKey(GUID_VERSION55_COMPANY_CRUISER))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Version-55 Company Cruiser detected");
+                Common.INSTALLED_VERSION55_COMPANY_CRUISER = true;
+            }
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_FAIRER_FIRE_EXITS))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Fairer Fire Exits detected");
+                Common.INSTALLED_FAIRER_FIRE_EXITS = true;
+            }
+
             Configuration.Init(Config);
 
             new Harmony(PLUGIN_GUID).PatchAll();
+
+            SceneManager.sceneLoaded += SceneOverrides.OnSceneLoaded;
 
             Logger.LogInfo($"{PLUGIN_NAME} v{PLUGIN_VERSION} loaded");
         }

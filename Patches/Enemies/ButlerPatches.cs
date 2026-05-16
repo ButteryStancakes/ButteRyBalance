@@ -97,5 +97,26 @@ namespace ButteRyBalance.Patches.Enemies
             if (BRBNetworker.Instance.ButlerLongCooldown.Value)
                 __instance.enemyHP = Mathf.Max(__instance.enemyHP, 3);
         }
+
+        [HarmonyPatch(nameof(ButlerEnemyAI.SyncSearchingMadlyServerRpc))]
+        [HarmonyPostfix]
+        static void ButlerEnemyAI_Post_SyncSearchingMadlyServerRpc(ref bool isSearching)
+        {
+            if (isSearching && StartOfRound.Instance.connectedPlayersAmount < 1 && Configuration.butlerNoSearch.Value)
+                isSearching = false;
+        }
+
+        [HarmonyPatch(nameof(ButlerEnemyAI.LookForChanceToMurder))]
+        [HarmonyPostfix]
+        static void ButlerEnemyAI_Post_LookForChanceToMurder(ButlerEnemyAI __instance)
+        {
+            // do your stupid job
+            if (__instance.madlySearchingForPlayers && StartOfRound.Instance.connectedPlayersAmount < 1 && Configuration.butlerNoSearch.Value)
+            {
+                __instance.madlySearchingForPlayers = false;
+                if (__instance.roamAndSweepFloor.searchPrecision >= 16f)
+                    __instance.roamAndSweepFloor.searchPrecision = 10f;
+            }
+        }
     }
 }

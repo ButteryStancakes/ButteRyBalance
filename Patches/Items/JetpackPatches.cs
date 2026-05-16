@@ -13,8 +13,8 @@ namespace ButteRyBalance.Patches.Items
         static readonly AnimationCurve accelerationCurve = new(
             new(1.5f, 10f),
             new(1.73f, 10f),
-            new(2f,  4f),
-            new(2.3f,  2f));
+            new(2f, 4f),
+            new(2.3f, 2f));
         static readonly AnimationCurve handlingCurve = new(
             new(1.5f, 20f),
             new(1.73f, 20f),

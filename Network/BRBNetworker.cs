@@ -1,5 +1,4 @@
-﻿using ButteRyBalance.Components;
-using ButteRyBalance.Overrides;
+﻿using ButteRyBalance.Overrides;
 using ButteRyBalance.Patches;
 using System.Security.Cryptography;
 using System.Text;
@@ -141,12 +140,17 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> CruiserTrees { get; private set; } = new();
         internal NetworkVariable<bool> CruiserEnemyDamage { get; private set; } = new();
         internal NetworkVariable<bool> CruiserCrashDamage { get; private set; } = new();
+        internal NetworkVariable<bool> WeaponsAdjustWeights { get; private set; } = new();
+        internal NetworkVariable<bool> OffenseFireExits { get; private set; } = new();
+        internal NetworkVariable<bool> DineFireExits { get; private set; } = new();
+        internal NetworkVariable<bool> ProportionalFireExits { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
         internal NetworkVariable<int> CruiserPrice { get; private set; } = new();
         internal NetworkVariable<int> JetpackPrice { get; private set; } = new();
         internal NetworkVariable<int> JetpackControls { get; private set; } = new();
+        internal NetworkVariable<int> WeedKillerDamage { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -210,6 +214,11 @@ namespace ButteRyBalance.Network
             CruiserTrees.Value = Configuration.cruiserTrees.Value;
             CruiserEnemyDamage.Value = Configuration.cruiserEnemyDamage.Value;
             CruiserCrashDamage.Value = Configuration.cruiserCrashDamage.Value;
+            WeaponsAdjustWeights.Value = Configuration.weaponsAdjustWeights.Value;
+            OffenseFireExits.Value = Configuration.offenseFireExits.Value;
+            DineFireExits.Value = Configuration.dineFireExits.Value;
+            ProportionalFireExits.Value = Configuration.proportionalFireExits.Value && !Common.INSTALLED_FAIRER_FIRE_EXITS;
+            WeedKillerDamage.Value = Configuration.weedKillerDamage.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
@@ -218,9 +227,8 @@ namespace ButteRyBalance.Network
         [Rpc(SendTo.ClientsAndHost)]
         internal void SyncScrapPriceRpc(NetworkObjectReference scrap, int value, bool node = true)
         {
-            if (scrap.TryGet(out NetworkObject netObj))
+            if (scrap.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out GrabbableObject item))
             {
-                GrabbableObject item = netObj.GetComponent<GrabbableObject>();
                 if (node)
                     item.SetScrapValue(value);
                 else
@@ -234,6 +242,60 @@ namespace ButteRyBalance.Network
         internal void SetScanValueMultiplierRpc(float value)
         {
             TerminalPatches.fakeValueMultiplier = value;
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        internal void SyncFireExitRpc(NetworkObjectReference tele, int entranceId, bool isEntranceToBuilding = true, int audioReverbPreset = 2, bool fresh = true)
+        {
+            if (tele.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out EntranceTeleport entranceTeleport))
+            {
+                if (fresh)
+                {
+                    if (isEntranceToBuilding && !entranceTeleport.isEntranceToBuilding)
+                        Common.extraFireExits.Add(entranceTeleport);
+                }
+                else
+                {
+                    if (entranceId == entranceTeleport.entranceId && isEntranceToBuilding == entranceTeleport.isEntranceToBuilding && audioReverbPreset == entranceTeleport.audioReverbPreset)
+                        Plugin.Logger.LogDebug($"Fire exit \"{entranceTeleport.name}\" is already synced");
+                    else if (entranceId != entranceTeleport.entranceId)
+                        Plugin.Logger.LogWarning($"Fire exit #{entranceId} is currently ID {entranceTeleport.entranceId} on this client!!");
+
+                    if (isEntranceToBuilding)
+                    {
+                        switch (entranceId)
+                        {
+                            case 1:
+                                if (SceneOverrides.entranceTeleport1 == null)
+                                    SceneOverrides.entranceTeleport1 = entranceTeleport;
+                                break;
+                            case 2:
+                                if (SceneOverrides.entranceTeleport2 == null)
+                                    SceneOverrides.entranceTeleport2 = entranceTeleport;
+                                break;
+                            case 3:
+                                if (SceneOverrides.entranceTeleport3 == null)
+                                    SceneOverrides.entranceTeleport3 = entranceTeleport;
+                                break;
+                        }
+                    }
+                }
+
+                entranceTeleport.isEntranceToBuilding = isEntranceToBuilding;
+                entranceTeleport.entranceId = entranceId;
+                entranceTeleport.audioReverbPreset = audioReverbPreset;
+
+                if (isEntranceToBuilding)
+                {
+                    Transform plane = entranceTeleport.transform.Find("Plane");
+                    if (plane != null)
+                        plane.gameObject.SetActive(false);
+                }
+
+                Plugin.Logger.LogDebug($"Synced {(fresh ? "new " : string.Empty)}fire exit \"{entranceTeleport.name}\" @ {entranceTeleport.entrancePoint.position} (ID: {entranceTeleport.entranceId}, Entrance: {entranceTeleport.isEntranceToBuilding})");
+            }
+            else
+                Plugin.Logger.LogError($"Failed to sync entrance teleport #{entranceId}");
         }
     }
 }

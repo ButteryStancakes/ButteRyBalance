@@ -21,6 +21,7 @@ namespace ButteRyBalance.Overrides
             "MaskedPlayerEnemy",
             "ClaySurgeon",
             "Crawler",
+            "Centipede",
             "SpringMan",
             "Stingray"
         };
@@ -30,9 +31,9 @@ namespace ButteRyBalance.Overrides
             { "ExperimentationLevel",   ExperimentationOverrides.infestations },
             { "AssuranceLevel",               AssuranceOverrides.infestations },
             { "VowLevel",                           VowOverrides.infestations },
-            { "OffenseLevel",                   OffenseOverrides.infestations },
             { "MarchLevel",                       MarchOverrides.infestations },
             { "AdamanceLevel",                 AdamanceOverrides.infestations },
+            { "OffenseLevel",                   OffenseOverrides.infestations },
             { "RendLevel",                         RendOverrides.infestations },
             { "DineLevel",                         DineOverrides.infestations },
             { "TitanLevel",                       TitanOverrides.infestations },
@@ -202,7 +203,13 @@ namespace ButteRyBalance.Overrides
             if (RoundManager.Instance.firstTimeSpawningEnemies)
             {
                 foreach (SpawnableEnemyWithRarity enemyWithRarity in RoundManager.Instance.currentLevel.Enemies)
+                {
+                    if (enemyWithRarity.enemyType.isOutsideEnemy || enemyWithRarity.enemyType.isDaytimeEnemy)
+                        continue;
+
                     enemyWithRarity.enemyType.numberSpawned = 0;
+                    enemyWithRarity.enemyType.hasSpawnedAtLeastOne = false;
+                }
 
                 RoundManager.Instance.firstTimeSpawningEnemies = false;
             }
@@ -217,8 +224,8 @@ namespace ButteRyBalance.Overrides
                     break;
                 }
 
-                int time = RoundManager.Instance.AnomalyRandom.Next((int)(TimeOfDay.Instance.lengthOfHours * TimeOfDay.Instance.hour) + 10, (int)(TimeOfDay.Instance.lengthOfHours * (RoundManager.Instance.currentHour + 1)));
-                EnemyVent vent = availableVents[RoundManager.Instance.AnomalyRandom.Next(availableVents.Count)];
+                int time = RoundManager.Instance.IndoorEnemySpawnPlacementRandom.Next((int)(TimeOfDay.Instance.lengthOfHours * TimeOfDay.Instance.hour) + 10, (int)(TimeOfDay.Instance.lengthOfHours * (RoundManager.Instance.currentHour + 1)));
+                EnemyVent vent = availableVents[RoundManager.Instance.IndoorEnemySpawnPlacementRandom.Next(availableVents.Count)];
 
                 vent.enemyType = infestationEnemy;
                 vent.enemyTypeIndex = infestationEnemyIndex;
@@ -227,6 +234,11 @@ namespace ButteRyBalance.Overrides
                 if (TimeOfDay.Instance.hour - RoundManager.Instance.currentHour <= 0)
                     vent.SyncVentSpawnTimeClientRpc(time, infestationEnemyIndex);
                 infestationEnemy.numberSpawned++;
+                if (!infestationEnemy.hasSpawnedAtLeastOne)
+                {
+                    infestationEnemy.hasSpawnedAtLeastOne = true;
+                    RoundManager.Instance.currentInsideEnemyDiversityLevel += infestationEnemy.DiversityPowerLevel;
+                }
                 Plugin.Logger.LogDebug("Added infestation enemy to vent");
 
                 // reduce scaling of barber infestation

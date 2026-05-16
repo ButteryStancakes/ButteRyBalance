@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 
 namespace ButteRyBalance.Patches
 {
@@ -117,32 +116,6 @@ namespace ButteRyBalance.Patches
                 Common.artificeBlizzard = GameObject.Find("/Systems/Audio/BlizzardAmbience");
                 if (Common.artificeBlizzard != null)
                     Plugin.Logger.LogDebug("Artifice Blizzard compatibility success");
-            }
-
-            string fogPath = "/Environment/Lighting/BrightDay/Local Volumetric Fog";
-
-            if (StartOfRound.Instance.currentLevel.sceneName == "Level3Vow")
-            {
-                if (BRBNetworker.Instance.VowMisty.Value)
-                {
-                    LocalVolumetricFog localVolumetricFog = GameObject.Find(fogPath)?.GetComponent<LocalVolumetricFog>();
-                    if (localVolumetricFog != null)
-                        localVolumetricFog.parameters.meanFreePath = 15.1f;
-                }
-            }
-            else if (StartOfRound.Instance.currentLevel.sceneName == "Level5Rend")
-            {
-                GameObject localVolumetricFog2 = GameObject.Find(fogPath + " (2)");
-                // this fog is placed randomly next to the ship and makes the fire exit more dangerous than it needs to be
-                if (localVolumetricFog2 != null)
-                    localVolumetricFog2.SetActive(false);
-            }
-            else if (StartOfRound.Instance.currentLevel.sceneName == "Level10Adamance")
-            {
-                if (__instance.mapPropsContainer == null)
-                    __instance.mapPropsContainer = GameObject.FindGameObjectWithTag("MapPropsContainer");
-
-                Object.Instantiate(__instance.quicksandPrefab, new(-117.796883f, -23.5f, 51.9545212f), Quaternion.identity, __instance.mapPropsContainer.transform);
             }
 
             if (__instance.IsServer)
@@ -304,6 +277,21 @@ namespace ButteRyBalance.Patches
             {
                 switch (__instance.currentLevel.name)
                 {
+                    case "AssuranceLevel":
+                        if (Configuration.assuranceNerfScrap.Value)
+                        {
+                            if (__instance.currentDungeonType != 4)
+                            {
+                                __instance.currentLevel.minScrap = 13;
+                                __instance.currentLevel.maxScrap = 16;
+                            }
+                            else
+                            {
+                                __instance.currentLevel.minScrap = 11;
+                                __instance.currentLevel.maxScrap = 16;
+                            }
+                        }
+                        break;
                     case "VowLevel":
                         if (BRBNetworker.Instance.VowMineshafts.Value)
                         {
@@ -399,6 +387,10 @@ namespace ButteRyBalance.Patches
                         break;
                 }
             }
+
+            // https://discord.com/channels/750645598293590077/1501504390148653066/1503528764108181574
+            if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
+                __instance.AnomalyRandom.NextDouble();
         }
 
         [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
@@ -423,7 +415,7 @@ namespace ButteRyBalance.Patches
                     codes.InsertRange(i + 2, [
                         new(OpCodes.Ldloca_S, codes[i - 4].operand),
                         new(OpCodes.Ldloca_S, codes[i + 1].operand),
-                        new(OpCodes.Call, AccessTools.Method(typeof(KeySpawner), nameof(KeySpawner.PostProcessKeyNodes)))
+                        new(OpCodes.Call, AccessTools.Method(typeof(InteriorObjectSpawner), nameof(InteriorObjectSpawner.PostProcessKeyNodes)))
                     ]);
                     Plugin.Logger.LogDebug($"Transpiler (Locked doors): Post process key spawns");
                     return codes;
@@ -438,22 +430,27 @@ namespace ButteRyBalance.Patches
         [HarmonyPostfix]
         static void RoundManager_Post_DespawnPropsAtEndOfRound(RoundManager __instance)
         {
-            if (__instance.IsServer && Configuration.cruiserItemSafety.Value && __instance.playersManager?.attachedVehicle != null && __instance.playersManager.attachedVehicle.vehicleID == 0)
+            if (__instance.IsServer)
             {
-                Bounds onTopOfTruckBounds = __instance.playersManager.attachedVehicle.ontopOfTruckCollider.bounds;
-
-                GrabbableObject[] cruiserItems = __instance.playersManager.attachedVehicle?.GetComponentsInChildren<GrabbableObject>();
-                foreach (GrabbableObject cruiserItem in cruiserItems)
+                if (Configuration.cruiserItemSafety.Value && __instance.playersManager?.attachedVehicle != null && __instance.playersManager.attachedVehicle.vehicleID == 0 && !Common.INSTALLED_VERSION55_COMPANY_CRUISER)
                 {
-                    if (__instance.playersManager.attachedVehicle.backDoorOpen || onTopOfTruckBounds.ClosestPoint(cruiserItem.transform.position) == cruiserItem.transform.position)
+                    Bounds onTopOfTruckBounds = __instance.playersManager.attachedVehicle.ontopOfTruckCollider.bounds;
+
+                    GrabbableObject[] cruiserItems = __instance.playersManager.attachedVehicle?.GetComponentsInChildren<GrabbableObject>();
+                    foreach (GrabbableObject cruiserItem in cruiserItems)
                     {
-                        Plugin.Logger.LogDebug($"Cruiser item \"{cruiserItem.name}\" (#{cruiserItem.GetInstanceID()}) lost in orbit");
-                        if (cruiserItem.NetworkObject != null && cruiserItem.NetworkObject.IsSpawned)
-                            cruiserItem.NetworkObject.Despawn();
-                        else
-                            Object.Destroy(cruiserItem.gameObject);
+                        if (__instance.playersManager.attachedVehicle.backDoorOpen || onTopOfTruckBounds.ClosestPoint(cruiserItem.transform.position) == cruiserItem.transform.position)
+                        {
+                            Plugin.Logger.LogDebug($"Cruiser item \"{cruiserItem.name}\" (#{cruiserItem.GetInstanceID()}) lost in orbit");
+                            if (cruiserItem.NetworkObject != null && cruiserItem.NetworkObject.IsSpawned)
+                                cruiserItem.NetworkObject.Despawn();
+                            else
+                                Object.Destroy(cruiserItem.gameObject);
+                        }
                     }
                 }
+
+                Common.CleanTemporaryNetworkObjects();
             }
         }
 
@@ -476,6 +473,91 @@ namespace ButteRyBalance.Patches
 
             Plugin.Logger.LogWarning($"Destroy tree transpiler failed");
             return instructions;
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SpawnSyncedProps))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_SpawnSyncedProps(RoundManager __instance)
+        {
+            if (!__instance.IsServer || BRBNetworker.Instance.MoonsKillSwitch.Value)
+                return;
+
+            bool resyncFireExits = false;
+            switch (Common.lastSceneLoaded)
+            {
+                case "Level4March":
+                    resyncFireExits = true;
+                    break;
+
+                case "Level6Dine":
+                    resyncFireExits = BRBNetworker.Instance.DineFireExits.Value;
+                    break;
+
+                case "Level7Offense":
+                    resyncFireExits = BRBNetworker.Instance.OffenseFireExits.Value;
+                    break;
+            }
+
+            if (resyncFireExits)
+            {
+                if (SceneOverrides.entranceTeleport1?.NetworkObject != null)
+                {
+                    BRBNetworker.Instance.SyncFireExitRpc(SceneOverrides.entranceTeleport1.NetworkObject, 1, fresh: false);
+                    if (SceneOverrides.entranceTeleport2?.NetworkObject != null)
+                    {
+                        BRBNetworker.Instance.SyncFireExitRpc(SceneOverrides.entranceTeleport2.NetworkObject, 2, fresh: false);
+
+                        // *supposed* to be null on Offense
+                        if (SceneOverrides.entranceTeleport3?.NetworkObject != null)
+                            BRBNetworker.Instance.SyncFireExitRpc(SceneOverrides.entranceTeleport3.NetworkObject, 3, fresh: false);
+
+                        return;
+                    }
+                }
+                Plugin.Logger.LogWarning($"Failed to resync fire exits as host:\n#1 - {SceneOverrides.entranceTeleport1}\n#2 - {SceneOverrides.entranceTeleport2}\n#3 - {SceneOverrides.entranceTeleport3}");
+            }
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SetExitIDs))]
+        [HarmonyFinalizer]
+        [HarmonyPriority(Priority.Last)]
+        static void RoundManager_Post_SetExitIDs()
+        {
+            if (SceneOverrides.entranceTeleport1 != null || SceneOverrides.entranceTeleport2 != null || SceneOverrides.entranceTeleport3 != null)
+                Plugin.Logger.LogDebug("Running final synchronization step for fire exits");
+
+            if (SceneOverrides.entranceTeleport1 != null)
+            {
+                if (SceneOverrides.entranceTeleport1.entranceId != 1)
+                {
+                    Plugin.Logger.LogWarning($"Fire exit \"{SceneOverrides.entranceTeleport1.name}\" is expressing an incorrect ID of {SceneOverrides.entranceTeleport1.entranceId} on this client (should be 1)");
+                    SceneOverrides.entranceTeleport1.entranceId = 1;
+                }
+                else
+                    Plugin.Logger.LogDebug($"Fire exit \"{SceneOverrides.entranceTeleport1.name}\" is nutritious and healthy");
+            }
+
+            if (SceneOverrides.entranceTeleport2 != null)
+            {
+                if (SceneOverrides.entranceTeleport2.entranceId != 2)
+                {
+                    Plugin.Logger.LogWarning($"Fire exit \"{SceneOverrides.entranceTeleport2.name}\" is expressing an incorrect ID of {SceneOverrides.entranceTeleport2.entranceId} on this client (should be 2)");
+                    SceneOverrides.entranceTeleport2.entranceId = 2;
+                }
+                else
+                    Plugin.Logger.LogDebug($"Fire exit \"{SceneOverrides.entranceTeleport2.name}\" is nutritious and healthy");
+            }
+
+            if (SceneOverrides.entranceTeleport3 != null)
+            {
+                if (SceneOverrides.entranceTeleport3.entranceId != 3)
+                {
+                    Plugin.Logger.LogWarning($"Fire exit \"{SceneOverrides.entranceTeleport3.name}\" is expressing an incorrect ID of {SceneOverrides.entranceTeleport3.entranceId} on this client (should be 3)");
+                    SceneOverrides.entranceTeleport3.entranceId = 3;
+                }
+                else
+                    Plugin.Logger.LogDebug($"Fire exit \"{SceneOverrides.entranceTeleport3.name}\" is nutritious and healthy");
+            }
         }
     }
 }

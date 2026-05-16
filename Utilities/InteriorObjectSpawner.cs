@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using DunGen;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ButteRyBalance.Utilities
 {
-    internal static class KeySpawner
+    internal static class InteriorObjectSpawner
     {
         internal static void PostProcessKeyNodes(ref GameObject[] nodes, ref int count)
         {
@@ -84,6 +85,17 @@ namespace ButteRyBalance.Utilities
             {
                 Plugin.Logger.LogError("An error occurred while filtering key spawns");
                 Plugin.Logger.LogError(e);
+            }
+        }
+
+        internal static void RandomlyActivateFireExits(GlobalProp[] fireExits, System.Random rand)
+        {
+            List<GlobalProp> inactiveFireExits = new(fireExits);
+            for (int i = 0; i < Common.fireExitCount; i++)
+            {
+                int index = rand.Next(inactiveFireExits.Count);
+                inactiveFireExits[index].gameObject.SetActive(true);
+                inactiveFireExits.RemoveAt(index);
             }
         }
     }

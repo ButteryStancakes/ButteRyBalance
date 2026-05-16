@@ -2,9 +2,10 @@
 using ButteRyBalance.Network;
 using ButteRyBalance.Overrides.Moons;
 using ButteRyBalance.Patches;
+using ButteRyBalance.Patches.Items;
 using GameNetcodeStuff;
+using MonoMod.Utils;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -144,27 +145,41 @@ namespace ButteRyBalance.Overrides
 
         internal static void ApplyOnAllClients()
         {
-            Dictionary<string, float> adjustedWeights = new()
+            Dictionary<string, float> adjustedWeights = [];
+
+            if (BRBNetworker.Instance.ScrapAdjustWeights.Value)
             {
-                { "BottleBin",       1.15f },   // vanilla: 1.18
-                { "Brush",           1.07f },   // vanilla: 1.1
-                { "Candy",              1f },   // vanilla: 1.1
-                { "ChemicalJug",      1.4f },   // vanilla: 1.3
-                { "Clock",            1.2f },   // vanilla: 1.25
-                { "Cog1",            1.23f },   // vanilla: 1.15
-                { "EnginePart1",     1.18f },   // vanilla: 1.15
-                { "FancyCup",         1.2f },   // vanilla: 1.15
-                { "FancyLamp",       1.25f },   // vanilla: 1.2
-                { "Flask",            1.1f },   // vanilla: 1.18
-                { "GarbageLid",       1.1f },   // vanilla: 1
-                { "Hairdryer",        1.1f },   // vanilla: 1.07
-                { "MetalSheet",       1.2f },   // vanilla: 1.25
-                { "Ring",            1.08f },   // vanilla: 1.15
-                { "SoccerBall",      1.13f },   // vanilla: 1.18
-                { "StopSign",         1.2f },   // vanilla: 1.27
-                { "TeaKettle",       1.15f },   // vanilla: 1.2
-                { "YieldSign",        1.3f },   // vanilla: 1.4
-            };
+                adjustedWeights.AddRange(new()
+                {
+                    { "BottleBin",       1.15f },   // vanilla: 1.18
+                    { "Brush",           1.07f },   // vanilla: 1.1
+                    { "Candy",              1f },   // vanilla: 1.1
+                    //{ "ChemicalJug",    1.4f },   // vanilla: 1.3
+                    { "Clock",            1.2f },   // vanilla: 1.25
+                    { "Cog1",            1.23f },   // vanilla: 1.15
+                    { "EnginePart1",     1.18f },   // vanilla: 1.15
+                    { "FancyCup",         1.2f },   // vanilla: 1.15
+                    { "FancyLamp",       1.25f },   // vanilla: 1.2
+                    { "Flask",            1.1f },   // vanilla: 1.18
+                    { "GarbageLid",       1.1f },   // vanilla: 1
+                    { "Hairdryer",        1.1f },   // vanilla: 1.07
+                    { "MetalSheet",       1.2f },   // vanilla: 1.25
+                    { "Ring",            1.08f },   // vanilla: 1.15
+                    { "SoccerBall",      1.13f },   // vanilla: 1.18
+                    //{ "StopSign",       1.2f },   // vanilla: 1.27
+                    { "TeaKettle",       1.15f },   // vanilla: 1.2
+                    //{ "YieldSign",      1.3f },   // vanilla: 1.4
+                });
+            }
+            if (BRBNetworker.Instance.WeaponsAdjustWeights.Value)
+            {
+                adjustedWeights.AddRange(new()
+                {
+                    { "Shovel",          1.15f },   // vanilla: 1.13
+                    { "StopSign",        1.08f },   // vanilla: 1.27
+                    { "YieldSign",       1.13f },   // vanilla: 1.4
+                });
+            }
 
             foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
             {
@@ -217,7 +232,7 @@ namespace ButteRyBalance.Overrides
                         break;
                 }
 
-                if (BRBNetworker.Instance.ScrapAdjustWeights.Value && adjustedWeights.TryGetValue(item.name, out float weight) && item.weight != weight)
+                if (adjustedWeights.TryGetValue(item.name, out float weight) && item.weight != weight)
                 {
                     Plugin.Logger.LogDebug($"{item.name}.weight: ${item.weight} -> {weight}");
                     item.weight = weight;
@@ -296,35 +311,38 @@ namespace ButteRyBalance.Overrides
                 }
             }
 
-            if (BRBNetworker.Instance.CruiserPrice.Value != 0 && BRBNetworker.Instance.CruiserPrice.Value != VANILLA_CRUISER_PRICE && Common.Terminal?.buyableVehicles != null)
+            if (!Common.INSTALLED_VERSION55_COMPANY_CRUISER)
             {
-                BuyableVehicle cruiser = Common.Terminal.buyableVehicles.FirstOrDefault(buyableVehicle => buyableVehicle.vehicleDisplayName == "Cruiser");
-                if (cruiser != null)
+                if (BRBNetworker.Instance.CruiserPrice.Value != 0 && BRBNetworker.Instance.CruiserPrice.Value != VANILLA_CRUISER_PRICE && Common.Terminal?.buyableVehicles != null)
                 {
-                    int price = cruiser.creditsWorth;
-                    cruiser.creditsWorth = BRBNetworker.Instance.CruiserPrice.Value;
-
-                    if (Common.Terminal.terminalNodes?.allKeywords != null)
+                    BuyableVehicle cruiser = Common.Terminal.buyableVehicles.FirstOrDefault(buyableVehicle => buyableVehicle.vehicleDisplayName == "Cruiser");
+                    if (cruiser != null)
                     {
-                        TerminalKeyword buyKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "buy");
-                        TerminalKeyword cruiserKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "cruiser");
-                        if (buyKeyword?.compatibleNouns != null && cruiserKeyword != null)
-                        {
-                            TerminalNode buyCruiser = buyKeyword.compatibleNouns.FirstOrDefault(compatibleNoun => compatibleNoun.noun == cruiserKeyword)?.result;
-                            if (buyCruiser != null)
-                            {
-                                buyCruiser.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
+                        int price = cruiser.creditsWorth;
+                        cruiser.creditsWorth = BRBNetworker.Instance.CruiserPrice.Value;
 
-                                if (buyCruiser.terminalOptions != null)
+                        if (Common.Terminal.terminalNodes?.allKeywords != null)
+                        {
+                            TerminalKeyword buyKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "buy");
+                            TerminalKeyword cruiserKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "cruiser");
+                            if (buyKeyword?.compatibleNouns != null && cruiserKeyword != null)
+                            {
+                                TerminalNode buyCruiser = buyKeyword.compatibleNouns.FirstOrDefault(compatibleNoun => compatibleNoun.noun == cruiserKeyword)?.result;
+                                if (buyCruiser != null)
                                 {
-                                    TerminalKeyword confirmKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "confirm");
-                                    if (confirmKeyword != null)
+                                    buyCruiser.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
+
+                                    if (buyCruiser.terminalOptions != null)
                                     {
-                                        TerminalNode buyCruiser2 = buyCruiser.terminalOptions.FirstOrDefault(compatibleNoun => compatibleNoun.noun == confirmKeyword)?.result;
-                                        if (buyCruiser2 != null)
+                                        TerminalKeyword confirmKeyword = Common.Terminal.terminalNodes.allKeywords.FirstOrDefault(keyword => keyword.word == "confirm");
+                                        if (confirmKeyword != null)
                                         {
-                                            buyCruiser2.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
-                                            Plugin.Logger.LogDebug($"Cruiser: Price ${price} -> ${BRBNetworker.Instance.CruiserPrice.Value}");
+                                            TerminalNode buyCruiser2 = buyCruiser.terminalOptions.FirstOrDefault(compatibleNoun => compatibleNoun.noun == confirmKeyword)?.result;
+                                            if (buyCruiser2 != null)
+                                            {
+                                                buyCruiser2.itemCost = BRBNetworker.Instance.CruiserPrice.Value;
+                                                Plugin.Logger.LogDebug($"Cruiser: Price ${price} -> ${BRBNetworker.Instance.CruiserPrice.Value}");
+                                            }
                                         }
                                     }
                                 }
@@ -332,18 +350,24 @@ namespace ButteRyBalance.Overrides
                         }
                     }
                 }
+                if (BRBNetworker.Instance.CruiserRegen.Value)
+                {
+                    Plugin.Logger.LogDebug($"Cruiser: Regen ({VehicleControllerPatches.criticalDurability}, {VehicleControllerPatches.regenInterval}) => (7, 16)");
+                    VehicleControllerPatches.criticalDurability = 7;
+                    VehicleControllerPatches.regenInterval = 16f;
+                }
+                if (BRBNetworker.Instance.CruiserCrashDamage.Value)
+                {
+                    Plugin.Logger.LogDebug($"Cruiser: Crash ({VehicleControllerPatches.scrapingStress}, {VehicleControllerPatches.adjustableCrashSpeed}) => (0.35, 27)");
+                    VehicleControllerPatches.scrapingStress = 0.35f;
+                    VehicleControllerPatches.adjustableCrashSpeed = 27f;
+                }
             }
-            if (BRBNetworker.Instance.CruiserRegen.Value)
+
+            if (BRBNetworker.Instance.WeedKillerDamage.Value != 0)
             {
-                Plugin.Logger.LogDebug($"Cruiser: Regen ({VehicleControllerPatches.criticalDurability}, {VehicleControllerPatches.regenInterval}) => (7, 16)");
-                VehicleControllerPatches.criticalDurability = 7;
-                VehicleControllerPatches.regenInterval = 16f;
-            }
-            if (BRBNetworker.Instance.CruiserCrashDamage.Value)
-            {
-                Plugin.Logger.LogDebug($"Cruiser: Crash ({VehicleControllerPatches.scrapingStress}, {VehicleControllerPatches.adjustableCrashSpeed}) => (0.35, 27)");
-                VehicleControllerPatches.scrapingStress = 0.35f;
-                VehicleControllerPatches.adjustableCrashSpeed = 27f;
+                Plugin.Logger.LogDebug($"Weed killer: Damage {SprayPaintPatches.damageNumber} => {BRBNetworker.Instance.WeedKillerDamage.Value}");
+                SprayPaintPatches.damageNumber = BRBNetworker.Instance.WeedKillerDamage.Value;
             }
         }
     }

@@ -33,7 +33,7 @@ namespace ButteRyBalance.Patches
         {
             __state = __instance.carHP;
 
-            if (__instance.vehicleID != 0)
+            if (Common.INSTALLED_VERSION55_COMPANY_CRUISER || __instance.vehicleID != 0)
                 return true;
 
             if (type == CarObstacleType.Enemy && enemyScript != null && BRBNetworker.Instance.FoxSlender.Value && enemyScript is BushWolfEnemy)
@@ -52,7 +52,7 @@ namespace ButteRyBalance.Patches
         [HarmonyPostfix]
         static void VehicleController_Post_CarReactToObstacle(VehicleController __instance, int __state, Vector3 vel, CarObstacleType type, float obstacleSize, EnemyAI enemyScript)
         {
-            if (__instance.vehicleID != 0 || __instance.carHP <= 0)
+            if (Common.INSTALLED_VERSION55_COMPANY_CRUISER || __instance.vehicleID != 0 || __instance.carHP <= 0)
                 return;
 
             if (type == CarObstacleType.Enemy && enemyScript != null && __instance.carHP <= __state && BRBNetworker.Instance.CruiserEnemyDamage.Value)
@@ -101,7 +101,7 @@ namespace ButteRyBalance.Patches
         [HarmonyPrefix]
         static bool VehicleController_Pre_DoTurboBoost(VehicleController __instance, InputAction.CallbackContext context)
         {
-            if (__instance.vehicleID != 0 || __instance.turboBoosts > 0 || !BRBNetworker.Instance.CruiserExhaust.Value)
+            if (Common.INSTALLED_VERSION55_COMPANY_CRUISER || __instance.vehicleID != 0 || __instance.turboBoosts > 0 || !BRBNetworker.Instance.CruiserExhaust.Value)
                 return true;
 
             if (context.performed && __instance.localPlayerInControl && !__instance.keyIsInDriverHand && __instance.currentDriver == GameNetworkManager.Instance.localPlayerController)
@@ -146,7 +146,7 @@ namespace ButteRyBalance.Patches
                     codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(criticalDurability));
                     patchHP = true;
                 }
-                else if (!patchTime && codes[i].opcode == OpCodes.Ldc_R4 && (float)codes[i].operand == regenInterval && codes[i -1].opcode == OpCodes.Sub && codes[i - 2].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 2].operand == timeAtLastDamage)
+                else if (!patchTime && codes[i].opcode == OpCodes.Ldc_R4 && (float)codes[i].operand == regenInterval && codes[i - 1].opcode == OpCodes.Sub && codes[i - 2].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 2].operand == timeAtLastDamage)
                 {
                     codes[i].opcode = OpCodes.Ldsfld;
                     codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(regenInterval));
@@ -167,13 +167,13 @@ namespace ButteRyBalance.Patches
         internal static void JustDestroyedTree()
         {
             Plugin.Logger.LogDebug("A tree was just destroyed");
-            if (Common.vehicleController != null && Common.vehicleController.vehicleID == 0 && Common.vehicleController.IsOwner && BRBNetworker.Instance.CruiserTrees.Value)
+            if (Common.vehicleController != null && Common.vehicleController.vehicleID == 0 && !Common.INSTALLED_VERSION55_COMPANY_CRUISER && Common.vehicleController.IsOwner && BRBNetworker.Instance.CruiserTrees.Value)
                 timeAtLastTreeDestroyed = Time.realtimeSinceStartup;
         }
 
         internal static void DealExtraCrashDamage(VehicleController vehicleController, int damage)
         {
-            if (vehicleController != null && vehicleController.vehicleID == 0 && BRBNetworker.Instance.CruiserCrashDamage.Value)
+            if (vehicleController != null && vehicleController.vehicleID == 0 && !Common.INSTALLED_VERSION55_COMPANY_CRUISER && BRBNetworker.Instance.CruiserCrashDamage.Value)
             {
                 Plugin.Logger.LogDebug($"Cruiser takes extra {damage} damage from collision with geometry");
                 vehicleController.DealPermanentDamage(damage);

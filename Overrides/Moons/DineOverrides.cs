@@ -1,4 +1,5 @@
-﻿using MonoMod.Utils;
+﻿using ButteRyBalance.Network;
+using MonoMod.Utils;
 using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
@@ -185,6 +186,9 @@ namespace ButteRyBalance.Overrides.Moons
 
                 MoonOverrides.outsidePowerCount = 10; // vanilla: 9
             }
+
+            if (BRBNetworker.Instance.DineFireExits.Value)
+                MoonOverrides.powerCount = 15; // vanilla: 10
 
             MoonOverrides.Apply(level);
         }
