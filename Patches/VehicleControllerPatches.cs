@@ -1,4 +1,6 @@
 ﻿using ButteRyBalance.Network;
+using ButteRyBalance.Utilities;
+using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,7 @@ namespace ButteRyBalance.Patches
     {
         const float MIN_STAMINA_DRAIN = 0.08f, MAX_STAMINA_DRAIN = 0.125f, STAMINA_MULT = 2f;
 
-        internal static int criticalDurability = 16;
+        internal static int criticalDurability = 16, turboBoosts = 5;
         internal static float regenInterval = 8f, scrapingStress = 0.2f, adjustableCrashSpeed = 28f;
 
         static float timeAtLastTreeDestroyed;
@@ -137,7 +139,7 @@ namespace ButteRyBalance.Patches
 
             FieldInfo carHP = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.carHP)),
                       timeAtLastDamage = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.timeAtLastDamage));
-            bool patchHP = false, patchTime = false;
+            bool patchHP = false, patchTime = false, patchTurbo = false;
             for (int i = 2; i < codes.Count; i++)
             {
                 if (!patchHP && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == criticalDurability && codes[i - 1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 1].operand == carHP)
@@ -146,16 +148,27 @@ namespace ButteRyBalance.Patches
                     codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(criticalDurability));
                     patchHP = true;
                 }
-                else if (!patchTime && codes[i].opcode == OpCodes.Ldc_R4 && (float)codes[i].operand == regenInterval && codes[i - 1].opcode == OpCodes.Sub && codes[i - 2].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 2].operand == timeAtLastDamage)
+                else if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i - 2].opcode == OpCodes.Ldfld)
                 {
-                    codes[i].opcode = OpCodes.Ldsfld;
-                    codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(regenInterval));
-                    patchTime = true;
+                    float operand = (float)codes[i].operand;
+                    FieldInfo field = (FieldInfo)codes[i - 2].operand;
+                    if (!patchTime && operand == regenInterval && codes[i - 1].opcode == OpCodes.Sub && field == timeAtLastDamage)
+                    {
+                        codes[i].opcode = OpCodes.Ldsfld;
+                        codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(regenInterval));
+                        patchTime = true;
+                    }
+                    else if (!patchTurbo && operand == 5f && field == ReflectionCache.TURBO_BOOSTS)
+                    {
+                        codes[i].opcode = OpCodes.Call;
+                        codes[i].operand = AccessTools.Method(typeof(VehicleControllerPatches), nameof(GetTurboDivisor));
+                        patchTurbo = true;
+                    }
                 }
 
-                if (patchHP && patchTime)
+                if (patchHP && patchTime && patchTurbo)
                 {
-                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Dynamic regen");
+                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Dynamic regen/meter");
                     return codes;
                 }
             }
@@ -247,6 +260,84 @@ namespace ButteRyBalance.Patches
 
             Plugin.Logger.LogWarning($"Cruiser crash transpiler failed");
             return instructions;
+        }
+
+        public static bool IsPlayerSafeInBack(VehicleController vehicleController, PlayerControllerB player)
+        {
+            if (vehicleController == null)
+                return false;
+
+            if (player == null || Common.INSTALLED_VERSION55_COMPANY_CRUISER || vehicleController.vehicleID != 0 || BRBNetworker.Instance == null || !BRBNetworker.Instance.CruiserPatchEnemies.Value)
+                return !vehicleController.backDoorOpen;
+
+            if (vehicleController.backDoorOpen)
+                return false;
+
+            // player is in one of the seats
+            if (player.inVehicleAnimation || vehicleController.currentDriver == player || vehicleController.currentPassenger == player)
+                return false;
+
+            // player is on top of the Cruiser
+            if (vehicleController.ontopOfTruckCollider.bounds.ClosestPoint(player.transform.position) == player.transform.position)
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPatch(typeof(ForestGiantAI), nameof(ForestGiantAI.OnCollideWithPlayer))]
+        [HarmonyPatch(typeof(MouthDogAI), nameof(MouthDogAI.OnCollideWithPlayer))]
+        [HarmonyTranspiler]
+        static IEnumerable<CodeInstruction> EnemyAI_Trans_OnCollideWithPlayer(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            for (int i = 8; i < codes.Count - 2; i++)
+            {
+                if (codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == ReflectionCache.BACK_DOOR_OPEN && codes[i + 1].opcode == OpCodes.Ldc_I4_0 && codes[i + 2].opcode == OpCodes.Ceq && codes[i - 6].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 6].operand == ReflectionCache.PHYSICS_PARENT)
+                {
+                    codes[i + 1].opcode = OpCodes.Ldc_I4_1;
+                    codes[i] = new(OpCodes.Call, ReflectionCache.IS_PLAYER_SAFE_IN_BACK);
+                    codes.Insert(i, new(codes[i - 7].opcode, codes[i - 7].operand));
+                    //i++;
+                    Plugin.Logger.LogDebug($"Transpiler ({__originalMethod.DeclaringType}.{__originalMethod.Name}): Patch backdoor protection");
+                    return codes;
+                }
+            }
+
+            return instructions;
+        }
+
+        public static float GetTurboDivisor()
+        {
+            return Mathf.Max(turboBoosts, 1f);
+        }
+
+        [HarmonyPatch(nameof(VehicleController.AddTurboBoost))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> VehicleController_Trans_AddTurboBoost(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            for (int i = 3; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Ldc_I4_5 && codes[i - 3].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 3].operand == ReflectionCache.TURBO_BOOSTS)
+                {
+                    codes[i].opcode = OpCodes.Ldsfld;
+                    codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(turboBoosts));
+                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Dynamic turbo");
+                    return codes;
+                }
+            }
+
+            Plugin.Logger.LogWarning($"Cruiser turbo transpiler failed");
+            return instructions;
+        }
+
+        [HarmonyPatch(nameof(VehicleController.AddTurboBoost))]
+        [HarmonyPrefix]
+        static bool VehicleController_Pre_AddTurboBoost()
+        {
+            return turboBoosts > 0;
         }
     }
 }

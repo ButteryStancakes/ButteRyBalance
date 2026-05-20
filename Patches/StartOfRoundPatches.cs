@@ -57,5 +57,12 @@ namespace ButteRyBalance.Patches
 
             BRBNetworker.Create();
         }
+
+        [HarmonyPatch(nameof(StartOfRound.PassTimeToNextDay))]
+        [HarmonyPostfix]
+        static void StartOfRound_Post_PassTimeToNextDay(StartOfRound __instance)
+        {
+            RoundManager.Instance.hasInitializedLevelRandomSeed = false;
+        }
     }
 }

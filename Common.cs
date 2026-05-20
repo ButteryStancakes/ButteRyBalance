@@ -19,7 +19,7 @@ namespace ButteRyBalance
         // Experimentation, Assurance, Vow, Gordion, March, Adamance, Rend, Dine, Offense, Titan, Artifice, Liquidation, Embrion
         internal const int NUM_LEVELS = 13;
 
-        internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_SPAWN_CYCLE_FIXES, INSTALLED_VERSION55_COMPANY_CRUISER, INSTALLED_FAIRER_FIRE_EXITS;
+        internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_SPAWN_CYCLE_FIXES, INSTALLED_VERSION55_COMPANY_CRUISER, INSTALLED_FAIRER_FIRE_EXITS, INSTALLED_SCANDALS_TWEAKS;
         internal static GameObject artificeBlizzard;
 
         internal static Dictionary<string, EnemyType> enemies = [];

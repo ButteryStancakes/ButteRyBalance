@@ -99,16 +99,8 @@ namespace ButteRyBalance.Patches
                         Common.fireExitCount++;
                     }
 
-                    if (BRBNetworker.Instance.ProportionalFireExits.Value)
-                    {
-                        alleyExitDoorContainer.Count.Min = 0;
-                        alleyExitDoorContainer.Count.Max = 0;
-                    }
-                    else
-                    {
-                        alleyExitDoorContainer.Count.Min = Common.fireExitCount;
-                        alleyExitDoorContainer.Count.Max = Common.fireExitCount;
-                    }
+                    alleyExitDoorContainer.Count.Min = Common.fireExitCount;
+                    alleyExitDoorContainer.Count.Max = Common.fireExitCount;
                     Plugin.Logger.LogDebug($"Fire exits: {Common.fireExitCount}");
                 }
                 else

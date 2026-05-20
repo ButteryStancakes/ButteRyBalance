@@ -30,10 +30,10 @@ namespace ButteRyBalance
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, foxSlender, adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, weaponsAdjustWeights, butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, foxSlender, adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, weaponsAdjustWeights, butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
-        internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage;
+        internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage, cruiserTurbos;
         internal static ConfigEntry<JetpackControls> jetpackControls;
 
         internal static void Init(ConfigFile cfg)
@@ -187,6 +187,13 @@ namespace ButteRyBalance
                 new ConfigDescription(
                     "Alters the price of the Cruiser. $400 is the original price from v55 launch. $370 is the current vanilla price.",
                     new AcceptableValueRange<int>(MIN_PRICE, MAX_PRICE)));
+            cruiserTurbos = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Turbo Boosts",
+                5,
+                new ConfigDescription(
+                    "How many boosts can the Cruiser use at maximum capacity? When set to 0, weed killer does nothing once the car is fully repaired.",
+                    new AcceptableValueRange<int>(0, 5)));
             cruiserRegen = configFile.Bind(
                 "Vehicle.Cruiser",
                 "Reduced Regeneration",
@@ -207,6 +214,11 @@ namespace ButteRyBalance
                 "Increase Crash Damage",
                 true,
                 "The cruiser takes increased damage from collision with terrain or walls.");
+            cruiserPatchEnemies = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Patch Enemy Protection",
+                true,
+                "Corrects several interactions where you are erroneously invincible to enemies while inside the Cruiser.\nFor example, this fixes the bug preventing giants from grabbing players off the roof of the car or out of the seats, any time the back door is closed.\nWhen using Scandal's Tweaks, Old Birds and baboon hawks will also be able to see players sitting in the front seats.");
             cruiserItemSafety = configFile.Bind(
                 "Vehicle.Cruiser",
                 "No Space Insurance",

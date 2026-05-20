@@ -144,6 +144,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> OffenseFireExits { get; private set; } = new();
         internal NetworkVariable<bool> DineFireExits { get; private set; } = new();
         internal NetworkVariable<bool> ProportionalFireExits { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserPatchEnemies { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -151,6 +152,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<int> JetpackPrice { get; private set; } = new();
         internal NetworkVariable<int> JetpackControls { get; private set; } = new();
         internal NetworkVariable<int> WeedKillerDamage { get; private set; } = new();
+        internal NetworkVariable<int> CruiserTurbos { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -219,6 +221,8 @@ namespace ButteRyBalance.Network
             DineFireExits.Value = Configuration.dineFireExits.Value;
             ProportionalFireExits.Value = Configuration.proportionalFireExits.Value && !Common.INSTALLED_FAIRER_FIRE_EXITS;
             WeedKillerDamage.Value = Configuration.weedKillerDamage.Value;
+            CruiserPatchEnemies.Value = Configuration.cruiserPatchEnemies.Value;
+            CruiserTurbos.Value = Configuration.cruiserTurbos.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
@@ -252,7 +256,15 @@ namespace ButteRyBalance.Network
                 if (fresh)
                 {
                     if (isEntranceToBuilding && !entranceTeleport.isEntranceToBuilding)
+                    {
                         Common.extraFireExits.Add(entranceTeleport);
+                        InteractTrigger interactTrigger = entranceTeleport.GetComponent<InteractTrigger>();
+                        if (interactTrigger != null)
+                        {
+                            interactTrigger.hoverTip = interactTrigger.hoverTip.Replace("Exit", "Enter");
+                            interactTrigger.timeToHold = 1.5f;
+                        }
+                    }
                 }
                 else
                 {

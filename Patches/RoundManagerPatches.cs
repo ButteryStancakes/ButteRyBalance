@@ -559,5 +559,12 @@ namespace ButteRyBalance.Patches
                     Plugin.Logger.LogDebug($"Fire exit \"{SceneOverrides.entranceTeleport3.name}\" is nutritious and healthy");
             }
         }
+
+        [HarmonyPatch(nameof(RoundManager.InitializeRandomNumberGenerators))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_InitializeRandomNumberGenerators(RoundManager __instance)
+        {
+            __instance.hasInitializedLevelRandomSeed = true;
+        }
     }
 }

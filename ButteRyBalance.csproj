@@ -10,7 +10,8 @@
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
+      https://nuget.samboy.dev/v3/index.json;
+	  https://nuget.windows10ce.com/nuget/v3/index.json
     </RestoreAdditionalProjectSources>
     <RootNamespace>ButteRyBalance</RootNamespace>
 	<NoWarn>$(NoWarn);CS0436</NoWarn>
@@ -26,6 +27,7 @@
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="TeamBMX.LobbyCompatibility" Version="1.*" PrivateAssets="all" />
+	<PackageReference Include="Scandal-Scandals_Tweaks" Version="*" Private="False" />
   </ItemGroup>
 
   <!-- Avoid that the game's assemblies are copied to the plugin's target directory -->

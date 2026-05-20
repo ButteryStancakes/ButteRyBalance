@@ -362,6 +362,11 @@ namespace ButteRyBalance.Overrides
                     VehicleControllerPatches.scrapingStress = 0.35f;
                     VehicleControllerPatches.adjustableCrashSpeed = 27f;
                 }
+                Plugin.Logger.LogDebug($"Cruiser: Turbo {VehicleControllerPatches.turboBoosts} => {BRBNetworker.Instance.CruiserTurbos.Value}");
+                VehicleControllerPatches.turboBoosts = BRBNetworker.Instance.CruiserTurbos.Value;
+
+                if (BRBNetworker.Instance.CruiserPatchEnemies.Value && !Common.INSTALLED_SCANDALS_TWEAKS)
+                    Plugin.Logger.LogWarning("\"Patch Enemy Protection\" is enabled in the Cruiser settings, but Scandal's Tweaks is not installed. Some patches will not apply to this session!");
             }
 
             if (BRBNetworker.Instance.WeedKillerDamage.Value != 0)
