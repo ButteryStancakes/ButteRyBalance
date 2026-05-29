@@ -14,7 +14,7 @@ namespace ButteRyBalance.Patches
     [HarmonyPatch(typeof(VehicleController))]
     static class VehicleControllerPatches
     {
-        const float MIN_STAMINA_DRAIN = 0.08f, MAX_STAMINA_DRAIN = 0.125f, STAMINA_MULT = 2f;
+        const float MIN_STAMINA_DRAIN = 0.125f, MAX_STAMINA_DRAIN = 0.2133333f;
 
         internal static int criticalDurability = 16, turboBoosts = 5;
         internal static float regenInterval = 8f, scrapingStress = 0.2f, adjustableCrashSpeed = 28f;
@@ -31,15 +31,12 @@ namespace ButteRyBalance.Patches
 
         [HarmonyPatch(nameof(VehicleController.CarReactToObstacle))]
         [HarmonyPrefix]
-        static bool VehicleController_Pre_CarReactToObstacle(VehicleController __instance, ref int __state, CarObstacleType type, EnemyAI enemyScript, ref bool dealDamage)
+        static bool VehicleController_Pre_CarReactToObstacle(VehicleController __instance, ref int __state, CarObstacleType type, ref bool dealDamage)
         {
             __state = __instance.carHP;
 
             if (Common.INSTALLED_VERSION55_COMPANY_CRUISER || __instance.vehicleID != 0)
                 return true;
-
-            if (type == CarObstacleType.Enemy && enemyScript != null && BRBNetworker.Instance.FoxSlender.Value && enemyScript is BushWolfEnemy)
-                return false;
 
             if (type == CarObstacleType.Object && Time.realtimeSinceStartup - timeAtLastTreeDestroyed < Time.fixedDeltaTime)
             {
@@ -85,8 +82,8 @@ namespace ButteRyBalance.Patches
                 }
 
                 // tulip snakes jostling the car is fine, but they shouldn't deal damage
-                if (enemyScript is FlowerSnakeEnemy)
-                    return;
+                /*if (enemyScript is FlowerSnakeEnemy)
+                    return;*/
 
                 float forgivenessVelocity = obstacleSize > 2f ? 15f : 9f;
                 Vector3 velocity = vel;
@@ -117,7 +114,7 @@ namespace ButteRyBalance.Patches
                     if (Vector3.Angle(Vector3.up, __instance.transform.forward) < Vector3.Angle(Vector3.down, __instance.transform.forward))
                         staminaDrain = Mathf.Lerp(staminaDrain, MAX_STAMINA_DRAIN, (Vector3.Angle(Vector3.up, __instance.transform.up) - __instance.physicsRegion.maxTippingAngle) / (90 - __instance.physicsRegion.maxTippingAngle));
 
-                    __instance.currentDriver.sprintMeter = Mathf.Clamp01(__instance.currentDriver.sprintMeter - (staminaDrain * STAMINA_MULT));
+                    __instance.currentDriver.sprintMeter = Mathf.Clamp01(__instance.currentDriver.sprintMeter - staminaDrain);
                     if (__instance.currentDriver.sprintMeter <= 0.3f)
                     {
                         __instance.currentDriver.sprintMeter = 0.1f;

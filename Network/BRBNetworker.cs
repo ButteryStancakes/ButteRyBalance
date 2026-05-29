@@ -123,7 +123,6 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
         internal NetworkVariable<bool> GiantSquishy { get; private set; } = new();
-        internal NetworkVariable<bool> FoxSlender { get; private set; } = new();
         internal NetworkVariable<bool> JetpackUtility { get; private set; } = new();
         internal NetworkVariable<bool> AdamanceInteriors { get; private set; } = new();
         internal NetworkVariable<bool> DineMineshafts { get; private set; } = new();
@@ -196,7 +195,6 @@ namespace ButteRyBalance.Network
             DineSnowmen.Value = (int)Configuration.dineSnowmen.Value;
             TitanSnowmen.Value = (int)Configuration.titanSnowmen.Value;
             GiantSquishy.Value = Configuration.giantSquishy.Value;
-            FoxSlender.Value = Configuration.foxSlender.Value;
             JetpackUtility.Value = Configuration.jetpackUtility.Value;
             AdamanceInteriors.Value = Configuration.adamanceInteriors.Value;
             DineMineshafts.Value = Configuration.dineMineshafts.Value;

@@ -1,14 +1,15 @@
 ﻿using ButteRyBalance.Network;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ButteRyBalance.Patches.Enemies
 {
     [HarmonyPatch(typeof(ForestGiantAI))]
     static class ForestKeeperPatches
     {
-        [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.GetAllPlayersInLineOfSight))]
+        [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.GetAllPlayersInLineOfSightNonAlloc), [typeof(float), typeof(int), typeof(Transform), typeof(float), typeof(int)])]
         [HarmonyPrefix]
-        static void EnemyAI_Pre_GetAllPlayersInLineOfSight(EnemyAI __instance, ref int range)
+        static void EnemyAI_Pre_GetAllPlayersInLineOfSightNonAlloc(EnemyAI __instance, ref int range)
         {
             if (__instance.isOutside && !__instance.enemyType.canSeeThroughFog && range > 30 && __instance.IsOwner && __instance is ForestGiantAI && Configuration.giantSnowSight.Value && Common.IsSnowLevel())
                 range = 30;

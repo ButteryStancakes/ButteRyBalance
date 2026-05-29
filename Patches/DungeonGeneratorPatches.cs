@@ -89,7 +89,7 @@ namespace ButteRyBalance.Patches
                     if (spawnSyncedObject.spawnPrefab == null)
                         continue;
 
-                    if ((spawnSyncedObject.spawnPrefab.TryGetComponent(out EntranceTeleport entranceTeleport) && !entranceTeleport.isEntranceToBuilding && entranceTeleport.entranceId == 0) || spawnSyncedObject.spawnPrefab.name == "EntranceTeleportA")
+                    if ((spawnSyncedObject.spawnPrefab.TryGetComponent(out EntranceTeleport entranceTeleport) && !entranceTeleport.isEntranceToBuilding && entranceTeleport.entranceId == 0) || spawnSyncedObject.spawnPrefab.name.StartsWith("EntranceTeleportA"))
                     {
                         mainEntrancePos = spawnSyncedObject.transform.position;
                         break;
