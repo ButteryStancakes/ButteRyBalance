@@ -108,7 +108,7 @@ namespace ButteRyBalance.Patches
                 if (__instance.currentDriver.isExhausted || __instance.currentDriver.sprintMeter <= 0.3f)
                     return false;
 
-                if (!__instance.jumpingInCar)
+                if (!__instance.jumpingInCar && (!GameNetworkManager.Instance.localPlayerController.isTypingChat || !Common.INSTALLED_CRUISER_IMPROVED))
                 {
                     float staminaDrain = MIN_STAMINA_DRAIN;
                     if (Vector3.Angle(Vector3.up, __instance.transform.forward) < Vector3.Angle(Vector3.down, __instance.transform.forward))
@@ -134,12 +134,11 @@ namespace ButteRyBalance.Patches
         {
             List<CodeInstruction> codes = instructions.ToList();
 
-            FieldInfo carHP = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.carHP)),
-                      timeAtLastDamage = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.timeAtLastDamage));
+            FieldInfo timeAtLastDamage = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.timeAtLastDamage));
             bool patchHP = false, patchTime = false, patchTurbo = false;
             for (int i = 2; i < codes.Count; i++)
             {
-                if (!patchHP && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == criticalDurability && codes[i - 1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 1].operand == carHP)
+                if (!patchHP && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == criticalDurability && codes[i - 1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 1].operand == ReflectionCache.CAR_HP)
                 {
                     codes[i].opcode = OpCodes.Ldsfld;
                     codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(criticalDurability));
@@ -165,12 +164,12 @@ namespace ButteRyBalance.Patches
 
                 if (patchHP && patchTime && patchTurbo)
                 {
-                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Dynamic regen/meter");
+                    Plugin.Logger.LogDebug("Transpiler (Cruiser): Dynamic regen/meter");
                     return codes;
                 }
             }
 
-            Plugin.Logger.LogWarning($"Cruiser regen transpiler failed");
+            Plugin.Logger.LogWarning("Cruiser regen transpiler failed");
             return instructions;
         }
 
@@ -250,12 +249,12 @@ namespace ButteRyBalance.Patches
 
                 if (patchStress && patchVelocity && damageCalls == 3)
                 {
-                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Extra crash damage");
+                    Plugin.Logger.LogDebug("Transpiler (Cruiser): Extra crash damage");
                     return codes;
                 }
             }
 
-            Plugin.Logger.LogWarning($"Cruiser crash transpiler failed");
+            Plugin.Logger.LogWarning("Cruiser crash transpiler failed");
             return instructions;
         }
 
@@ -321,12 +320,12 @@ namespace ButteRyBalance.Patches
                 {
                     codes[i].opcode = OpCodes.Ldsfld;
                     codes[i].operand = AccessTools.Field(typeof(VehicleControllerPatches), nameof(turboBoosts));
-                    Plugin.Logger.LogDebug($"Transpiler (Cruiser): Dynamic turbo");
+                    Plugin.Logger.LogDebug("Transpiler (Cruiser): Dynamic turbo");
                     return codes;
                 }
             }
 
-            Plugin.Logger.LogWarning($"Cruiser turbo transpiler failed");
+            Plugin.Logger.LogWarning("Cruiser turbo transpiler failed");
             return instructions;
         }
 
@@ -335,6 +334,52 @@ namespace ButteRyBalance.Patches
         static bool VehicleController_Pre_AddTurboBoost()
         {
             return turboBoosts > 0;
+        }
+
+        [HarmonyPatch(nameof(VehicleController.Update))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> VehicleController_Trans_Update(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            FieldInfo baseCarHP = AccessTools.Field(typeof(VehicleController), nameof(VehicleController.baseCarHP));
+            for (int i = 3; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Stfld && (FieldInfo)codes[i].operand == ReflectionCache.CAR_HP && codes[i - 1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 1].operand == baseCarHP && codes[i - 2].opcode == OpCodes.Ldarg_0 && codes[i - 3].opcode == OpCodes.Ldarg_0)
+                {
+                    for (int j = i - 3; j <= i; j++)
+                        codes[j].opcode = OpCodes.Nop;
+
+                    Plugin.Logger.LogDebug("Transpiler (Cruiser): Don't heal in orbit");
+                    return codes;
+                }
+            }
+            Plugin.Logger.LogWarning("Cruiser orbit transpiler failed");
+            return instructions;
+        }
+
+        [HarmonyPatch(nameof(VehicleController.Update))]
+        [HarmonyPostfix]
+        static void VehicleController_Post_Update(VehicleController __instance)
+        {
+            if (__instance.destroyNextFrame)
+                return;
+
+            if (__instance.magnetedToShip && StartOfRound.Instance.magnetOn)
+            {
+                if (StartOfRound.Instance.inShipPhase)
+                {
+                    if (BRBNetworker.Instance == null || BRBNetworker.Instance.CruiserAutoHeal.Value)
+                        __instance.carHP = __instance.baseCarHP;
+                    else if (__instance.carHP < criticalDurability)
+                        __instance.carHP = criticalDurability;
+                }
+            }
+            else if (__instance.stability > 0f && BRBNetworker.Instance != null && BRBNetworker.Instance.CruiserDontStabilize.Value)
+            {
+                __instance.stability = 0f;
+                __instance.speed = float.Epsilon;
+            }
         }
     }
 }

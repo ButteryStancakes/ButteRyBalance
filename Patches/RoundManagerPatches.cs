@@ -108,6 +108,13 @@ namespace ButteRyBalance.Patches
         }
 
         [HarmonyPatch(nameof(RoundManager.FinishGeneratingNewLevelClientRpc))]
+        [HarmonyPrefix]
+        static void RoundManager_Pre_FinishGeneratingNewLevelClientRpc(RoundManager __instance)
+        {
+            Common.CacheCaveTiles();
+        }
+
+        [HarmonyPatch(nameof(RoundManager.FinishGeneratingNewLevelClientRpc))]
         [HarmonyPostfix]
         static void RoundManager_Post_FinishGeneratingNewLevelClientRpc(RoundManager __instance)
         {
@@ -162,6 +169,30 @@ namespace ButteRyBalance.Patches
                     }
                 }
 
+                if (__instance.currentDungeonType == 4 && Configuration.cavernsNoTurrets.Value)
+                {
+                    Turret[] turrets = Object.FindObjectsByType<Turret>(FindObjectsSortMode.None);
+                    foreach (Turret turret in turrets)
+                    {
+                        foreach (Bounds caveTile in Common.caveTiles)
+                        {
+                            if (caveTile.Contains(turret.transform.position))
+                            {
+                                NetworkObject netObj = turret.GetComponentInParent<NetworkObject>();
+                                if (netObj != null && netObj.IsSpawned)
+                                {
+                                    Plugin.Logger.LogDebug($"Turret #{turret.GetInstanceID()} will be destroyed (inside the caves)");
+                                    netObj.Despawn();
+                                }
+                                else
+                                    Plugin.Logger.LogWarning("Error occurred while despawning turret (could not find network object, or it was not network spawned yet)");
+
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 if ((__instance.currentDungeonType == 0 || __instance.currentDungeonType == 2 || __instance.currentDungeonType == 3) && BRBNetworker.Instance.ApparatusPrice.Value)
                 {
                     LungProp apparatus = __instance.mapPropsContainer.GetComponentInChildren<LungProp>();
@@ -169,8 +200,6 @@ namespace ButteRyBalance.Patches
                         BRBNetworker.Instance.SyncScrapPriceRpc(apparatus.NetworkObject, new System.Random(StartOfRound.Instance.randomMapSeed).Next(40, 131), false);
                 }
             }
-
-            Common.CacheCaveTiles();
         }
 
         [HarmonyPatch(nameof(RoundManager.SpawnOutsideHazards))]

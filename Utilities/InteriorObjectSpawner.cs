@@ -14,12 +14,25 @@ namespace ButteRyBalance.Utilities
             try
             {
                 List<GameObject> tunnelNodes = new(nodes);
-                List<GameObject> backupNodes = [];
+                List<GameObject> caveNodes = new(RoundManager.Instance.allCaveNodes);
 
                 if (tunnelNodes.Count < 1)
                 {
                     Plugin.Logger.LogWarning("Key spawner was fed an invalid array of nodes - this shouldn't happen");
                     tunnelNodes = new(RoundManager.Instance.insideAINodes);
+                }
+
+                for (int i = tunnelNodes.Count - 1; i >= 0; i--)
+                {
+                    foreach (Bounds caveTile in Common.caveTiles)
+                    {
+                        if (caveTile.Contains(tunnelNodes[i].transform.position) /*|| Vector3.Distance(tunnelNodes[i].transform.position, caveTile.center) < 12f*/)
+                        {
+                            caveNodes.Add(tunnelNodes[i]);
+                            tunnelNodes.RemoveAt(i);
+                            break;
+                        }
+                    }
                 }
 
                 bool goNext = false;
@@ -47,14 +60,11 @@ namespace ButteRyBalance.Utilities
                         continue;
                     }
 
-                    foreach (GameObject caveNode in RoundManager.Instance.allCaveNodes)
+                    foreach (GameObject caveNode in caveNodes)
                     {
                         float dist = Vector3.Distance(tunnelNodes[i].transform.position, caveNode.transform.position);
                         if (dist < 12f)
                         {
-                            if (dist > 8f)
-                                backupNodes.Add(tunnelNodes[i]);
-
                             tunnelNodes.RemoveAt(i);
                             break;
                         }
@@ -63,16 +73,7 @@ namespace ButteRyBalance.Utilities
 
                 if (tunnelNodes.Count < 1)
                 {
-                    if (backupNodes.Count > 0)
-                    {
-                        Plugin.Logger.LogDebug($"Key spawn nodes: {count} -> {backupNodes.Count} (BACKUP)");
-
-                        nodes = backupNodes.ToArray();
-                        count = nodes.Length;
-                        return;
-                    }
-
-                    Plugin.Logger.LogWarning("Ignoring \"No Keys in Caverns\" for this round, because there are no valid nodes outside of cavern tiles");
+                    Plugin.Logger.LogWarning("Ignoring \"No Keys in Caverns\" for this round, because there aren't valid nodes outside exclusion criteria");
                     return;
                 }
 

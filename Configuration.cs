@@ -30,11 +30,12 @@ namespace ButteRyBalance
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender,*/ adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, weaponsAdjustWeights, butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, maneaterScrapGrowth, moonsKillSwitch, dineReduceButlers, barberDynamicSpawns, foggyLimit, experimentationNoEvents, experimentationNoGiants, experimentationNoEggs, /*experimentationNoNuts,*/ experimentationBuffScrap, randomIndoorFog, assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, offenseNerfEclipse, vowNoTraps, /*marchShrink,*/ marchBuffScrap, /*marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos,*/ coilheadCurves, /*rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap,*/ rendWorms, metalSheetPrice, coilheadPower, /*dineAdjustIndoor, dineBuffScrap,*/ dineAdjustOutdoor, /*dineAdjustCurves,*/ titanBuffScrap, titanAddGold, /*titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, robotFog, nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, jetpackReduceDiscount, /*tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights, maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, embrionAdjustEnemies, embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender,*/ adamanceNerfEclipse, adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, marchAdjustEnemies, gunkfishSquishy, shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, weaponsAdjustWeights, butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies, cavernsNoTurrets, cadaversLimitGrowth, cruiserAutoHeal, cruiserStabilize;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
         internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage, cruiserTurbos;
         internal static ConfigEntry<JetpackControls> jetpackControls;
+        internal static ConfigEntry<float> vainsChanceSame, vainsChanceSameEarly, vainsChanceOther, vainsChanceRare;
 
         internal static void Init(ConfigFile cfg)
         {
@@ -229,6 +230,16 @@ namespace ButteRyBalance
                 "Rocking Costs Stamina",
                 true,
                 "When \"rocking\" the car (with the jump button), stamina will be deducted, and you are unable to rock the car when out of stamina. The stamina cost gets steeper the more the car is facing upward.");
+            cruiserAutoHeal = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Heal in Orbit",
+                true,
+                "When returning to orbit, the Cruiser's durability is completely restored. This is vanilla behavior; when disabled, you must use weed killer to restore durability to maximum.");
+            cruiserStabilize = configFile.Bind(
+                "Vehicle.Cruiser",
+                "Stabilize",
+                true,
+                "The Cruiser will automatically try to adjust itself to an upright position when starting to tip over. (This mechanic did not exist prior to v70.)");
         }
 
         static void EnemyConfig()
@@ -277,7 +288,7 @@ namespace ButteRyBalance
                 "Enemy.Butler",
                 "No Search in Solo",
                 false,
-                "Disables the Butler's \"mad search\" behavior in singleplayer, where they put around their broom and sprint around the interior looking for players. This should make it somewhat easier to stay out of their way without them forcing an interaction.");
+                "Disables the Butler's \"mad search\" behavior in singleplayer, where they put away their broom and sprint around the interior looking for players. This should make it somewhat easier to stay out of their way without them forcing an interaction.");
 
             // Cadaver Bloom
             cadaverTarget = configFile.Bind(
@@ -292,6 +303,11 @@ namespace ButteRyBalance
                 "Increase Power Level",
                 true,
                 "Increase Cadaver Growths' power level from 2 to 4, to keep the day's threats more solitarily focused.");
+            cadaversLimitGrowth = configFile.Bind(
+                "Enemy.CadaverGrowths",
+                "Limit Growth",
+                false,
+                "Sharply limits Cadaver Growths' rate of spread throughout the building, such that it only covers a small concentrated area, which fits vanilla's given power level better.");
 
             // Coil-head
             coilheadStunReset = configFile.Bind(
@@ -391,6 +407,36 @@ namespace ButteRyBalance
                 "See Through Fog",
                 true,
                 "Old Birds can see through fog with their powerful searchlights.");
+
+            // Vain Shrouds
+            vainsChanceSame = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Spawn Chance (Same Moon)",
+                4.5f,
+                new ConfigDescription(
+                    "The chance for vain shrouds to start growing on a moon after leaving it. Only applies on quota 4 and later.",
+                    new AcceptableValueRange<float>(0f, 100f)));
+            vainsChanceSameEarly = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Spawn Chance (Same Moon, Early)",
+                3f,
+                new ConfigDescription(
+                    "The chance for vain shrouds to start growing on a moon after leaving it. Only applies on quotas 1-3.",
+                    new AcceptableValueRange<float>(0f, 100f)));
+            vainsChanceRare = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Spawn Chance (Other Moons, Rare)",
+                1.5f,
+                new ConfigDescription(
+                    "The chance for vain shrouds to start growing each day on purchasable moons (Rend, Titan, or before quota 4, Artifice) when leaving any other moon.",
+                    new AcceptableValueRange<float>(0f, 100f)));
+            vainsChanceOther = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Spawn Chance (Other Moons)",
+                2.2f,
+                new ConfigDescription(
+                    "The chance for vain shrouds to start growing on a moon each day if none of the other settings apply.",
+                    new AcceptableValueRange<float>(0f, 100f)));
 
             // Spore lizard
             pufferPower = configFile.Bind(
@@ -692,6 +738,12 @@ namespace ButteRyBalance
                 "No Keys in Caverns",
                 true,
                 "Adjusts key spawns in mineshafts, so that they can no longer spawn in cavern tiles, *similar* to pre-v80 behavior.\nAlso removes the distance limit from main entrance, which will allow keys to spawn near deep fire exits, normally impossible in vanilla.");
+
+            cavernsNoTurrets = configFile.Bind(
+                "Misc",
+                "No Turrets in Caverns",
+                true,
+                "Turrets are no longer allowed to spawn inside of cave tiles, where the radar is unable to see.");
 
             proportionalFireExits = configFile.Bind(
                 "Misc",

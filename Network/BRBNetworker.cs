@@ -32,7 +32,7 @@ namespace ButteRyBalance.Network
 
                 // assign a unique hash so it can be network registered
                 NetworkObject netObj = prefab.AddComponent<NetworkObject>();
-                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(typeof(BRBNetworker).Assembly.GetName().Name + prefab.name));
+                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(typeof(BRBNetworker).Assembly.GetName().Name + prefab.name + Plugin.PLUGIN_VERSION.ToString()));
                 netObj.GlobalObjectIdHash = System.BitConverter.ToUInt32(hash, 0);
 
                 // and now it holds our network handler!
@@ -144,6 +144,8 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> DineFireExits { get; private set; } = new();
         internal NetworkVariable<bool> ProportionalFireExits { get; private set; } = new();
         internal NetworkVariable<bool> CruiserPatchEnemies { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserAutoHeal { get; private set; } = new();
+        internal NetworkVariable<bool> CruiserDontStabilize { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -221,6 +223,8 @@ namespace ButteRyBalance.Network
             WeedKillerDamage.Value = Configuration.weedKillerDamage.Value;
             CruiserPatchEnemies.Value = Configuration.cruiserPatchEnemies.Value;
             CruiserTurbos.Value = Configuration.cruiserTurbos.Value;
+            CruiserAutoHeal.Value = Configuration.cruiserAutoHeal.Value;
+            CruiserDontStabilize.Value = !Configuration.cruiserStabilize.Value; // inverted, since it will default to false and VehicleController.Update() might check before sync
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();

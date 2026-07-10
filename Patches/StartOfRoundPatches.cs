@@ -1,7 +1,10 @@
 ﻿using ButteRyBalance.Network;
+using ButteRyBalance.Utilities;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace ButteRyBalance.Patches
@@ -9,6 +12,8 @@ namespace ButteRyBalance.Patches
     [HarmonyPatch(typeof(StartOfRound))]
     static class StartOfRoundPatches
     {
+        static float moldChance1 = 0.03f, moldChance2 = 0.045f, moldChance3 = 0.015f, moldChance4 = 0.022f;
+
         [HarmonyPatch(nameof(StartOfRound.Awake))]
         [HarmonyPostfix]
         static void StartOfRound_Post_Awake(StartOfRound __instance)
@@ -60,9 +65,71 @@ namespace ButteRyBalance.Patches
 
         [HarmonyPatch(nameof(StartOfRound.PassTimeToNextDay))]
         [HarmonyPostfix]
-        static void StartOfRound_Post_PassTimeToNextDay(StartOfRound __instance)
+        static void StartOfRound_Post_PassTimeToNextDay()
         {
             RoundManager.Instance.hasInitializedLevelRandomSeed = false;
+        }
+
+        [HarmonyPatch(nameof(StartOfRound.SetPlanetsMold))]
+        [HarmonyTranspiler]
+        private static IEnumerable<CodeInstruction> StartOfRound_Trans_SetPlanetsMold(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            bool patch1 = false, patch2 = false, patch3 = false, patch4 = false;
+            for (int i = 1; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Stloc_1 && codes[i - 1].opcode == OpCodes.Ldc_R4)
+                {
+                    if (!patch1 && (float)codes[i - 1].operand == moldChance1)
+                    {
+                        codes[i - 1].opcode = OpCodes.Ldsfld;
+                        codes[i - 1].operand = AccessTools.Field(typeof(StartOfRoundPatches), nameof(moldChance1));
+                        patch1 = true;
+                    }
+                    else if (!patch2 && (float)codes[i - 1].operand == moldChance2)
+                    {
+                        codes[i - 1].opcode = OpCodes.Ldsfld;
+                        codes[i - 1].operand = AccessTools.Field(typeof(StartOfRoundPatches), nameof(moldChance2));
+                        patch2 = true;
+                    }
+                    else if (!patch3 && (float)codes[i - 1].operand == moldChance3)
+                    {
+                        codes[i - 1].opcode = OpCodes.Ldsfld;
+                        codes[i - 1].operand = AccessTools.Field(typeof(StartOfRoundPatches), nameof(moldChance3));
+                        patch3 = true;
+                    }
+                    else if (!patch4 && (float)codes[i - 1].operand == moldChance4)
+                    {
+                        codes[i - 1].opcode = OpCodes.Ldsfld;
+                        codes[i - 1].operand = AccessTools.Field(typeof(StartOfRoundPatches), nameof(moldChance4));
+                        patch4 = true;
+                    }
+                }
+
+                if (patch1 && patch2 && patch3 && patch4)
+                {
+                    Plugin.Logger.LogDebug($"Transpiler (Vain shrouds): Dynamic chances");
+                    return codes;
+                }
+            }
+
+            Plugin.Logger.LogWarning("Vain shroud chance transpiler failed");
+            return instructions;
+        }
+
+        [HarmonyPatch(nameof(StartOfRound.SetPlanetsMold))]
+        [HarmonyPrefix]
+        static void StartOfRound_Pre_SetPlanetsMold(StartOfRound __instance)
+        {
+            if (__instance.IsServer)
+            {
+                moldChance1 = Configuration.vainsChanceSameEarly.Value / 100f;
+                moldChance2 = Configuration.vainsChanceSame.Value / 100f;
+                moldChance3 = Configuration.vainsChanceRare.Value / 100f;
+                moldChance4 = Configuration.vainsChanceOther.Value / 100f;
+                Plugin.Logger.LogDebug($"Adjusted vain shroud growth chances on host: ({moldChance1 * 100}%, {moldChance2 * 100}%, {moldChance3 * 100}%, {moldChance4 * 100}%)");
+            }
         }
     }
 }
