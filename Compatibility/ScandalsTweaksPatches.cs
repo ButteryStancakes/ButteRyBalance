@@ -1,7 +1,6 @@
 ﻿using ButteRyBalance.Network;
 using GameNetcodeStuff;
 using HarmonyLib;
-using ScandalsTweaks.Utils;
 using UnityEngine;
 
 namespace ButteRyBalance.Compatibility
@@ -11,7 +10,7 @@ namespace ButteRyBalance.Compatibility
         static Transform cabinWindow;
         static LayerMask vehicleMask = 1 << 30;
 
-        [HarmonyPatch(typeof(GlobalUtilities), nameof(GlobalUtilities.ShouldAllowSightForVehicle))]
+        [HarmonyPatch(typeof(ScandalsTweaks.Utils.Utilities), nameof(ScandalsTweaks.Utils.Utilities.ShouldAllowSightThroughVehicle))]
         [HarmonyPrefix]
         static bool Utilities_Pre_ShouldAllowSightForVehicle(PlayerControllerB player, EnemyAI enemy, ref bool __result)
         {
