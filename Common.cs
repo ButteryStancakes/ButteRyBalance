@@ -8,6 +8,15 @@ namespace ButteRyBalance
 {
     internal class Common
     {
+        internal enum InteriorID
+        {
+            Factory = 0,
+            Manor = 1,
+            FactoryExtraLarge = 2,
+            FactoryThreeExits = 3,
+            Mineshaft = 4
+        }
+
         internal enum DamageID
         {
             Unknown = -1,
@@ -47,6 +56,9 @@ namespace ButteRyBalance
 
         internal static string lastSceneLoaded = string.Empty;
 
+        internal static DressGirlAI girl;
+        internal static bool girlUpdating;
+
         internal static void Disconnect()
         {
             enemies.Clear();
@@ -65,7 +77,7 @@ namespace ButteRyBalance
         {
             caveTiles.Clear();
 
-            if (RoundManager.Instance.currentDungeonType == 4)
+            if ((InteriorID)RoundManager.Instance.currentDungeonType == InteriorID.Mineshaft)
             {
                 GameObject dungeonRoot = RoundManager.Instance.dungeonGenerator?.Root ?? GameObject.Find("/Systems/LevelGeneration/LevelGenerationRoot");
                 if (dungeonRoot == null)

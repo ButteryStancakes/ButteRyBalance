@@ -1,7 +1,9 @@
 ﻿using ButteRyBalance.Network;
 using GameNetcodeStuff;
 using HarmonyLib;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace ButteRyBalance.Patches.Enemies
@@ -10,7 +12,6 @@ namespace ButteRyBalance.Patches.Enemies
     class ManeaterPatches
     {
         static bool playersHaveEnteredBuilding;
-        static float GROWTH_SPEED_MULTIPLIER = 0.045f;
 
         [HarmonyPatch(nameof(CaveDwellerAI.HitEnemy))]
         [HarmonyPrefix]
@@ -85,26 +86,6 @@ namespace ButteRyBalance.Patches.Enemies
             }
         }
 
-        [HarmonyPatch(nameof(CaveDwellerAI.Start))]
-        [HarmonyPostfix]
-        static void CaveDwellerAI_Post_Start(CaveDwellerAI __instance)
-        {
-            GROWTH_SPEED_MULTIPLIER = __instance.growthSpeedMultiplier;
-        }
-
-        [HarmonyPatch(nameof(CaveDwellerAI.StopObserving))]
-        [HarmonyPostfix]
-        static void CaveDwellerAI_Post_StopObserving(CaveDwellerAI __instance, bool eatScrap)
-        {
-            if (eatScrap && Configuration.maneaterScrapGrowth.Value)
-            {
-                if (__instance.scrapEaten == 1)
-                    __instance.growthSpeedMultiplier = GROWTH_SPEED_MULTIPLIER * 0.75f;
-                else
-                    __instance.growthSpeedMultiplier = GROWTH_SPEED_MULTIPLIER * 0.5f;
-            }
-        }
-
         [HarmonyPatch(nameof(CaveDwellerAI.DoNonBabyUpdateLogic))]
         [HarmonyPostfix]
         static void CaveDwellerAI_Post_DoNonBabyUpdateLogic(CaveDwellerAI __instance)
@@ -142,6 +123,39 @@ namespace ButteRyBalance.Patches.Enemies
                     boxCollider.size = new Vector3(scalar, scalar, scalar);
                 }
             }
+        }
+
+        [HarmonyPatch(nameof(CaveDwellerAI.BabyObserveScrap))]
+        [HarmonyPrefix]
+        static bool CaveDwellerAI_Pre_BabyObserveScrap(CaveDwellerAI __instance, ref bool __result)
+        {
+            if (__instance.scrapEaten >= 3f)
+            {
+                __result = false; // baby refuses to eat scrap items at max chunkiness
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch(nameof(CaveDwellerAI.ClearBabyObservingClientRpc))]
+        [HarmonyTranspiler]
+        static IEnumerable<CodeInstruction> CaveDwellerAI_Trans_ClearBabyObservingClientRpc(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            for (int i = 4; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Div && codes[i - 1].opcode == OpCodes.Ldc_R4 && (float)codes[i - 1].operand == 5f && codes[i - 4].opcode == OpCodes.Ldc_R4 && (float)codes[i - 4].operand == 5f)
+                {
+                    codes[i - 1].operand = 3f;
+                    codes[i - 4].operand = 3f;
+                    Plugin.Logger.LogDebug($"Transpiler (Maneater): Max scale after eating 3 items");
+                    return codes;
+                }
+            }
+
+            return instructions;
         }
     }
 }

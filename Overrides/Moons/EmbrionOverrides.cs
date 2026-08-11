@@ -1,15 +1,16 @@
-﻿using MonoMod.Utils;
+﻿using ButteRyBalance.Network;
+using MonoMod.Utils;
 using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
     internal class EmbrionOverrides
     {
-        internal static readonly Dictionary<int, int> adjustedInteriors = new()
+        internal static readonly Dictionary<Common.InteriorID, int> adjustedInteriors = new()
         {
-            { 0,  13 }, // factory,   vanilla: 300
-            { 1,   4 }, // manor,     vanilla: 10
-            { 4, 118 }, // mineshaft, vanilla: 44
+            { Common.InteriorID.Factory,    13 }, // vanilla: 300
+            { Common.InteriorID.Manor,       4 }, // vanilla: 10
+            { Common.InteriorID.Mineshaft, 118 }, // vanilla: 44
         };
 
         internal static readonly Dictionary<string, int> infestations = new()
@@ -24,7 +25,7 @@ namespace ButteRyBalance.Overrides.Moons
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.embrionMega.Value)
+            if (BRBNetworker.Instance.EmbrionMega.Value)
             {
                 MoonOverrides.minScrap = 28; // vanilla: 14
                 MoonOverrides.maxScrap = 45; // vanilla: 17
@@ -47,10 +48,7 @@ namespace ButteRyBalance.Overrides.Moons
                     //{ "ClownHorn", 31 },
                     { "DiyFlashbang", 13 },
                 });
-            }
 
-            if (Configuration.embrionAdjustEnemies.Value)
-            {
                 MoonOverrides.adjustedEnemies.AddRange(new(){
                     // non-biological
                     { "Nutcracker", 37 },

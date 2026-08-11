@@ -10,8 +10,6 @@ namespace ButteRyBalance.Patches
     [HarmonyPatch(typeof(RuntimeDungeon))]
     static class RuntimeDungeonPatches
     {
-        const float DINE_REND_DIFF = 1.3f / 1.2f;
-
         [HarmonyPatch(nameof(RuntimeDungeon.Generate))]
         [HarmonyPrefix]
         [HarmonyBefore(Plugin.GUID_LETHAL_LEVEL_LOADER)]
@@ -37,16 +35,10 @@ namespace ButteRyBalance.Patches
                         break;
                     case "DineLevel":
                         if (BRBNetworker.Instance.DineFireExits.Value)
-                        {
-                            // 1.8x -> 1.95x
-                            __instance.Generator.LengthMultiplier *= DINE_REND_DIFF;
-                            Plugin.Logger.LogDebug("Increase Dine");
-
                             bonusFireExits = 2;
-                        }
                         break;
                     case "ArtificeLevel":
-                        if (RoundManager.Instance.currentDungeonType != 4 && BRBNetworker.Instance.ArtificeInteriors.Value)
+                        if ((Common.InteriorID)RoundManager.Instance.currentDungeonType != Common.InteriorID.Mineshaft && BRBNetworker.Instance.ArtificeInteriors.Value)
                         {
                             // 1.8x -> 2x
                             __instance.Generator.LengthMultiplier /= 0.9f;
@@ -56,15 +48,15 @@ namespace ButteRyBalance.Patches
                     case "EmbrionLevel":
                         if (BRBNetworker.Instance.EmbrionMega.Value)
                         {
-                            switch (RoundManager.Instance.currentDungeonType)
+                            switch ((Common.InteriorID)RoundManager.Instance.currentDungeonType)
                             {
-                                case 0:
+                                case Common.InteriorID.Factory:
                                     __instance.Generator.LengthMultiplier = 2.35f * RoundManager.Instance.mapSizeMultiplier;
                                     break;
-                                case 1:
+                                case Common.InteriorID.Manor:
                                     __instance.Generator.LengthMultiplier = 2.4f * RoundManager.Instance.mapSizeMultiplier;
                                     break;
-                                case 4:
+                                case Common.InteriorID.Mineshaft:
                                     __instance.Generator.LengthMultiplier = 2.2f * RoundManager.Instance.mapSizeMultiplier;
                                     break;
                                 default:

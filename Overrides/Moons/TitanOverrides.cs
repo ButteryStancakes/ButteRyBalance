@@ -18,9 +18,6 @@ namespace ButteRyBalance.Overrides.Moons
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.titanAddGold.Value)
-                MoonOverrides.adjustedScrap.Add("GoldBar", 9);
-
             if (Configuration.titanAdjustEnemies.Value)
             {
                 MoonOverrides.adjustedEnemies.AddRange(new(){

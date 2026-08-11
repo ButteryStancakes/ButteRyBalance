@@ -17,10 +17,7 @@ namespace ButteRyBalance.Overrides.Moons
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.rendWorms.Value)
-                MoonOverrides.adjustedEnemies.Add("SandWorm", 18);
-
-            MoonOverrides.adjustedScrap.Add("Zeddog", 8);
+            MoonOverrides.adjustedScrap.Add("Zeddog", 8); // v70
 
             MoonOverrides.Apply(level);
         }

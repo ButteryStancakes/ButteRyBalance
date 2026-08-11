@@ -38,6 +38,7 @@ namespace ButteRyBalance.Overrides.Moons
                     //{ "Hairdryer", 0 },
                     //{ "ClownHorn", 4 },
                     //{ "Airhorn", 4 },
+                    { "Candy", 3 },
 
                     // OFFENSE
                     { "MetalSheet", 65 },
@@ -49,9 +50,6 @@ namespace ButteRyBalance.Overrides.Moons
                     { "DiyFlashbang", 13 },
                     //{ "TragedyMask", 0 },
                     { "ToiletPaperRolls", 18 },
-
-                    // DINE
-                    { "Candy", 50 }, // v72
                 });
             }
 

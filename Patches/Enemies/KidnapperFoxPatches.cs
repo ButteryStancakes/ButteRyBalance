@@ -12,6 +12,7 @@ namespace ButteRyBalance.Patches.Enemies
     {
         [HarmonyPatch(typeof(BushWolfEnemy), nameof(BushWolfEnemy.Update))]
         [HarmonyTranspiler]
+        [HarmonyAfter(Plugin.GUID_SCANDALS_TWEAKS)]
         static IEnumerable<CodeInstruction> BushWolfEnemy_Trans_Update(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> codes = instructions.ToList();

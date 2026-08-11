@@ -1,16 +1,25 @@
-﻿using ButteRyBalance.Network;
-using MonoMod.Utils;
+﻿using MonoMod.Utils;
 using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
     internal class DineOverrides
     {
-        internal const float CONSOLIDATE_AMOUNT = 0.4f, CONSOLIDATE_VALUE = 1.75f;
-
-        internal static readonly Dictionary<int, int> adjustedInteriors = new()
+        internal static readonly Dictionary<string, (int, int)> consolidatedValues = new()
         {
-            { 4, 140 },  // mineshaft,  vanilla: 17
+            { "SeveredBone",    (  60,  90 ) }, // vanilla: 17,  37
+            { "SeveredBoneRib", (  70, 160 ) }, // vanilla: 20,  65
+            { "SeveredEar",     (  25,  85 ) }, // vanilla:  7,  35
+            { "SeveredFoot",    (  50, 135 ) }, // vanilla: 15,  55
+            { "SeveredHand",    (  35,  75 ) }, // vanilla: 10,  30
+            { "SeveredHeart",   ( 210, 440 ) }, // vanilla: 60, 250
+            { "SeveredThigh",   (  70, 110 ) }, // vanilla: 20,  45
+            { "SeveredTongue",  (  30, 100 ) }, // vanilla:  8,  40
+        };
+
+        internal static readonly Dictionary<Common.InteriorID, int> adjustedInteriors = new()
+        {
+            { Common.InteriorID.Mineshaft, 140 },  // vanilla: 17
         };
 
         internal static readonly Dictionary<string, int> infestations = new()
@@ -36,71 +45,86 @@ namespace ButteRyBalance.Overrides.Moons
                     MoonOverrides.maxScrap = 28; // v72: 26
 
                     MoonOverrides.adjustedScrap.AddRange(new(){
-                        // v56
-                        { "Cog1", 15 },
-                        { "EnginePart1", 14 },
-                        { "BottleBin", 30 },
-                        { "FancyLamp", 54 },
-                        { "Ring", 26 },
-                        { "RobotToy", 26 },
-                        { "PerfumeBottle", 34 },
-                        //{ "Bell", 48 },
-                        { "Hairdryer", 22 },
-                        { "Airhorn", 16 },
-                        { "ClownHorn", 17 },
-
-                        // v49
-                        //{ "FancyPainting", 50 },
-                        { "CashRegister", 12 },
-                        //{ "Candy", 16 },
-                        //{ "GiftBox", 21 },
-                        { "TragedyMask", 64 },
-
-                        // v45
-                        { "GiftBox", 69 },
-
-                        // REND
-                        //{ "MagnifyingGlass", 35 },
-                        { "PillBottle", 4 },
-                        //{ "PerfumeBottle", 28 },
-                        { "Toothpaste", 24 },
-                        { "TeaKettle", 25 },
-                        //{ "7Ball", 23 },
-                        { "Candy", 15 },
-                        //{ "WhoopieCushion", 0 },
-                        //{ "ToiletPaperRolls", 13 },
-                            
-                        // TITAN
-                        { "Brush", 25 },
-
-                        // LIQUIDATION
-                        { "MagnifyingGlass", 37 },
-                        { "Bell", 49 },
-
-                        // get it?
-                        { "DustPan", 32 },
-                        
-                        // unchanged in BRB v0.2.4
+                        // v72
+                        //{ "Cog1", 19 },
+                        //{ "EnginePart1", 19 },
                         { "FishTestProp", 5 },
                         { "BigBolt", 4 },
+                        { "FancyLamp", 29 },
                         { "ToyCube", 33 },
                         { "PickleJar", 30 },
                         { "FlashLaserPointer", 5 },
                         { "FancyCup", 36 },
-                        { "FancyPainting", 44 },
+                        //{ "FancyPainting", 44 },
+                        { "Bell", 21 },
+                        { "Ring", 16 },
+                        { "RobotToy", 17 },
+                        { "Toothpaste", 41 },
+                        { "Brush", 18 },
+                        { "PillBottle", 29 },
+                        { "PerfumeBottle", 16 },
                         { "Mug", 48 },
+                        //{ "BottleBin", 45 },
+                        { "MagnifyingGlass", 14 },
+                        { "Hairdryer", 14 },
                         { "Phone", 8 },
                         { "SodaCanRed", 50 },
                         { "Dentures", 44 },
-                        { "7Ball", 24 },
+                        //{ "7Ball", 24 },
                         { "RubberDuck", 25 },
+                        { "TeaKettle", 43 },
+                        //{ "Airhorn", 15 },
+                        //{ "ClownHorn", 12 },
+                        //{ "CashRegister", 14 },
+                        { "Candy", 50 },
                         { "DiyFlashbang", 20 },
+                        //{ "GiftBox", 11 },
+                        //{ "TragedyMask", 30 },
                         { "ComedyMask", 47 },
-                        { "WhoopieCushion", 12 },
+                        //{ "WhoopieCushion", 12 },
                         { "EasterEgg", 44 },
                         { "GarbageLid", 22 },
                         { "ToiletPaperRolls", 28 },
-                        { "Zeddog", 1 },
+                        //{ "Zeddog", 1 },
+
+                        // v69 jolly
+                        //{ "GiftBox", 41 },
+
+                        // v56
+                        { "Cog1", 15 },
+                        { "EnginePart1", 14 },
+                        //{ "FancyLamp", 54 },
+                        //{ "PickleJar", 13 },
+                        { "FancyPainting", 35 },
+                        //{ "Bell", 48 },
+                        //{ "Ring", 26 },
+                        //{ "RobotToy", 26 },
+                        //{ "Brush", 22 },
+                        //{ "PillBottle", 14 },
+                        //{ "PerfumeBottle", 34 },
+                        //{ "Mug", 44 },
+                        { "BottleBin", 30 },
+                        //{ "Hairdryer", 22 },
+                        //{ "Phone", 12 },
+                        { "7Ball", 30 },
+                        //{ "RubberDuck", 18 },
+                        { "Airhorn", 16 },
+                        { "ClownHorn", 17 },
+                        { "CashRegister", 22 },
+                        { "WhoopieCushion", 18 },
+
+                        // v49
+                        //{ "FancyPainting", 50 },
+                        //{ "Airhorn", 11 },
+                        //{ "ClownHorn", 11 },
+                        //{ "Candy", 16 },
+                        //{ "DiyFlashbang", 10 },
+                        //{ "GiftBox", 21 },
+                        { "TragedyMask", 64 },
+                        //{ "ComedyMask", 29 },
+
+                        // v45
+                        { "GiftBox", 69 },
 
                         // remove v73 scrap
                         { "SeveredHand", 0 },
@@ -115,10 +139,13 @@ namespace ButteRyBalance.Overrides.Moons
                 }
                 else
                 {
-                    //MoonOverrides.minScrap = 200;
-                    //MoonOverrides.maxScrap = 250;
+                    MoonOverrides.minScrap = 38;
+                    MoonOverrides.maxScrap = 75;
 
                     MoonOverrides.adjustedScrap.AddRange(new(){
+                        { "WhoopieCushion", 1 },
+                        { "EasterEgg", 1 },
+
                         // add v73 scrap
                         { "SeveredHand", 100 },
                         { "SeveredBone", 79 },
@@ -165,19 +192,16 @@ namespace ButteRyBalance.Overrides.Moons
                         { "GiftBox", 0 },
                         { "TragedyMask", 0 },
                         { "ComedyMask", 0 },
-                        { "WhoopieCushion", 1 },
-                        { "EasterEgg", 1 },
                         { "GarbageLid", 0 },
                         { "ToiletPaperRolls", 0 },
-                        { "Zeddog", 0 },
+                        //{ "Zeddog", 0 },
                     });
                 }
+
+                MoonOverrides.adjustedScrap.Add("Zeddog", 1);
             }
 
-            if (Configuration.dineReduceButlers.Value)
-                MoonOverrides.adjustedEnemies.Add("Butler", 12); // vanilla: 17
-
-            if (Configuration.dineAdjustOutdoor.Value)
+            if (Configuration.dineAdjustEnemies.Value)
             {
                 MoonOverrides.adjustedEnemies.AddRange(new(){
                     { "ForestGiant", 28 }, // vanilla: 100
@@ -185,10 +209,9 @@ namespace ButteRyBalance.Overrides.Moons
                 });
 
                 MoonOverrides.outsidePowerCount = 10; // vanilla: 9
-            }
 
-            if (BRBNetworker.Instance.DineFireExits.Value)
                 MoonOverrides.powerCount = 15; // vanilla: 10
+            }
 
             MoonOverrides.Apply(level);
         }

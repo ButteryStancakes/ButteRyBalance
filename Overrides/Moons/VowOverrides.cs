@@ -4,10 +4,10 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class VowOverrides
     {
-        internal static readonly Dictionary<int, int> adjustedInteriors = new()
+        internal static readonly Dictionary<Common.InteriorID, int> adjustedInteriors = new()
         {
-            { 0, 50 },  // factory,     vanilla: 300
-            { 4, 300 }, // mineshaft,   vanilla: 192
+            { Common.InteriorID.Factory,     0 }, // vanilla: 300
+            { Common.InteriorID.Mineshaft, 300 }, // vanilla: 192
         };
 
         internal static readonly Dictionary<string, int> infestations = new()
@@ -26,18 +26,15 @@ namespace ButteRyBalance.Overrides.Moons
             {
                 if (level.maxOutsideEnemyPowerCount == 6)
                     MoonOverrides.outsidePowerCount = 7;
+
+                MoonOverrides.minScrap = 10; // vanilla: 12
+                MoonOverrides.maxScrap = 13; // vanilla: 15
             }
 
             if (Configuration.vowNoCoils.Value)
                 MoonOverrides.adjustedEnemies.Add("SpringMan", 0);
 
-            if (Configuration.vowNoTraps.Value)
-            {
-                level.indoorMapHazards = [];
-                Plugin.Logger.LogDebug($"{level.name}.indoorMapHazards");
-            }
-
-            MoonOverrides.adjustedScrap.Add("Zeddog", 5);
+            MoonOverrides.adjustedScrap.Add("Zeddog", 5); // v70
 
             MoonOverrides.Apply(level);
         }

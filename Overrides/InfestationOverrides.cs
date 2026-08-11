@@ -61,7 +61,7 @@ namespace ButteRyBalance.Overrides
             else
                 compatibleEnemies.Remove("MaskedPlayerEnemy");
 
-            if (Configuration.infestationBarbers.Value && RoundManager.Instance.currentDungeonType != 4)
+            if (Configuration.infestationBarbers.Value && (Common.InteriorID)RoundManager.Instance.currentDungeonType != Common.InteriorID.Mineshaft)
             {
                 if (!compatibleEnemies.Contains("ClaySurgeon"))
                     compatibleEnemies.Add("ClaySurgeon");

@@ -35,9 +35,6 @@ namespace ButteRyBalance.Patches
                     // don't override Clay Surgeon Overhaul infestations
                     InfestationOverrides.CustomInfestation((__instance.enemyRushIndex >= 0 && __instance.currentLevel.Enemies[__instance.enemyRushIndex].enemyType.name == "ClaySurgeon") ? __instance.enemyRushIndex : -1);
                 }
-
-                if (__instance.indoorFog.gameObject.activeSelf && BRBNetworker.Instance.RandomIndoorFog.Value)
-                    __instance.indoorFog.parameters.meanFreePath = tempRandom.Next(5, 11);
             }
 
             if (__instance.IsServer)
@@ -46,7 +43,7 @@ namespace ButteRyBalance.Patches
                 {
                     if (Common.enemies.TryGetValue("ClaySurgeon", out EnemyType barber))
                     {
-                        if (RoundManager.Instance.currentDungeonType == 4 && InfestationOverrides.GetInfesterName() != "ClaySurgeon")
+                        if ((Common.InteriorID)RoundManager.Instance.currentDungeonType == Common.InteriorID.Mineshaft && InfestationOverrides.GetInfesterName() != "ClaySurgeon")
                         {
                             barber.MaxCount = 1;
                             barber.spawnInGroupsOf = 1;
@@ -169,7 +166,7 @@ namespace ButteRyBalance.Patches
                     }
                 }
 
-                if (__instance.currentDungeonType == 4 && Configuration.cavernsNoTurrets.Value)
+                if ((Common.InteriorID)__instance.currentDungeonType == Common.InteriorID.Mineshaft && Configuration.cavernsNoTurrets.Value)
                 {
                     Turret[] turrets = Object.FindObjectsByType<Turret>(FindObjectsSortMode.None);
                     foreach (Turret turret in turrets)
@@ -191,13 +188,6 @@ namespace ButteRyBalance.Patches
                             }
                         }
                     }
-                }
-
-                if ((__instance.currentDungeonType == 0 || __instance.currentDungeonType == 2 || __instance.currentDungeonType == 3) && BRBNetworker.Instance.ApparatusPrice.Value)
-                {
-                    LungProp apparatus = __instance.mapPropsContainer.GetComponentInChildren<LungProp>();
-                    if (apparatus != null && apparatus.isLungDocked && apparatus.scrapValue == 80)
-                        BRBNetworker.Instance.SyncScrapPriceRpc(apparatus.NetworkObject, new System.Random(StartOfRound.Instance.randomMapSeed).Next(40, 131), false);
                 }
             }
         }
@@ -271,7 +261,7 @@ namespace ButteRyBalance.Patches
             if (__instance.IsServer)
             {
                 InfestationOverrides.SpawnInfestationWave();
-                if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceReduceCadavers.Value && __instance.minEnemiesToSpawn < 1 && __instance.timeScript.hour > __instance.hourTimeBetweenEnemySpawnBatches && new System.Random(__instance.playersManager.randomMapSeed / Mathf.RoundToInt(__instance.timeScript.hour * __instance.timeScript.lengthOfHours)).NextDouble() < 0.8)
+                if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceReduceCadavers.Value && __instance.minEnemiesToSpawn < 1 /*&& __instance.timeScript.hour > __instance.hourTimeBetweenEnemySpawnBatches && new System.Random(__instance.playersManager.randomMapSeed / Mathf.RoundToInt(__instance.timeScript.hour * __instance.timeScript.lengthOfHours)).NextDouble() < 0.8*/)
                 {
                     __state = true;
                     __instance.minEnemiesToSpawn = 1;
@@ -299,9 +289,8 @@ namespace ButteRyBalance.Patches
 
         [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
         [HarmonyPrefix]
-        static void RoundManager_Pre_SpawnScrapInLevel(RoundManager __instance, ref float[] __state)
+        static void RoundManager_Pre_SpawnScrapInLevel(RoundManager __instance)
         {
-            __state = [1f, 1f];
             if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
             {
                 switch (__instance.currentLevel.name)
@@ -309,7 +298,7 @@ namespace ButteRyBalance.Patches
                     case "AssuranceLevel":
                         if (Configuration.assuranceNerfScrap.Value)
                         {
-                            if (__instance.currentDungeonType != 4)
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft)
                             {
                                 __instance.currentLevel.minScrap = 13;
                                 __instance.currentLevel.maxScrap = 16;
@@ -321,26 +310,10 @@ namespace ButteRyBalance.Patches
                             }
                         }
                         break;
-                    case "VowLevel":
-                        if (BRBNetworker.Instance.VowMineshafts.Value)
-                        {
-                            if (__instance.currentDungeonType != 4)
-                            {
-                                __instance.currentLevel.minScrap = 12;
-                                __instance.currentLevel.maxScrap = 15;
-                            }
-                            else
-                            {
-                                // pre-v50 values, because mineshaft is a bit *too* good...
-                                __instance.currentLevel.minScrap = 10;
-                                __instance.currentLevel.maxScrap = 13;
-                            }
-                        }
-                        break;
                     case "AdamanceLevel":
                         if (Configuration.adamanceBuffScrap.Value)
                         {
-                            if (__instance.currentDungeonType != 4 || !BRBNetworker.Instance.AdamanceInteriors.Value)
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft || !BRBNetworker.Instance.AdamanceInteriors.Value)
                             {
                                 // v73
                                 __instance.currentLevel.minScrap = 16;
@@ -348,42 +321,40 @@ namespace ButteRyBalance.Patches
                             }
                             else
                             {
-                                // vanilla
+                                // vanilla values, because mineshaft is a bit *too* good...
                                 __instance.currentLevel.minScrap = 14;
                                 __instance.currentLevel.maxScrap = 17;
                             }
                         }
                         break;
                     case "DineLevel":
-                        if (Configuration.dineScrapPool.Value != Configuration.DineScrap.Rollback)
+                        if (Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
                         {
-                            if (__instance.currentLevel.minScrap >= 200)
+                            foreach (KeyValuePair<string, (int min, int max)> consolidatedValue in DineOverrides.consolidatedValues)
                             {
-                                if (__instance.currentDungeonType != 4 || !BRBNetworker.Instance.DineMineshafts.Value)
+                                foreach (SpawnableItemWithRarity spawnableItemWithRarity in __instance.currentLevel.spawnableScrap)
                                 {
-                                    // vanilla
-                                    __instance.currentLevel.minScrap = 200;
-                                    __instance.currentLevel.maxScrap = 250;
+                                    if (spawnableItemWithRarity.spawnableItem != null && spawnableItemWithRarity.spawnableItem.name == consolidatedValue.Key)
+                                    {
+                                        if (spawnableItemWithRarity.spawnableItem.minValue != consolidatedValue.Value.min)
+                                        {
+                                            Plugin.Logger.LogDebug($"{spawnableItemWithRarity.spawnableItem.name}.minValue: {spawnableItemWithRarity.spawnableItem.minValue} -> {consolidatedValue.Value.min}");
+                                            spawnableItemWithRarity.spawnableItem.minValue = consolidatedValue.Value.min;
+                                        }
+                                        if (spawnableItemWithRarity.spawnableItem.maxValue != consolidatedValue.Value.max)
+                                        {
+                                            Plugin.Logger.LogDebug($"{spawnableItemWithRarity.spawnableItem.name}.maxValue: {spawnableItemWithRarity.spawnableItem.maxValue} -> {consolidatedValue.Value.max}");
+                                            spawnableItemWithRarity.spawnableItem.maxValue = consolidatedValue.Value.max;
+                                        }
+                                    }
                                 }
-                                else
-                                {
-                                    __instance.currentLevel.minScrap = 220;
-                                    __instance.currentLevel.maxScrap = 270;
-                                }
-                            }
-                            if (Configuration.dineScrapPool.Value == Configuration.DineScrap.Consolidate)
-                            {
-                                __state[0] *= DineOverrides.CONSOLIDATE_AMOUNT;
-                                __instance.scrapAmountMultiplier *= __state[0];
-                                __state[1] *= DineOverrides.CONSOLIDATE_VALUE;
-                                __instance.scrapValueMultiplier *= __state[1];
                             }
                         }
                         break;
                     case "TitanLevel":
                         if (Configuration.titanBuffScrap.Value)
                         {
-                            if (__instance.currentDungeonType != 4)
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft)
                             {
                                 // v50
                                 __instance.currentLevel.minScrap = 28;
@@ -400,7 +371,7 @@ namespace ButteRyBalance.Patches
                     case "ArtificeLevel":
                         if (Configuration.artificeBuffScrap.Value)
                         {
-                            if (__instance.currentDungeonType != 4)
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft)
                             {
                                 // v56
                                 __instance.currentLevel.minScrap = 31;
@@ -420,15 +391,6 @@ namespace ButteRyBalance.Patches
             // https://discord.com/channels/750645598293590077/1501504390148653066/1503528764108181574
             if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
                 __instance.AnomalyRandom.NextDouble();
-        }
-
-        [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
-        [HarmonyPostfix]
-        static void RoundManager_Post_SpawnScrapInLevel(RoundManager __instance, float[] __state)
-        {
-            BRBNetworker.Instance.SetScanValueMultiplierRpc(__instance.scrapValueMultiplier);
-            __instance.scrapAmountMultiplier /= __state[0];
-            __instance.scrapValueMultiplier /= __state[1];
         }
 
         [HarmonyPatch(nameof(RoundManager.SetLockedDoors))]
@@ -594,6 +556,14 @@ namespace ButteRyBalance.Patches
         static void RoundManager_Post_InitializeRandomNumberGenerators(RoundManager __instance)
         {
             __instance.hasInitializedLevelRandomSeed = true;
+        }
+
+        [HarmonyPatch(nameof(RoundManager.FlickerLights))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_FlickerLights()
+        {
+            if (Common.girlUpdating && Common.girl != null && Common.girl.IsOwner)
+                GameNetworkManager.Instance.localPlayerController.JumpToFearLevel(Common.girl.timesSeenByPlayer > 0 ? 0.9f : 0.2f);
         }
     }
 }

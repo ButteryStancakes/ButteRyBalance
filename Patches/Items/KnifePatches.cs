@@ -16,22 +16,12 @@ namespace ButteRyBalance.Patches.Items
         static float timeAtLastSwing;
         static InputAction activateItem;
 
-        [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.Start))]
-        [HarmonyPostfix]
-        static void GrabbableObject_Post_Start(GrabbableObject __instance)
-        {
-            if (__instance.IsServer && !StartOfRound.Instance.inShipPhase && __instance.scrapValue == 35 && Configuration.butlerKnifePrice.Value && __instance is KnifeItem)
-            {
-                Plugin.Logger.LogInfo("Trying to sync knife price on server");
-                BRBNetworker.Instance.SyncScrapPriceRpc(__instance.NetworkObject, Random.Range(28, 84));
-            }
-        }
-
         [HarmonyPatch(nameof(KnifeItem.EquipItem))]
         [HarmonyPostfix]
         static void KnifeItem_Post_EquipItem(KnifeItem __instance)
         {
             knifeCooldown = BRBNetworker.Instance.KnifeShortCooldown.Value ? 0.37f : 0.43f;
+            //Plugin.Logger.LogDebug($"Knife cooldown: {knifeCooldown}s");
         }
 
         [HarmonyPatch(nameof(KnifeItem.HitKnife))]
@@ -67,15 +57,18 @@ namespace ButteRyBalance.Patches.Items
         {
             if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is KnifeItem knifeItem && Configuration.knifeAutoSwing.Value && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeAtLastSwing > 0.12f && Time.realtimeSinceStartup - knifeItem.timeAtLastDamageDealt > knifeCooldown)
             {
-                // prevents two swings when first clicking button
-                if (Time.realtimeSinceStartup - timeAtLastSwing <= 0.5f)
-                {
-                    ShipBuildModeManager.Instance.CancelBuildMode();
-                    __instance.currentlyHeldObjectServer.UseItemOnClient();
-                    __instance.timeSinceSwitchingSlots = 0f;
-                }
-                timeAtLastSwing = Time.realtimeSinceStartup + Random.Range(0f, 0.01f);
+                ShipBuildModeManager.Instance.CancelBuildMode();
+                __instance.currentlyHeldObjectServer.UseItemOnClient();
+                __instance.timeSinceSwitchingSlots = 0f;
             }
+        }
+
+        [HarmonyPatch(typeof(KnifeItem), nameof(KnifeItem.HitKnife))]
+        [HarmonyPostfix]
+        static void KnifeItem_Post_ItemActivate(KnifeItem __instance)
+        {
+            //Plugin.Logger.LogDebug($"Knife swung at {Time.realtimeSinceStartup}s ({Time.realtimeSinceStartup - timeAtLastSwing}s since last swing)");
+            timeAtLastSwing = Time.realtimeSinceStartup + Random.Range(0f, 0.01f); // light variation in swing timing
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ButteRyBalance.Network;
+using MonoMod.Utils;
+using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
@@ -20,13 +22,13 @@ namespace ButteRyBalance.Overrides.Moons
                 MoonOverrides.minScrap = 11; // vanilla: 8
                 MoonOverrides.maxScrap = 16; // vanilla: 12
 
-                MoonOverrides.adjustedScrap.Add("CashRegister", 6); // v9
+                MoonOverrides.adjustedScrap.AddRange(new(){
+                    { "CashRegister", 6 }, // v9
+                    { "EasterEgg", 0 }, // early v50 betas
+                });
             }
 
-            if (Configuration.experimentationNoEggs.Value)
-                MoonOverrides.adjustedScrap.Add("EasterEgg", 0);
-
-            if (Configuration.experimentationNoGiants.Value)
+            if (BRBNetworker.Instance.ExperimentationNoEvents.Value)
                 MoonOverrides.adjustedEnemies.Add("ForestGiant", 0);
 
             MoonOverrides.Apply(level);

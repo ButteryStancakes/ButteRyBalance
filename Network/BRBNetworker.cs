@@ -1,5 +1,4 @@
 ﻿using ButteRyBalance.Overrides;
-using ButteRyBalance.Patches;
 using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
@@ -104,23 +103,15 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ManeaterLimitGrowth { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterWideTurns { get; private set; } = new();
         internal NetworkVariable<bool> MoonsKillSwitch { get; private set; } = new();
-        internal NetworkVariable<bool> FoggyLimit { get; private set; } = new();
         internal NetworkVariable<bool> ExperimentationNoEvents { get; private set; } = new();
-        internal NetworkVariable<bool> RandomIndoorFog { get; private set; } = new();
         internal NetworkVariable<bool> VowMineshafts { get; private set; } = new();
         internal NetworkVariable<bool> RendShrink { get; private set; } = new();
         internal NetworkVariable<bool> DineFloods { get; private set; } = new();
-        internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
-        internal NetworkVariable<bool> JetpackReduceDiscount { get; private set; } = new();
         internal NetworkVariable<bool> ArtificeInteriors { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunPrice { get; private set; } = new();
-        internal NetworkVariable<bool> RadarBoosterPrice { get; private set; } = new();
-        internal NetworkVariable<bool> StunGrenadePrice { get; private set; } = new();
-        internal NetworkVariable<bool> ScrapAdjustWeights { get; private set; } = new();
         internal NetworkVariable<bool> EmbrionMega { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunBattery { get; private set; } = new();
-        internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
         internal NetworkVariable<bool> GiantSquishy { get; private set; } = new();
         internal NetworkVariable<bool> JetpackUtility { get; private set; } = new();
@@ -129,7 +120,6 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ProFlashlightPrice { get; private set; } = new();
         internal NetworkVariable<bool> VowMisty { get; private set; } = new();
         internal NetworkVariable<bool> NerfNightVision { get; private set; } = new();
-        internal NetworkVariable<bool> GunkfishSquishy { get; private set; } = new();
         internal NetworkVariable<bool> StunLonger { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterTarget { get; private set; } = new();
         internal NetworkVariable<bool> CadaverTarget { get; private set; } = new();
@@ -139,13 +129,13 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> CruiserTrees { get; private set; } = new();
         internal NetworkVariable<bool> CruiserEnemyDamage { get; private set; } = new();
         internal NetworkVariable<bool> CruiserCrashDamage { get; private set; } = new();
-        internal NetworkVariable<bool> WeaponsAdjustWeights { get; private set; } = new();
         internal NetworkVariable<bool> OffenseFireExits { get; private set; } = new();
         internal NetworkVariable<bool> DineFireExits { get; private set; } = new();
         internal NetworkVariable<bool> ProportionalFireExits { get; private set; } = new();
         internal NetworkVariable<bool> CruiserPatchEnemies { get; private set; } = new();
         internal NetworkVariable<bool> CruiserAutoHeal { get; private set; } = new();
         internal NetworkVariable<bool> CruiserDontStabilize { get; private set; } = new();
+        internal NetworkVariable<bool> GirlBreakers { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -175,23 +165,15 @@ namespace ButteRyBalance.Network
             ManeaterLimitGrowth.Value = Configuration.maneaterLimitGrowth.Value;
             ManeaterWideTurns.Value = Configuration.maneaterWideTurns.Value;
             MoonsKillSwitch.Value = Configuration.moonsKillSwitch.Value;
-            FoggyLimit.Value = Configuration.foggyLimit.Value;
             ExperimentationNoEvents.Value = Configuration.experimentationNoEvents.Value;
-            RandomIndoorFog.Value = Configuration.randomIndoorFog.Value;
             VowMineshafts.Value = Configuration.vowMineshafts.Value;
             RendShrink.Value = Configuration.rendShrink.Value;
             DineFloods.Value = Configuration.dineFloods.Value;
-            NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
             JetpackBattery.Value = Configuration.jetpackBattery.Value;
-            JetpackReduceDiscount.Value = Configuration.jetpackReduceDiscount.Value;
             ArtificeInteriors.Value = Configuration.artificeInteriors.Value;
             ZapGunPrice.Value = Configuration.zapGunPrice.Value;
-            RadarBoosterPrice.Value = Configuration.radarBoosterPrice.Value;
-            StunGrenadePrice.Value = Configuration.stunGrenadePrice.Value;
-            ScrapAdjustWeights.Value = Configuration.scrapAdjustWeights.Value;
             EmbrionMega.Value = Configuration.embrionMega.Value;
             ZapGunBattery.Value = Configuration.zapGunBattery.Value;
-            ApparatusPrice.Value = Configuration.apparatusPrice.Value;
             ButlerSquishy.Value = Configuration.butlerSquishy.Value;
             RendSnowmen.Value = (int)Configuration.rendSnowmen.Value;
             DineSnowmen.Value = (int)Configuration.dineSnowmen.Value;
@@ -203,7 +185,6 @@ namespace ButteRyBalance.Network
             ProFlashlightPrice.Value = Configuration.proFlashlightPrice.Value;
             VowMisty.Value = Configuration.vowMisty.Value;
             NerfNightVision.Value = Configuration.nerfNightVision.Value;
-            GunkfishSquishy.Value = Configuration.gunkfishSquishy.Value;
             StunLonger.Value = Configuration.stunLonger.Value;
             CruiserPrice.Value = Configuration.cruiserPrice.Value;
             JetpackPrice.Value = Configuration.jetpackPrice.Value;
@@ -216,7 +197,6 @@ namespace ButteRyBalance.Network
             CruiserTrees.Value = Configuration.cruiserTrees.Value;
             CruiserEnemyDamage.Value = Configuration.cruiserEnemyDamage.Value;
             CruiserCrashDamage.Value = Configuration.cruiserCrashDamage.Value;
-            WeaponsAdjustWeights.Value = Configuration.weaponsAdjustWeights.Value;
             OffenseFireExits.Value = Configuration.offenseFireExits.Value;
             DineFireExits.Value = Configuration.dineFireExits.Value;
             ProportionalFireExits.Value = Configuration.proportionalFireExits.Value && !Common.INSTALLED_FAIRER_FIRE_EXITS;
@@ -225,12 +205,13 @@ namespace ButteRyBalance.Network
             CruiserTurbos.Value = Configuration.cruiserTurbos.Value;
             CruiserAutoHeal.Value = Configuration.cruiserAutoHeal.Value;
             CruiserDontStabilize.Value = !Configuration.cruiserStabilize.Value; // inverted, since it will default to false and VehicleController.Update() might check before sync
+            GirlBreakers.Value = Configuration.girlBreakers.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
         }
 
-        [Rpc(SendTo.ClientsAndHost)]
+        /*[Rpc(SendTo.ClientsAndHost)]
         internal void SyncScrapPriceRpc(NetworkObjectReference scrap, int value, bool node = true)
         {
             if (scrap.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out GrabbableObject item))
@@ -242,13 +223,7 @@ namespace ButteRyBalance.Network
             }
             else
                 Plugin.Logger.LogError("Failed to sync scrap price");
-        }
-
-        [Rpc(SendTo.ClientsAndHost)]
-        internal void SetScanValueMultiplierRpc(float value)
-        {
-            TerminalPatches.fakeValueMultiplier = value;
-        }
+        }*/
 
         [Rpc(SendTo.ClientsAndHost)]
         internal void SyncFireExitRpc(NetworkObjectReference tele, int entranceId, bool isEntranceToBuilding = true, int audioReverbPreset = 2, bool fresh = true)

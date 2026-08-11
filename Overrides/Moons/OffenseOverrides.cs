@@ -51,9 +51,6 @@ namespace ButteRyBalance.Overrides.Moons
                 });
             }
 
-            if (Configuration.offenseNerfEclipse.Value)
-                MoonOverrides.adjustedEclipse = 3; // vanilla: 4
-
             if (Configuration.offenseBees.Value)
             {
                 MoonOverrides.adjustedEnemies.Add("RedLocustBees", 31);

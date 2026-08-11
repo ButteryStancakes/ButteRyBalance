@@ -1,6 +1,5 @@
 ﻿using ButteRyBalance.Network;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ButteRyBalance.Patches
 {
@@ -14,19 +13,13 @@ namespace ButteRyBalance.Patches
             if (!StartOfRound.Instance.isChallengeFile && !BRBNetworker.Instance.MoonsKillSwitch.Value && RoundManager.Instance.currentLevel.name == "DineLevel" && __instance.currentLevelWeather == LevelWeatherType.Flooded && BRBNetworker.Instance.DineFloods.Value)
             {
                 // use v50 beta values since main entrance was moved down in v60
-                TimeOfDay.Instance.currentWeatherVariable = -16f;
-                TimeOfDay.Instance.currentWeatherVariable2 = -5f;
+                //TimeOfDay.Instance.currentWeatherVariable = -16f;
+                //TimeOfDay.Instance.currentWeatherVariable2 = -5f;
+
+                // v49
+                TimeOfDay.Instance.currentWeatherVariable = -21f;
+                TimeOfDay.Instance.currentWeatherVariable2 = 12f;
             }
-        }
-
-        [HarmonyPatch(nameof(TimeOfDay.SetWeatherBasedOnVariables))]
-        [HarmonyPostfix]
-        static void TimeOfDay_Post_SetWeatherBasedOnVariables(TimeOfDay __instance)
-        {
-            if (StartOfRound.Instance.currentLevel.currentWeather != LevelWeatherType.Foggy || !__instance.foggyWeather.enabled || !BRBNetworker.Instance.FoggyLimit.Value)
-                return;
-
-            __instance.foggyWeather.parameters.meanFreePath = Mathf.Max(__instance.foggyWeather.parameters.meanFreePath, 7f);
         }
 
         [HarmonyPatch(nameof(TimeOfDay.DecideRandomDayEvents))]

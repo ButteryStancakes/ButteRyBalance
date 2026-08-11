@@ -9,25 +9,6 @@ namespace ButteRyBalance.Patches
     [HarmonyPatch(typeof(Terminal))]
     static class TerminalPatches
     {
-        internal static float fakeValueMultiplier = 0.4f;
-
-        [HarmonyPatch(nameof(Terminal.TextPostProcess))]
-        [HarmonyPrefix]
-        [HarmonyBefore(Plugin.GUID_BUTTERY_FIXES, Plugin.GUID_LETHAL_FIXES)]
-        [HarmonyPriority(Priority.HigherThanNormal)]
-        static void Terminal_Pre_TextPostProcess(ref float __state)
-        {
-            __state = RoundManager.Instance.scrapValueMultiplier;
-            RoundManager.Instance.scrapValueMultiplier = fakeValueMultiplier; // for display purposes
-        }
-
-        [HarmonyPatch(nameof(Terminal.TextPostProcess))]
-        [HarmonyPostfix]
-        static void Terminal_Post_TextPostProcess(float __state)
-        {
-            RoundManager.Instance.scrapValueMultiplier = __state;
-        }
-
         [HarmonyPatch(nameof(Terminal.SetItemSales))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> Terminal_Trans_SetItemSales(IEnumerable<CodeInstruction> instructions)

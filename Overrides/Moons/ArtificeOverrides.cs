@@ -6,10 +6,10 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class ArtificeOverrides
     {
-        internal static readonly Dictionary<int, int> adjustedInteriors = new()
+        internal static readonly Dictionary<Common.InteriorID, int> adjustedInteriors = new()
         {
-            { 0,  94 }, // factory, vanilla: 64
-            { 1, 300 }, // manor,   vanilla: 151
+            { Common.InteriorID.Factory,  94 }, // vanilla: 64
+            { Common.InteriorID.Manor,   300 }, // vanilla: 151
         };
 
         internal static readonly Dictionary<string, int> infestations = new()

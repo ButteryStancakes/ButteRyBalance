@@ -20,7 +20,7 @@ namespace ButteRyBalance
     [BepInDependency(GUID_SCANDALS_TWEAKS, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.6.6";
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.butterybalance", PLUGIN_NAME = "ButteRyBalance", PLUGIN_VERSION = "0.7.0";
         internal static new ManualLogSource Logger;
 
         const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility",
@@ -29,11 +29,11 @@ namespace ButteRyBalance
                      GUID_SPAWN_CYCLE_FIXES = "butterystancakes.lethalcompany.spawncyclefixes",
                      GUID_VERSION55_COMPANY_CRUISER = "scandal.v55cruiser",
                      GUID_FAIRER_FIRE_EXITS = "OreoM.FairerFireExits",
-                     GUID_SCANDALS_TWEAKS = "scandal.scandalstweaks",
                      GUID_CRUISER_IMPROVED = "DiggC.CruiserImproved";
         internal const string GUID_BUTTERY_FIXES = "butterystancakes.lethalcompany.butteryfixes",
                               GUID_LETHAL_FIXES = "uk.1a3.lethalfixes",
-                              GUID_LETHAL_LEVEL_LOADER = "imabatby.lethallevelloader";
+                              GUID_LETHAL_LEVEL_LOADER = "imabatby.lethallevelloader",
+                              GUID_SCANDALS_TWEAKS = "scandal.scandalstweaks";
 
         void Awake()
         {

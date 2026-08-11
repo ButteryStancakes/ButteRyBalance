@@ -6,7 +6,7 @@ namespace ButteRyBalance.Overrides.Moons
 {
     internal class MoonOverrides
     {
-        internal static int minScrap = -1, maxScrap = -1, adjustedEclipse = -1, powerCount = -1, outsidePowerCount = -1;
+        internal static int minScrap = -1, maxScrap = -1, powerCount = -1, outsidePowerCount = -1;
         internal static Dictionary<string, int> adjustedScrap = [], adjustedEnemies = [];
 
         static SpawnableOutsideObject snowman, snowmanTall;
@@ -16,17 +16,6 @@ namespace ButteRyBalance.Overrides.Moons
         {
             AdjustScrap(level);
             AdjustEnemies(level);
-
-            if (adjustedEclipse >= 0)
-            {
-                RandomWeatherWithVariables eclipse = level.randomWeathers.FirstOrDefault(randomWeather => randomWeather.weatherType == LevelWeatherType.Eclipsed);
-                if (eclipse != null)
-                {
-                    Plugin.Logger.LogDebug($"{level.name}.randomWeathers.Eclipsed.weatherVariable: {eclipse.weatherVariable} -> {adjustedEclipse}");
-                    eclipse.weatherVariable = adjustedEclipse;
-                }
-                adjustedEclipse = -1;
-            }
         }
 
         static void AdjustScrap(SelectableLevel level)
@@ -120,11 +109,11 @@ namespace ButteRyBalance.Overrides.Moons
             }
         }
 
-        internal static void AdjustInteriors(SelectableLevel level, Dictionary<int, int> adjustedInteriors)
+        internal static void AdjustInteriors(SelectableLevel level, Dictionary<Common.InteriorID, int> adjustedInteriors)
         {
             foreach (IntWithRarity interior in level.dungeonFlowTypes)
             {
-                if (adjustedInteriors.TryGetValue(interior.id, out int weight))
+                if (adjustedInteriors.TryGetValue((Common.InteriorID)interior.id, out int weight))
                 {
                     Plugin.Logger.LogDebug($"{level.name}.dungeonFlowTypes: {RoundManager.Instance.dungeonFlowTypes[interior.id].dungeonFlow.name}, {interior.rarity} -> {weight}");
                     interior.rarity = weight;
