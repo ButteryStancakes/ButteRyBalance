@@ -1,7 +1,6 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ButteRyBalance.Patches.Items
 {
@@ -9,7 +8,6 @@ namespace ButteRyBalance.Patches.Items
     static class ShovelPatches
     {
         static float timeLastBuffered;
-        static InputAction activateItem;
 
         [HarmonyPatch(nameof(Shovel.ItemActivate))]
         [HarmonyPrefix]
@@ -19,18 +17,11 @@ namespace ButteRyBalance.Patches.Items
                 timeLastBuffered = Time.realtimeSinceStartup;
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.OnEnable))]
-        [HarmonyPostfix]
-        static void PlayerControllerB_Post_OnEnable()
-        {
-            activateItem = InputSystem.actions.FindAction("ActivateItem", false);
-        }
-
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Update))]
         [HarmonyPostfix]
         static void PlayerControllerB_Post_Update(PlayerControllerB __instance)
         {
-            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is Shovel shovel && Configuration.shovelBuffer.Value && __instance.CanUseItem() && activateItem.IsPressed() && Time.realtimeSinceStartup - timeLastBuffered < 0.5f)
+            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is Shovel shovel && Configuration.shovelBuffer.Value && __instance.CanUseItem() && Common.activateItem != null && Common.activateItem.IsPressed() && Time.realtimeSinceStartup - timeLastBuffered < 0.5f)
             {
                 // prevents two swings when first clicking button
                 if (Time.realtimeSinceStartup - timeLastBuffered <= 0.5f)

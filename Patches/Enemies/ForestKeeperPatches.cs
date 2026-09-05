@@ -21,7 +21,7 @@ namespace ButteRyBalance.Patches.Enemies
         {
             Common.DamageID damageID = (Common.DamageID)hitID;
             // instant death from cruiser damage
-            if (force == 12 && BRBNetworker.Instance.GiantSquishy.Value && (damageID == Common.DamageID.Cruiser || (damageID != Common.DamageID.Shovel && damageID != Common.DamageID.Knife && Common.vehicleController != null)))
+            if (force == 12 && BRBNetworker.Instance.GiantSquishy.Value && (damageID == Common.DamageID.Cruiser || (!Common.INSTALLED_CRUISER_IMPROVED && damageID != Common.DamageID.Shovel && damageID != Common.DamageID.Knife && Common.vehicleController != null)))
                 force += 100;
         }
     }

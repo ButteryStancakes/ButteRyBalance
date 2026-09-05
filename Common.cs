@@ -3,6 +3,7 @@ using DunGen;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ButteRyBalance
 {
@@ -59,12 +60,21 @@ namespace ButteRyBalance
         internal static DressGirlAI girl;
         internal static bool girlUpdating;
 
+        internal static InputAction activateItem;
+
+        internal static Dictionary<ShotgunItem, int> nutcrackerGuns = [];
+        internal static int butlers = 0;
+        internal static Dictionary<ButlerEnemyAI, int> butlerKnives = [];
+
         internal static void Disconnect()
         {
             enemies.Clear();
             caveTiles.Clear();
             extraFireExits.Clear();
             CleanTemporaryNetworkObjects();
+            nutcrackerGuns.Clear();
+            butlers = 0;
+            butlerKnives.Clear();
         }
 
         internal static bool IsSnowLevel()

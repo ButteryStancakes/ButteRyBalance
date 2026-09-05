@@ -107,11 +107,13 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> VowMineshafts { get; private set; } = new();
         internal NetworkVariable<bool> RendShrink { get; private set; } = new();
         internal NetworkVariable<bool> DineFloods { get; private set; } = new();
+        internal NetworkVariable<bool> NutcrackerGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> JetpackBattery { get; private set; } = new();
         internal NetworkVariable<bool> ArtificeInteriors { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunPrice { get; private set; } = new();
         internal NetworkVariable<bool> EmbrionMega { get; private set; } = new();
         internal NetworkVariable<bool> ZapGunBattery { get; private set; } = new();
+        internal NetworkVariable<bool> ApparatusPrice { get; private set; } = new();
         internal NetworkVariable<bool> ButlerSquishy { get; private set; } = new();
         internal NetworkVariable<bool> GiantSquishy { get; private set; } = new();
         internal NetworkVariable<bool> JetpackUtility { get; private set; } = new();
@@ -120,6 +122,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> ProFlashlightPrice { get; private set; } = new();
         internal NetworkVariable<bool> VowMisty { get; private set; } = new();
         internal NetworkVariable<bool> NerfNightVision { get; private set; } = new();
+        internal NetworkVariable<bool> GunkfishSquishy { get; private set; } = new();
         internal NetworkVariable<bool> StunLonger { get; private set; } = new();
         internal NetworkVariable<bool> ManeaterTarget { get; private set; } = new();
         internal NetworkVariable<bool> CadaverTarget { get; private set; } = new();
@@ -169,11 +172,13 @@ namespace ButteRyBalance.Network
             VowMineshafts.Value = Configuration.vowMineshafts.Value;
             RendShrink.Value = Configuration.rendShrink.Value;
             DineFloods.Value = Configuration.dineFloods.Value;
+            NutcrackerGunPrice.Value = Configuration.nutcrackerGunPrice.Value;
             JetpackBattery.Value = Configuration.jetpackBattery.Value;
             ArtificeInteriors.Value = Configuration.artificeInteriors.Value;
             ZapGunPrice.Value = Configuration.zapGunPrice.Value;
             EmbrionMega.Value = Configuration.embrionMega.Value;
             ZapGunBattery.Value = Configuration.zapGunBattery.Value;
+            ApparatusPrice.Value = Configuration.apparatusPrice.Value;
             ButlerSquishy.Value = Configuration.butlerSquishy.Value;
             RendSnowmen.Value = (int)Configuration.rendSnowmen.Value;
             DineSnowmen.Value = (int)Configuration.dineSnowmen.Value;
@@ -185,6 +190,7 @@ namespace ButteRyBalance.Network
             ProFlashlightPrice.Value = Configuration.proFlashlightPrice.Value;
             VowMisty.Value = Configuration.vowMisty.Value;
             NerfNightVision.Value = Configuration.nerfNightVision.Value;
+            GunkfishSquishy.Value = Configuration.infestationGunkfish.Value; // this is for you Alex
             StunLonger.Value = Configuration.stunLonger.Value;
             CruiserPrice.Value = Configuration.cruiserPrice.Value;
             JetpackPrice.Value = Configuration.jetpackPrice.Value;
@@ -211,7 +217,7 @@ namespace ButteRyBalance.Network
             OverrideCoordinator.ApplyOnAllClients();
         }
 
-        /*[Rpc(SendTo.ClientsAndHost)]
+        [Rpc(SendTo.ClientsAndHost)]
         internal void SyncScrapPriceRpc(NetworkObjectReference scrap, int value, bool node = true)
         {
             if (scrap.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out GrabbableObject item))
@@ -223,7 +229,7 @@ namespace ButteRyBalance.Network
             }
             else
                 Plugin.Logger.LogError("Failed to sync scrap price");
-        }*/
+        }
 
         [Rpc(SendTo.ClientsAndHost)]
         internal void SyncFireExitRpc(NetworkObjectReference tele, int entranceId, bool isEntranceToBuilding = true, int audioReverbPreset = 2, bool fresh = true)
@@ -285,6 +291,25 @@ namespace ButteRyBalance.Network
             }
             else
                 Plugin.Logger.LogError($"Failed to sync entrance teleport #{entranceId}");
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        internal void SyncNutcrackerGunPriceRpc(NetworkObjectReference gunObject, int value)
+        {
+            if (gunObject.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out ShotgunItem gun))
+            {
+                if (gun.scrapValue == 60 && value != 60)
+                {
+                    gun.SetScrapValue(value);
+                    RoundManager.Instance.totalScrapValueInLevel += value - 60;
+                    Plugin.Logger.LogDebug($"Gun #{netObj.NetworkObjectId} price $60 -> ${value}");
+                }
+
+                if (!Common.nutcrackerGuns.ContainsKey(gun))
+                    Common.nutcrackerGuns.Add(gun, value);
+            }
+            else
+                Plugin.Logger.LogError("Failed to sync shotgun price");
         }
     }
 }

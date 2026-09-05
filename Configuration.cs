@@ -30,7 +30,7 @@ namespace ButteRyBalance
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, /*butlerKnifePrice,*/ knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, /*maneaterScrapGrowth,*/ moonsKillSwitch, /*dineReduceButlers,*/ barberDynamicSpawns, /*foggyLimit,*/ experimentationNoEvents, /*experimentationNoGiants, experimentationNoEggs, experimentationNoNuts,*/ experimentationBuffScrap, /*randomIndoorFog,*/ assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, /*offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos, coilheadCurves, rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice,*/ coilheadPower, /*dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor,*/ /*dineAdjustCurves,*/ titanBuffScrap, /*titanAddGold, titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, /*robotFog, nutcrackerGunPrice, nutcrackerKevlar,*/ jetpackBattery, /*jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, /*radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights,*/ maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, /*embrionAdjustEnemies,*/ embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, /*apparatusPrice, robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender, adamanceNerfEclipse,*/ adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, /*marchAdjustEnemies, gunkfishSquishy,*/ shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, /*weaponsAdjustWeights,*/ butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies, cavernsNoTurrets, cadaversLimitGrowth, cruiserAutoHeal, cruiserStabilize, dineAdjustEnemies, girlBreakers;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, /*maneaterScrapGrowth,*/ moonsKillSwitch, /*dineReduceButlers,*/ barberDynamicSpawns, /*foggyLimit,*/ experimentationNoEvents, /*experimentationNoGiants, experimentationNoEggs, experimentationNoNuts,*/ experimentationBuffScrap, /*randomIndoorFog,*/ assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, /*offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos, coilheadCurves, rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice,*/ coilheadPower, /*dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor,*/ /*dineAdjustCurves,*/ titanBuffScrap, /*titanAddGold, titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, /*robotFog,*/ nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, /*jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, /*radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights,*/ maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, /*embrionAdjustEnemies,*/ embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender, adamanceNerfEclipse,*/ adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, /*marchAdjustEnemies, gunkfishSquishy,*/ shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, /*weaponsAdjustWeights,*/ butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies, cavernsNoTurrets, cadaversLimitGrowth, cruiserAutoHeal, cruiserStabilize, dineAdjustEnemies, girlBreakers;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
         internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage, cruiserTurbos;
@@ -62,6 +62,12 @@ namespace ButteRyBalance
 
         static void ItemConfig()
         {
+            // Apparatus
+            apparatusPrice = configFile.Bind(
+                "Item.Apparatus",
+                "Randomize Price",
+                false,
+                "Randomizes the price of the apparatus once it has been unplugged. ($80 -> $40-130)");
             // Jetpack
             jetpackBattery = configFile.Bind(
                 "Item.Jetpack",
@@ -234,6 +240,11 @@ namespace ButteRyBalance
                 "Squishy",
                 true,
                 "Butlers take bonus damage from shotgun shots and explosions, allowing those to kill in one hit.");
+            butlerKnifePrice = configFile.Bind(
+                "Enemy.Butler",
+                "Randomize Knife Price",
+                false,
+                "Restores the kitchen knife's price randomization. ($35 -> $28-84)");
             butlerNoSearch = configFile.Bind(
                 "Enemy.Butler",
                 "No Search in Solo",
@@ -335,6 +346,18 @@ namespace ButteRyBalance
                 "Infighting",
                 true,
                 "Allows Maneaters to be targeted by other enemies after transforming into an adult outside the building. (Baboon hawks, Old Birds, giant sapsucker)");
+
+            // Nutcracker
+            nutcrackerGunPrice = configFile.Bind(
+                "Enemy.Nutcracker",
+                "Randomize Shotgun Price",
+                false,
+                "Enables randomization for the shotgun's price. ($60 -> $25-90)");
+            nutcrackerKevlar = configFile.Bind(
+                "Enemy.Nutcracker",
+                "Last Stand",
+                false,
+                "Nutcrackers will resist instant death from a shotgun blast if they are at full health, immediately entering \"berserk\" state.");
 
             // Vain Shrouds
             vainsChanceSame = configFile.Bind(
@@ -662,7 +685,7 @@ namespace ButteRyBalance
                 "Infestations",
                 "Backwater Gunkfish Infestations",
                 false,
-                "Allow Backwater Gunkfish to be selected as the subject of an infestation.");
+                "Allow Backwater Gunkfish to be selected as the subject of an infestation. Also reduces HP from 4 to 3.");
         }
 
         static void MigrateLegacyConfig()
@@ -719,16 +742,12 @@ namespace ButteRyBalance
                 ("Item.RadarBooster", "Buff Price"),
                 ("Item.StunGrenade", "Nerf Price"),
                 ("Item.Jetpack", "Reduce Max Discount"),
-                ("Enemy.Nutcracker", "Last Stand"),
                 ("Misc", "Rework Foggy Weather"),
                 ("Misc", "Nerf Foggy Weather"),
                 ("Moon.March", "Adjust Outdoor Enemies"),
                 ("Item.MetalSheet", "Increase Value"),
                 ("Items", "Adjust Scrap Weights"),
                 ("Item.Shovel", "Adjust Weapon Weights"),
-                ("Item.Apparatus", "Randomize Price"),
-                ("Enemy.Butler", "Randomize Knife Price"),
-                ("Enemy.Nutcracker", "Randomize Gun Price"),
                 ("Enemy.BackwaterGunkfish", "Squishy"),
                 ("Misc", "Random Indoor Fog"),
                 ("Moon.Experimentation", "No Forest Keepers"),

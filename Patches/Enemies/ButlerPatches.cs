@@ -78,7 +78,7 @@ namespace ButteRyBalance.Patches.Enemies
         static void ButlerEnemyAI_Pre_HitEnemy(ButlerEnemyAI __instance, ref int force, int hitID)
         {
             Common.DamageID damageID = (Common.DamageID)hitID;
-            if (force > 2 && BRBNetworker.Instance.ButlerSquishy.Value && damageID != Common.DamageID.Shovel)
+            if (force > 2 && BRBNetworker.Instance.ButlerSquishy.Value && damageID == Common.DamageID.Unknown)
                 force += 3;
         }
 
@@ -96,6 +96,15 @@ namespace ButteRyBalance.Patches.Enemies
         {
             if (BRBNetworker.Instance.ButlerLongCooldown.Value)
                 __instance.enemyHP = Mathf.Max(__instance.enemyHP, 3);
+
+            if (__instance.IsServer && Configuration.butlerKnifePrice.Value && !Common.butlerKnives.ContainsKey(__instance))
+            {
+                System.Random butlerRandom = new(StartOfRound.Instance.randomMapSeed + 50 + Common.butlers);
+                butlerRandom.NextDouble();
+                Common.butlerKnives.Add(__instance, butlerRandom.Next(28, 84 + 1));
+                Common.butlers++;
+                Plugin.Logger.LogDebug($"Butler #{__instance.NetworkObjectId} ({Common.butlers}/{__instance.enemyType.MaxCount}) has ${Common.butlerKnives[__instance]} knife");
+            }
         }
 
         [HarmonyPatch(nameof(ButlerEnemyAI.SyncSearchingMadlyServerRpc))]

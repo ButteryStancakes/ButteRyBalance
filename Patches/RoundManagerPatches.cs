@@ -261,7 +261,7 @@ namespace ButteRyBalance.Patches
             if (__instance.IsServer)
             {
                 InfestationOverrides.SpawnInfestationWave();
-                if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceReduceCadavers.Value && __instance.minEnemiesToSpawn < 1 /*&& __instance.timeScript.hour > __instance.hourTimeBetweenEnemySpawnBatches && new System.Random(__instance.playersManager.randomMapSeed / Mathf.RoundToInt(__instance.timeScript.hour * __instance.timeScript.lengthOfHours)).NextDouble() < 0.8*/)
+                if (__instance.currentLevel.name == "AdamanceLevel" && Configuration.adamanceReduceCadavers.Value && __instance.minEnemiesToSpawn < 1 && __instance.timeScript.hour > __instance.hourTimeBetweenEnemySpawnBatches /*&& new System.Random(__instance.playersManager.randomMapSeed / Mathf.RoundToInt(__instance.timeScript.hour * __instance.timeScript.lengthOfHours)).NextDouble() < 0.8*/)
                 {
                     __state = true;
                     __instance.minEnemiesToSpawn = 1;
@@ -295,6 +295,23 @@ namespace ButteRyBalance.Patches
             {
                 switch (__instance.currentLevel.name)
                 {
+                    case "ExperimentationLevel":
+                        if (Configuration.experimentationBuffScrap.Value)
+                        {
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft)
+                            {
+                                // v9
+                                __instance.currentLevel.minScrap = 11;
+                                __instance.currentLevel.maxScrap = 16;
+                            }
+                            else
+                            {
+                                // vanilla values, because mineshaft is a bit *too* good...
+                                __instance.currentLevel.minScrap = 8;
+                                __instance.currentLevel.maxScrap = 12;
+                            }
+                        }
+                        break;
                     case "AssuranceLevel":
                         if (Configuration.assuranceNerfScrap.Value)
                         {
@@ -305,6 +322,7 @@ namespace ButteRyBalance.Patches
                             }
                             else
                             {
+                                // v9
                                 __instance.currentLevel.minScrap = 11;
                                 __instance.currentLevel.maxScrap = 16;
                             }
@@ -321,7 +339,6 @@ namespace ButteRyBalance.Patches
                             }
                             else
                             {
-                                // vanilla values, because mineshaft is a bit *too* good...
                                 __instance.currentLevel.minScrap = 14;
                                 __instance.currentLevel.maxScrap = 17;
                             }
@@ -391,6 +408,35 @@ namespace ButteRyBalance.Patches
             // https://discord.com/channels/750645598293590077/1501504390148653066/1503528764108181574
             if (!BRBNetworker.Instance.MoonsKillSwitch.Value)
                 __instance.AnomalyRandom.NextDouble();
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
+        [HarmonyTranspiler]
+        [HarmonyPriority(Priority.VeryLow)]
+        static IEnumerable<CodeInstruction> RoundManager_Trans_SpawnScrapInLevel(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            FieldInfo maxScrap = AccessTools.Field(typeof(SelectableLevel), nameof(SelectableLevel.maxScrap)),
+                      maxValue = AccessTools.Field(typeof(Item), nameof(Item.maxValue));
+            for (int i = 1; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand as MethodInfo == ReflectionCache.NEXT && codes[i - 1].opcode == OpCodes.Ldfld)
+                {
+                    FieldInfo operand = (FieldInfo)codes[i - 1].operand;
+                    if (operand == maxScrap || operand == maxValue)
+                    {
+                        codes.InsertRange(i, [
+                            new(OpCodes.Ldc_I4_1),
+                            new(OpCodes.Add),
+                        ]);
+                        Plugin.Logger.LogDebug($"Transpiler (Scrap spawn): +1 to {operand.Name}");
+                    }
+                }
+            }
+
+            //Plugin.Logger.LogError("Scrap spawn transpiler failed");
+            return codes; // instructions
         }
 
         [HarmonyPatch(nameof(RoundManager.SetLockedDoors))]
@@ -564,6 +610,40 @@ namespace ButteRyBalance.Patches
         {
             if (Common.girlUpdating && Common.girl != null && Common.girl.IsOwner)
                 GameNetworkManager.Instance.localPlayerController.JumpToFearLevel(Common.girl.timesSeenByPlayer > 0 ? 0.9f : 0.2f);
+        }
+
+        [HarmonyPatch(nameof(RoundManager.SyncScrapValuesClientRpc))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_SyncScrapValuesClientRpc(RoundManager __instance)
+        {
+            if (!__instance.IsServer)
+                return;
+
+            if (__instance.mapPropsContainer != null && BRBNetworker.Instance.ApparatusPrice.Value)
+            {
+                Common.InteriorID interior = (Common.InteriorID)__instance.currentDungeonType;
+                if (interior == Common.InteriorID.Factory || interior == Common.InteriorID.FactoryThreeExits || interior == Common.InteriorID.FactoryExtraLarge)
+                {
+                    LungProp lungProp = __instance.mapPropsContainer.GetComponentInChildren<LungProp>();
+                    if (lungProp?.NetworkObject != null && lungProp.isLungDocked && lungProp.scrapValue == 80)
+                    {
+                        System.Random apparatusRandom = new(StartOfRound.Instance.randomMapSeed + 4);
+                        apparatusRandom.NextDouble();
+
+                        BRBNetworker.Instance.SyncScrapPriceRpc(lungProp.NetworkObject, apparatusRandom.Next(40, 130 + 1), false);
+                        Plugin.Logger.LogDebug($"Apparatus: ${lungProp.scrapValue}");
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(nameof(RoundManager.UnloadSceneObjectsEarly))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_UnloadSceneObjectsEarly()
+        {
+            Common.nutcrackerGuns.Clear();
+            Common.butlers = 0;
+            Common.butlerKnives.Clear();
         }
     }
 }

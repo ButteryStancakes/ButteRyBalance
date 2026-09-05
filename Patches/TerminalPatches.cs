@@ -56,9 +56,15 @@ namespace ButteRyBalance.Patches
         {
             if (node.terminalEvent == "cheat_ResetCredits" && GameNetworkManager.Instance.localPlayerController.IsServer)
             {
+                /*
                 string username = GameNetworkManager.Instance.localPlayerController.playerUsername;
                 if (username == "Zeekerss" || username == "Blueray" || username == "Puffo")
                     return; // don't run twice
+                */
+
+                // don't really want to add a config setting just for disabling this, so instead I guess I'll just limit it to testing in my own environment
+                if (GameNetworkManager.Instance.localPlayerController.playerUsername != "ButteryStancakes")
+                    return;
 
                 __instance.useCreditsCooldown = true;
                 __instance.groupCredits = 2500;
