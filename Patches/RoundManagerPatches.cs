@@ -1,8 +1,10 @@
-﻿using ButteRyBalance.Network;
+﻿using ButteRyBalance.Components;
+using ButteRyBalance.Network;
 using ButteRyBalance.Overrides;
 using ButteRyBalance.Overrides.Moons;
 using ButteRyBalance.Utilities;
 using HarmonyLib;
+using ScandalsTweaks.Scripts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -188,6 +190,12 @@ namespace ButteRyBalance.Patches
                             }
                         }
                     }
+                }
+
+                if (Common.vehicleController != null && BRBNetworker.Instance.CruiserPatchEnemies.Value && Common.vehicleController.GetComponent<SVehicleEnemyManager>() == null && !Common.INSTALLED_VERSION55_COMPANY_CRUISER)
+                {
+                    Plugin.Logger.LogWarning("Cruiser was missing enemy manager script by start of round");
+                    Common.vehicleController.gameObject.AddComponent<ButteryCruiserManager>();
                 }
             }
         }
@@ -417,26 +425,30 @@ namespace ButteRyBalance.Patches
         {
             List<CodeInstruction> codes = instructions.ToList();
 
-            FieldInfo maxScrap = AccessTools.Field(typeof(SelectableLevel), nameof(SelectableLevel.maxScrap)),
-                      maxValue = AccessTools.Field(typeof(Item), nameof(Item.maxValue));
+            FieldInfo maxScrap = AccessTools.Field(typeof(SelectableLevel), nameof(SelectableLevel.maxScrap));
+            int changes = 0;
             for (int i = 1; i < codes.Count; i++)
             {
                 if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand as MethodInfo == ReflectionCache.NEXT && codes[i - 1].opcode == OpCodes.Ldfld)
                 {
                     FieldInfo operand = (FieldInfo)codes[i - 1].operand;
-                    if (operand == maxScrap || operand == maxValue)
+                    if (operand == maxScrap || operand == ReflectionCache.MAX_VALUE)
                     {
                         codes.InsertRange(i, [
                             new(OpCodes.Ldc_I4_1),
                             new(OpCodes.Add),
                         ]);
+                        i += 2;
                         Plugin.Logger.LogDebug($"Transpiler (Scrap spawn): +1 to {operand.Name}");
+                        changes++;
                     }
                 }
             }
 
-            //Plugin.Logger.LogError("Scrap spawn transpiler failed");
-            return codes; // instructions
+            if (changes < 3)
+                Plugin.Logger.LogError("Scrap spawn transpiler failed");
+
+            return codes;
         }
 
         [HarmonyPatch(nameof(RoundManager.SetLockedDoors))]

@@ -22,5 +22,18 @@ namespace ButteRyBalance.Patches.Enemies
             if (StartOfRound.Instance.connectedPlayersAmount < 4 && BRBNetworker.Instance.JesterLongCooldown.Value)
                 __instance.beginCrankingTimer = Mathf.Max(__instance.beginCrankingTimer, Random.Range(12f, 28f));
         }
+
+        [HarmonyPatch(nameof(JesterAI.Update))]
+        [HarmonyPrefix]
+        static void JesterAI_Pre_Update(JesterAI __instance)
+        {
+            if (__instance.currentBehaviourStateIndex == 2 && __instance.IsOwner && __instance.targetPlayer != null && __instance.targetPlayer.isPlayerControlled && __instance.targetPlayer.isInsideFactory)
+            {
+                if (__instance.noPlayersToChaseTimer <= 0f)
+                    Plugin.Logger.LogDebug("Refreshed Jester's no players timer");
+
+                __instance.noPlayersToChaseTimer = 5f;
+            }
+        }
     }
 }

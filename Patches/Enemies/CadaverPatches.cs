@@ -1,5 +1,10 @@
-﻿using GameNetcodeStuff;
+﻿using ButteRyBalance.Utilities;
+using GameNetcodeStuff;
 using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -8,6 +13,8 @@ namespace ButteRyBalance.Patches.Enemies
     [HarmonyPatch]
     static class CadaverPatches
     {
+        static float timeOfDaySpawned;
+
         [HarmonyPatch(typeof(CadaverGrowthAI), nameof(CadaverGrowthAI.InfectPlayer))]
         [HarmonyPostfix]
         [HarmonyWrapSafe]
@@ -36,8 +43,10 @@ namespace ButteRyBalance.Patches.Enemies
         [HarmonyPostfix]
         static void CadaverGrowthAI_Post_Start(CadaverGrowthAI __instance)
         {
-            if (Configuration.cadaversLimitGrowth.Value)
-                __instance.GrowthChancePerInterval = 20f;
+            /*if (Configuration.cadaversLimitGrowth.Value)
+                __instance.GrowthChancePerInterval = 20f;*/
+
+            timeOfDaySpawned = TimeOfDay.Instance.normalizedTimeOfDay;
         }
 
         [HarmonyPatch(typeof(CadaverGrowthAI), nameof(CadaverGrowthAI.RemoveWeedFromTile))]
@@ -53,6 +62,39 @@ namespace ButteRyBalance.Patches.Enemies
         {
             if (Configuration.cadaversLimitGrowth.Value)
                 __instance.spreadInterval = Mathf.Clamp(__state - 2f, -12f, __instance.spreadInterval);
+        }
+
+        public static float GetCadaverGrowthTime()
+        {
+            if (Configuration.cadaversLimitGrowth.Value)
+                return Mathf.InverseLerp(timeOfDaySpawned, 1f, TimeOfDay.Instance.normalizedTimeOfDay);
+
+            return TimeOfDay.Instance.normalizedTimeOfDay;
+        }
+
+        [HarmonyPatch(typeof(CadaverGrowthAI), nameof(CadaverGrowthAI.DoAIInterval))]
+        [HarmonyPatch(typeof(CadaverGrowthAI), nameof(CadaverGrowthAI.LateUpdate))]
+        [HarmonyTranspiler]
+        static IEnumerable<CodeInstruction> CadaverGrowthAI_Trans(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            bool done = false;
+            for (int i = 0; i < codes.Count - 2; i++)
+            {
+                if (codes[i].opcode == OpCodes.Call && codes[i].operand as MethodInfo == ReflectionCache.TIME_OF_DAY_INSTANCE && codes[i + 1].opcode == OpCodes.Ldfld && (FieldInfo)codes[i + 1].operand == ReflectionCache.NORMALIZED_TIME_OF_DAY && codes[i + 2].opcode == OpCodes.Callvirt && codes[i + 2].operand as MethodInfo == ReflectionCache.EVALUATE)
+                {
+                    codes[i].operand = ReflectionCache.GET_CADAVER_GROWTH_TIME;
+                    codes.RemoveAt(i + 1);
+                    Plugin.Logger.LogDebug($"Transpiler ({__originalMethod.DeclaringType}.{__originalMethod.Name}): GetCadaverGrowthTime()");
+                    done = true;
+                }
+            }
+
+            if (!done)
+                Plugin.Logger.LogError($"{__originalMethod.DeclaringType}.{__originalMethod.Name} transpiler failed");
+
+            return codes;
         }
     }
 }

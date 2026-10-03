@@ -1,7 +1,9 @@
-﻿using ButteRyBalance.Network;
+﻿using ButteRyBalance.Components;
+using ButteRyBalance.Network;
 using ButteRyBalance.Utilities;
 using GameNetcodeStuff;
 using HarmonyLib;
+using ScandalsTweaks.Scripts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,7 +28,12 @@ namespace ButteRyBalance.Patches
         static void VehicleController_Post_Start(VehicleController __instance)
         {
             if (__instance.vehicleID == 0)
+            {
                 Common.vehicleController = __instance;
+
+                if (!Common.INSTALLED_VERSION55_COMPANY_CRUISER && BRBNetworker.Instance.CruiserPatchEnemies.Value && __instance.GetComponent<SVehicleEnemyManager>() == null)
+                    __instance.gameObject.AddComponent<ButteryCruiserManager>();
+            }
         }
 
         [HarmonyPatch(nameof(VehicleController.CarReactToObstacle))]
@@ -62,7 +69,7 @@ namespace ButteRyBalance.Patches
                     return;
 
                 // no extra damage if car is parked with the engine off, and no players are nearby
-                if (!__instance.ignitionStarted && __instance.gear == CarGearShift.Park && __instance.currentDriver == null && __instance.currentPassenger == null)
+                if (!__instance.ignitionStarted && __instance.gear == CarGearShift.Park && __instance.currentDriver == null && __instance.currentPassenger == null && (!Common.INSTALLED_CRUISER_IMPROVED || __instance.radioAudio == null || !__instance.radioAudio.isPlaying))
                 {
                     bool nobodyNearCar = true;
                     for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace ButteRyBalance.Patches.Items
 {
     [HarmonyPatch(typeof(KnifeItem))]
-    static class KnifePatches
+    static class KitchenKnifePatches
     {
         static float knifeCooldown = 0.43f;
         static float timeAtLastSwing;
@@ -69,7 +69,7 @@ namespace ButteRyBalance.Patches.Items
                 if (codes[i].opcode == OpCodes.Ldc_R4 && (float)codes[i].operand == 0.43f)
                 {
                     codes[i].opcode = OpCodes.Ldsfld;
-                    codes[i].operand = AccessTools.Field(typeof(KnifePatches), nameof(knifeCooldown));
+                    codes[i].operand = AccessTools.Field(typeof(KitchenKnifePatches), nameof(knifeCooldown));
                     Plugin.Logger.LogDebug("Transpiler (Knife): Dynamic cooldown");
                     return codes;
                 }

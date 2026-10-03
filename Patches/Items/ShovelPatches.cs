@@ -11,7 +11,7 @@ namespace ButteRyBalance.Patches.Items
 
         [HarmonyPatch(nameof(Shovel.ItemActivate))]
         [HarmonyPrefix]
-        static void Shovel_Post_ItemActivate(Shovel __instance, bool buttonDown)
+        static void Shovel_Pre_ItemActivate(Shovel __instance, bool buttonDown)
         {
             if (buttonDown && __instance.reelingUp)
                 timeLastBuffered = Time.realtimeSinceStartup;
@@ -21,7 +21,7 @@ namespace ButteRyBalance.Patches.Items
         [HarmonyPostfix]
         static void PlayerControllerB_Post_Update(PlayerControllerB __instance)
         {
-            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is Shovel shovel && Configuration.shovelBuffer.Value && __instance.CanUseItem() && Common.activateItem != null && Common.activateItem.IsPressed() && Time.realtimeSinceStartup - timeLastBuffered < 0.5f)
+            if (__instance.currentlyHeldObjectServer != null && __instance.timeSinceSwitchingSlots >= 0.075f && __instance.currentlyHeldObjectServer is Shovel && Configuration.shovelBuffer.Value && __instance.CanUseItem() && Common.activateItem != null && Common.activateItem.IsPressed() && Time.realtimeSinceStartup - timeLastBuffered < 0.5f)
             {
                 // prevents two swings when first clicking button
                 if (Time.realtimeSinceStartup - timeLastBuffered <= 0.5f)

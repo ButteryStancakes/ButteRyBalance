@@ -1,4 +1,5 @@
-﻿using GameNetcodeStuff;
+﻿using ButteRyBalance.Network;
+using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,14 @@ namespace ButteRyBalance.Patches.Items
             }
 
             return instructions;
+        }
+
+        [HarmonyPatch(nameof(SprayPaintItem.ResizeMatrix))]
+        [HarmonyPrefix]
+        static void SprayPaintItem_Pre_ResizeMatrix(ref float shrinkSpeed, bool shrink)
+        {
+            if (shrink && shrinkSpeed < 2.2f && BRBNetworker.Instance.VainsShrink.Value)
+                shrinkSpeed = 2.2f;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ButteRyBalance.Overrides.Moons
             { "SeveredEar",     (  25,  85 ) }, // vanilla:  7,  35
             { "SeveredFoot",    (  50, 135 ) }, // vanilla: 15,  55
             { "SeveredHand",    (  35,  75 ) }, // vanilla: 10,  30
-            { "SeveredHeart",   ( 210, 440 ) }, // vanilla: 60, 250
+            { "SeveredHeart",   ( 150, 435 ) }, // vanilla: 60, 250
             { "SeveredThigh",   (  70, 110 ) }, // vanilla: 20,  45
             { "SeveredTongue",  (  30, 100 ) }, // vanilla:  8,  40
         };
@@ -139,7 +139,7 @@ namespace ButteRyBalance.Overrides.Moons
                 }
                 else
                 {
-                    MoonOverrides.minScrap = 38;
+                    MoonOverrides.minScrap = 41;
                     MoonOverrides.maxScrap = 75;
 
                     MoonOverrides.adjustedScrap.AddRange(new(){

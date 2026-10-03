@@ -30,10 +30,10 @@ namespace ButteRyBalance
 
         static ConfigFile configFile;
 
-        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, /*maneaterScrapGrowth,*/ moonsKillSwitch, /*dineReduceButlers,*/ barberDynamicSpawns, /*foggyLimit,*/ experimentationNoEvents, /*experimentationNoGiants, experimentationNoEggs, experimentationNoNuts,*/ experimentationBuffScrap, /*randomIndoorFog,*/ assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, /*offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos, coilheadCurves, rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice,*/ coilheadPower, /*dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor,*/ /*dineAdjustCurves,*/ titanBuffScrap, /*titanAddGold, titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, /*robotFog,*/ nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, /*jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, /*radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights,*/ maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, /*embrionAdjustEnemies,*/ embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender, adamanceNerfEclipse,*/ adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, /*marchAdjustEnemies, gunkfishSquishy,*/ shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, /*weaponsAdjustWeights,*/ butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies, cavernsNoTurrets, cadaversLimitGrowth, cruiserAutoHeal, cruiserStabilize, dineAdjustEnemies, girlBreakers;
+        internal static ConfigEntry<bool> coilheadStunReset, jesterWalkThrough, butlerManorChance, butlerStealthStab, butlerLongCooldown, jesterLongCooldown, butlerKnifePrice, knifeShortCooldown, knifeAutoSwing, maneaterLimitGrowth, maneaterWideTurns, /*maneaterScrapGrowth,*/ moonsKillSwitch, /*dineReduceButlers,*/ barberDynamicSpawns, /*foggyLimit,*/ experimentationNoEvents, /*experimentationNoGiants, experimentationNoEggs, experimentationNoNuts,*/ experimentationBuffScrap, /*randomIndoorFog,*/ assuranceNerfScrap, assuranceMasked, /*vowAdjustScrap,*/ vowNoCoils, vowMineshafts, /*shrinkMineshafts,*/ offenseBuffScrap, /*offenseMineshafts,*/ offenseMasked, /*offenseNerfEclipse, vowNoTraps, marchShrink, marchBuffScrap, marchRainy, multiplayerWeather,*/ butlerSquishy, adamanceBuffScrap, /*adamanceReduceChaos, coilheadCurves, rendMineshafts,*/ rendShrink, /*rendAdjustIndoor, rendAdjustScrap, rendWorms, metalSheetPrice,*/ coilheadPower, /*dineAdjustIndoor, dineBuffScrap, dineAdjustOutdoor,*/ /*dineAdjustCurves,*/ titanBuffScrap, /*titanAddGold, titanMineshafts,*/ titanAdjustEnemies, titanWeeds, /*dineMasked,*/ giantSnowSight, /*giantForgetTargets,*/ dineFloods, /*robotFog,*/ nutcrackerGunPrice, nutcrackerKevlar, jetpackBattery, /*jetpackReduceDiscount, tzpExpandCapacity, jetpackInertia,*/ artificeBuffScrap, artificeInteriors, artificeTurrets, zapGunPrice, /*radarBoosterPrice, stunGrenadePrice, scrapAdjustWeights,*/ maneaterPower, /*embrionMineshafts, embrionBuffScrap,*/ embrionWeeds, /*embrionAdjustEnemies,*/ embrionMega, infestationRework, infestationButlers, infestationMasked, infestationBarbers, /*foxSquishy,*/ zapGunBattery, offenseBees, apparatusPrice, /*robotRider, jetpackShortCircuit,*/ spikeTrapDistance, infestationThumpers, coilheadPersistence, giantSquishy, hoarderAngerManagement, infestationSnareFlea, infestationCoilhead, /*foxSlender, adamanceNerfEclipse,*/ adamanceReduceCadavers, cadaversPower, pufferPower, spikeTrapMineshaft, jetpackUtility, infestationGunkfish, adamanceInteriors, adamanceNoMasks, offenseNerfTraps, assuranceGiants, dineMineshafts, proFlashlightPrice, vowMisty, nerfNightVision, /*marchAdjustEnemies, gunkfishSquishy,*/ shovelBuffer, stunLonger, maneaterTarget, cadaverTarget, cavernsNoKeys, jetpackWarmUp, cruiserItemSafety, cruiserExhaust, cruiserRegen, cruiserTrees, cruiserEnemyDamage, cruiserCrashDamage, /*weaponsAdjustWeights,*/ butlerNoSearch, offenseFireExits, dineFireExits, proportionalFireExits, cruiserPatchEnemies, cavernsNoTurrets, cadaversLimitGrowth, cruiserAutoHeal, cruiserStabilize, dineAdjustEnemies, girlBreakers, vainsShrink;
         internal static ConfigEntry<DineScrap> dineScrapPool;
         internal static ConfigEntry<SnowmanFrequency> rendSnowmen, dineSnowmen, titanSnowmen;
-        internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage, cruiserTurbos;
+        internal static ConfigEntry<int> cruiserPrice, jetpackPrice, weedKillerDamage, cruiserTurbos, vainsIterations;
         internal static ConfigEntry<JetpackControls> jetpackControls;
         internal static ConfigEntry<float> vainsChanceSame, vainsChanceSameEarly, vainsChanceOther, vainsChanceRare;
 
@@ -187,7 +187,7 @@ namespace ButteRyBalance
                 "Vehicle.Cruiser",
                 "Patch Enemy Protection",
                 true,
-                "Corrects several interactions where you are erroneously invincible to enemies while inside the Cruiser.\nFor example, this fixes the bug preventing giants from grabbing players off the roof of the car or out of the seats, any time the back door is closed.\nWhen using Scandal's Tweaks, Old Birds and baboon hawks will also be able to see players sitting in the front seats.");
+                "Corrects several interactions where you are erroneously invincible to enemies while inside the Cruiser.\nFor example, this fixes the bug preventing giants from grabbing players off the roof of the car or out of the seats, any time the back door is closed.\nOld Birds and baboon hawks will also be able to see players sitting in the front seats.");
             cruiserItemSafety = configFile.Bind(
                 "Vehicle.Cruiser",
                 "No Space Insurance",
@@ -267,8 +267,8 @@ namespace ButteRyBalance
             cadaversLimitGrowth = configFile.Bind(
                 "Enemy.CadaverGrowths",
                 "Limit Growth",
-                false,
-                "Sharply limits Cadaver Growths' rate of spread throughout the building, such that it only covers a small concentrated area, which fits vanilla's given power level better.");
+                true,
+                "Cadaver Growths' rate of spread now scales based on how late in the day it spawns; immediately after spawning, there will always be a grace period where growth is extremely slow, but it will ramp faster when starting later in the day.");
 
             // Coil-head
             coilheadStunReset = configFile.Bind(
@@ -388,6 +388,18 @@ namespace ButteRyBalance
                 new ConfigDescription(
                     "The chance for vain shrouds to start growing on a moon each day if none of the other settings apply.",
                     new AcceptableValueRange<float>(0f, 100f)));
+            vainsIterations = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Maximum Iterations",
+                35,
+                new ConfigDescription(
+                    "How many iterations of growth can occur for vain shrouds total? (2-3 per day on average)\nBefore v80, this value was set to 20.",
+                    new AcceptableValueRange<int>(0, 35)));
+            vainsShrink = configFile.Bind(
+                "Enemy.VainShrouds",
+                "Flimsy",
+                false,
+                "Weed killer is about 30% more efficient at shrinking Vain Shrouds.");
 
             // Spore lizard
             pufferPower = configFile.Bind(

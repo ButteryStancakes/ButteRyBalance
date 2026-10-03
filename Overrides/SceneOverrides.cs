@@ -107,6 +107,15 @@ namespace ButteRyBalance.Overrides
                         entranceTeleport3 = SpawnFireExit(3, new(49.488266f, 9.30028534f, 62.257103f), Quaternion.Euler(-0.035f, 109.308f, -0.063f));
                         entranceTeleport2 = SpawnFireExit(2, new(-115.096237f, -7.86410809f, -50.7210159f), Quaternion.Euler(0f, 83.113f, 0f));
                         entranceTeleport1 = GameObject.Find("/Environment/Teleports/EntranceTeleportB")?.GetComponent<EntranceTeleport>();
+
+                        // restore this ambience, because otherwise the ship fire exit sounds very empty
+                        HighAndLowAltitudeAudio highAndLowAltitudeAudio = GameObject.Find("/Systems/Audio/HighAndLowAltitudeBG")?.GetComponent<HighAndLowAltitudeAudio>();
+                        if (highAndLowAltitudeAudio != null)
+                        {
+                            highAndLowAltitudeAudio.maxAltitude = 31;
+                            highAndLowAltitudeAudio.minAltitude = -1;
+                            highAndLowAltitudeAudio.gameObject.SetActive(true);
+                        }
                     }
 
                     break;

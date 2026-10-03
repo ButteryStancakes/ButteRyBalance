@@ -139,6 +139,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> CruiserAutoHeal { get; private set; } = new();
         internal NetworkVariable<bool> CruiserDontStabilize { get; private set; } = new();
         internal NetworkVariable<bool> GirlBreakers { get; private set; } = new();
+        internal NetworkVariable<bool> VainsShrink { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -147,6 +148,7 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<int> JetpackControls { get; private set; } = new();
         internal NetworkVariable<int> WeedKillerDamage { get; private set; } = new();
         internal NetworkVariable<int> CruiserTurbos { get; private set; } = new();
+        internal NetworkVariable<int> VainsIterations { get; private set; } = new();
 
         /*internal static void ConfigUpdated()
         {
@@ -212,6 +214,8 @@ namespace ButteRyBalance.Network
             CruiserAutoHeal.Value = Configuration.cruiserAutoHeal.Value;
             CruiserDontStabilize.Value = !Configuration.cruiserStabilize.Value; // inverted, since it will default to false and VehicleController.Update() might check before sync
             GirlBreakers.Value = Configuration.girlBreakers.Value;
+            VainsShrink.Value = Configuration.vainsShrink.Value;
+            VainsIterations.Value = Configuration.vainsIterations.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();
