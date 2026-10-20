@@ -24,7 +24,7 @@ namespace ButteRyBalance.Overrides.Moons
                     // v9
                     { "Cog1", 94 },
                     { "EnginePart1", 80 },
-                    //{ "MetalSheet", 100 },
+                    { "MetalSheet", 100 },
                     { "BigBolt", 89 },
                     { "ToyCube", 11 },
                     //{ "FlashLaserPointer", 4 },
@@ -41,7 +41,7 @@ namespace ButteRyBalance.Overrides.Moons
                     { "Candy", 3 },
 
                     // OFFENSE
-                    { "MetalSheet", 65 },
+                    //{ "MetalSheet", 65 },
                     //{ "ToyCube", 18 },
                     { "StopSign", 27 },
                     //{ "Bell", 0 },

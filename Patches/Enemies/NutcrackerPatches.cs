@@ -40,5 +40,21 @@ namespace ButteRyBalance.Patches.Enemies
                 BRBNetworker.Instance.SyncNutcrackerGunPriceRpc(__instance.gun.NetworkObject, nutcrackerGunRandom.Next(25, 90 + 1));
             }
         }
+
+        [HarmonyPatch(typeof(NutcrackerEnemyAI), nameof(NutcrackerEnemyAI.IsLocalPlayerMoving))]
+        [HarmonyPostfix]
+        static void NutcrackerEnemyAI_Post_IsLocalPlayerMoving(NutcrackerEnemyAI __instance, ref bool __result)
+        {
+            if (!__result && __instance.lastPlayerSeenMoving == (int)GameNetworkManager.Instance.localPlayerController.playerClientId && BRBNetworker.Instance.NutcrackerPersistence.Value)
+                __result = true;
+        }
+
+        [HarmonyPatch(typeof(NutcrackerEnemyAI), nameof(NutcrackerEnemyAI.CheckLineOfSightForLocalPlayer))]
+        [HarmonyPrefix]
+        static void NutcrackerEnemyAI_Pre_CheckLineOfSightForLocalPlayer(NutcrackerEnemyAI __instance, ref int range)
+        {
+            if (!__instance.isOutside && !__instance.enemyType.canSeeThroughFog && RoundManager.Instance.indoorFog.gameObject.activeSelf && range > Common.INTERIOR_FOG_RANGE && BRBNetworker.Instance.IndoorFogSight.Value)
+                range = Common.INTERIOR_FOG_RANGE;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ButteRyBalance.Network;
+using System.Collections.Generic;
 
 namespace ButteRyBalance.Overrides.Moons
 {
@@ -22,13 +23,10 @@ namespace ButteRyBalance.Overrides.Moons
 
         internal static void Setup(SelectableLevel level)
         {
-            if (Configuration.vowMineshafts.Value)
+            if (BRBNetworker.Instance.VowMineshafts.Value)
             {
                 if (level.maxOutsideEnemyPowerCount == 6)
                     MoonOverrides.outsidePowerCount = 7;
-
-                MoonOverrides.minScrap = 10; // vanilla: 12
-                MoonOverrides.maxScrap = 13; // vanilla: 15
             }
 
             if (Configuration.vowNoCoils.Value)

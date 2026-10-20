@@ -29,6 +29,9 @@ namespace ButteRyBalance
         // Experimentation, Assurance, Vow, Gordion, March, Adamance, Rend, Dine, Offense, Titan, Artifice, Liquidation, Embrion
         internal const int NUM_LEVELS = 13;
 
+        // outdoor fog is 30
+        internal const int INTERIOR_FOG_RANGE = 18; // 12 is reeaall low
+
         internal static bool INSTALLED_ARTIFICE_BLIZZARD, INSTALLED_BARBER_FIXES, INSTALLED_SPAWN_CYCLE_FIXES, INSTALLED_VERSION55_COMPANY_CRUISER, INSTALLED_FAIRER_FIRE_EXITS, INSTALLED_CRUISER_IMPROVED;
         internal static GameObject artificeBlizzard;
 
@@ -56,9 +59,6 @@ namespace ButteRyBalance
         internal static List<NetworkObject> tempNetObjs = [];
 
         internal static string lastSceneLoaded = string.Empty;
-
-        internal static DressGirlAI girl;
-        internal static bool girlUpdating;
 
         internal static InputAction activateItem;
 

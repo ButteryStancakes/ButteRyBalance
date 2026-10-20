@@ -52,10 +52,10 @@ namespace ButteRyBalance.Overrides.Moons
                 MoonOverrides.adjustedEnemies.AddRange(new(){
                     // non-biological
                     { "Nutcracker", 37 },
-                    { "SpringMan", 42 },
+                    { "SpringMan", 46 },
                     { "ClaySurgeon", 61 },
 
-                    { "HoarderBug", 57 },
+                    { "HoarderBug", 50 },
                 });
             }
 

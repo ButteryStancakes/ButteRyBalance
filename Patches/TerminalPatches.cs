@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using ButteRyBalance.Network;
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -69,6 +70,23 @@ namespace ButteRyBalance.Patches
                 __instance.useCreditsCooldown = true;
                 __instance.groupCredits = 2500;
                 __instance.SyncGroupCreditsServerRpc(__instance.groupCredits, __instance.numberOfItemsInDropship);
+            }
+        }
+
+        [HarmonyPatch(nameof(Terminal.TextPostProcess))]
+        [HarmonyPostfix]
+        static void Terminal_Post_TextPostProcess(ref string __result, TerminalNode node)
+        {
+            switch (node.name)
+            {
+                case "JetpackInfo":
+                    if (BRBNetworker.Instance.JetpackUtility.Value)
+                        __result = __result.Replace("Just use it responsibly!", "Just use it responsibly!\nJetpacks cannot equip to your utility belt.");
+                    break;
+                case "NutcrackerFile":
+                    if (!BRBNetworker.Instance.NutcrackerPersistence.Value)
+                        __result = __result.Replace(" It remembers the last creature it saw, whether they are moving or not.", string.Empty);
+                    break;
             }
         }
     }

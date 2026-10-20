@@ -1,5 +1,5 @@
-﻿using ButteRyBalance.Patches;
-using ButteRyBalance.Patches.Enemies;
+﻿using ButteRyBalance.Patches.Enemies;
+using ButteRyBalance.Patches.Objects;
 using GameNetcodeStuff;
 using HarmonyLib;
 using System.Reflection;

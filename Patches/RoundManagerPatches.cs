@@ -2,7 +2,10 @@
 using ButteRyBalance.Network;
 using ButteRyBalance.Overrides;
 using ButteRyBalance.Overrides.Moons;
+using ButteRyBalance.Patches.Objects;
 using ButteRyBalance.Utilities;
+using DunGen;
+using DunGen.Graph;
 using HarmonyLib;
 using ScandalsTweaks.Scripts;
 using System.Collections.Generic;
@@ -11,6 +14,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Unity.Netcode;
 using UnityEngine;
+using static ButteRyBalance.Common;
 
 namespace ButteRyBalance.Patches
 {
@@ -126,10 +130,10 @@ namespace ButteRyBalance.Patches
 
             if (__instance.IsServer)
             {
+                EntranceTeleport[] entranceTeleports = Object.FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.None);
                 if (Configuration.spikeTrapDistance.Value)
                 {
                     SpikeRoofTrap[] spikeRoofTraps = Object.FindObjectsByType<SpikeRoofTrap>(FindObjectsSortMode.None);
-                    EntranceTeleport[] entranceTeleports = Object.FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.None);
                     MineshaftElevatorController mineshaftElevatorController = __instance.currentMineshaftElevator ?? Object.FindAnyObjectByType<MineshaftElevatorController>();
                     foreach (SpikeRoofTrap spikeRoofTrap in spikeRoofTraps)
                     {
@@ -164,6 +168,30 @@ namespace ButteRyBalance.Patches
                                 netObj.Despawn();
                             else
                                 Plugin.Logger.LogWarning("Error occurred while despawning spike trap (could not find network object, or it was not network spawned yet)");
+                        }
+                    }
+                }
+
+                Landmine[] landmines = Object.FindObjectsByType<Landmine>(FindObjectsSortMode.None);
+                foreach (Landmine landmine in landmines)
+                {
+                    foreach (EntranceTeleport entranceTeleport in entranceTeleports)
+                    {
+                        if (entranceTeleport.isEntranceToBuilding || entranceTeleport.entrancePoint == null)
+                            continue;
+
+                        if (Vector3.Distance(landmine.transform.position, entranceTeleport.entrancePoint.position) < 1.5f)
+                        {
+                            NetworkObject netObj = landmine.GetComponentInParent<NetworkObject>();
+                            if (netObj != null && netObj.IsSpawned)
+                            {
+                                Plugin.Logger.LogDebug($"Landmine #{landmine.GetInstanceID()} will be destroyed (too close to entrance \"{entranceTeleport.name}\")");
+                                netObj.Despawn();
+                            }
+                            else
+                                Plugin.Logger.LogWarning("Error occurred while despawning landmine (could not find network object, or it was not network spawned yet)");
+
+                            break;
                         }
                     }
                 }
@@ -333,6 +361,22 @@ namespace ButteRyBalance.Patches
                                 // v9
                                 __instance.currentLevel.minScrap = 11;
                                 __instance.currentLevel.maxScrap = 16;
+                            }
+                        }
+                        break;
+                    case "VowLevel":
+                        if (BRBNetworker.Instance.VowMineshafts.Value)
+                        {
+                            if ((Common.InteriorID)__instance.currentDungeonType != Common.InteriorID.Mineshaft)
+                            {
+                                __instance.currentLevel.minScrap = 12;
+                                __instance.currentLevel.maxScrap = 15;
+                            }
+                            else
+                            {
+                                // v49
+                                __instance.currentLevel.minScrap = 10;
+                                __instance.currentLevel.maxScrap = 13;
                             }
                         }
                         break;
@@ -616,14 +660,6 @@ namespace ButteRyBalance.Patches
             __instance.hasInitializedLevelRandomSeed = true;
         }
 
-        [HarmonyPatch(nameof(RoundManager.FlickerLights))]
-        [HarmonyPostfix]
-        static void RoundManager_Post_FlickerLights()
-        {
-            if (Common.girlUpdating && Common.girl != null && Common.girl.IsOwner)
-                GameNetworkManager.Instance.localPlayerController.JumpToFearLevel(Common.girl.timesSeenByPlayer > 0 ? 0.9f : 0.2f);
-        }
-
         [HarmonyPatch(nameof(RoundManager.SyncScrapValuesClientRpc))]
         [HarmonyPostfix]
         static void RoundManager_Post_SyncScrapValuesClientRpc(RoundManager __instance)
@@ -656,6 +692,59 @@ namespace ButteRyBalance.Patches
             Common.nutcrackerGuns.Clear();
             Common.butlers = 0;
             Common.butlerKnives.Clear();
+        }
+
+        [HarmonyPatch(nameof(RoundManager.Awake))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_Awake(RoundManager __instance)
+        {
+            DungeonFlow level2Flow = __instance.dungeonFlowTypes.FirstOrDefault(dungeonFlowType => dungeonFlowType.dungeonFlow?.name == "Level2Flow")?.dungeonFlow;
+            if (level2Flow != null)
+            {
+                DungeonFlow.GlobalPropSettings ventSettings = level2Flow.GlobalProps.FirstOrDefault(globalProp => globalProp.ID == 5);
+                if (ventSettings != null && ventSettings.Count.Min == 5 && ventSettings.Count.Max == 11)
+                {
+                    // Vent (8) isn't always active
+                    //ventSettings.Count.Min = 6;
+                    ventSettings.Count.Max = 12;
+                    Plugin.Logger.LogDebug($"{level2Flow.name}: Added extra vent spawn to compensate for deleted vent");
+                }
+            }
+        }
+
+        [HarmonyPatch(nameof(RoundManager.FinishGeneratingLevel))]
+        [HarmonyPostfix]
+        static void RoundManager_Post_FinishGeneratingLevel(RoundManager __instance)
+        {
+            if ((InteriorID)RoundManager.Instance.currentDungeonType == InteriorID.Manor && __instance.dungeonGenerator?.Generator?.Root != null)
+            {
+                Tile greenhouseTile = __instance.dungeonGenerator.Generator.Root.GetComponentsInChildren<Tile>()?.FirstOrDefault(tile => tile.name.StartsWith("GreenhouseTile"));
+                if (greenhouseTile != null)
+                {
+                    EnemyVent vent8Entrance = greenhouseTile.GetComponentInChildren<EnemyVent>(true);
+                    if (vent8Entrance != null)
+                    {
+                        if (vent8Entrance.NetworkObject == null || !vent8Entrance.NetworkObject.IsSpawned)
+                        {
+                            if (__instance.allEnemyVents != null && __instance.allEnemyVents.Length > 0)
+                            {
+                                int index = System.Array.IndexOf(__instance.allEnemyVents, vent8Entrance);
+                                if (index >= 0)
+                                {
+                                    Plugin.Logger.LogDebug($"Removing vent #{index} \"{vent8Entrance.name}\" from allEnemyVents");
+                                    List<EnemyVent> enemyVents = __instance.allEnemyVents.ToList();
+                                    enemyVents.RemoveAt(index);
+                                    __instance.allEnemyVents = enemyVents.ToArray();
+                                }
+                            }
+                            Object.Destroy(vent8Entrance);
+                            Plugin.Logger.LogDebug($"Destroying vent \"{vent8Entrance.name}\" in \"{greenhouseTile.name}\"");
+                        }
+                        else
+                            Plugin.Logger.LogWarning($"Vent \"{vent8Entrance.name}\" is somehow network spawned (you might experience problems?)");
+                    }
+                }
+            }
         }
     }
 }

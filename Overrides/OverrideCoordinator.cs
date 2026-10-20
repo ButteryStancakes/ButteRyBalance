@@ -1,8 +1,8 @@
 ﻿using ButteRyBalance.Components;
 using ButteRyBalance.Network;
 using ButteRyBalance.Overrides.Moons;
-using ButteRyBalance.Patches;
 using ButteRyBalance.Patches.Items;
+using ButteRyBalance.Patches.Objects;
 using GameNetcodeStuff;
 using System.Collections.Generic;
 using System.Linq;

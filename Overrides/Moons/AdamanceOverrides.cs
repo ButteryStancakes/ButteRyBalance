@@ -32,7 +32,7 @@ namespace ButteRyBalance.Overrides.Moons
             {
                 level.specialEnemyRarity.overrideEnemy = null;
                 level.specialEnemyRarity.percentageChance = 0f;
-                //MoonOverrides.adjustedEnemies.Add("CadaverGrowths", 100);
+                MoonOverrides.adjustedEnemies.Add("CadaverGrowths", 100);
             }
 
             if (Configuration.adamanceInteriors.Value)

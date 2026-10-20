@@ -140,6 +140,8 @@ namespace ButteRyBalance.Network
         internal NetworkVariable<bool> CruiserDontStabilize { get; private set; } = new();
         internal NetworkVariable<bool> GirlBreakers { get; private set; } = new();
         internal NetworkVariable<bool> VainsShrink { get; private set; } = new();
+        internal NetworkVariable<bool> NutcrackerPersistence { get; private set; } = new();
+        internal NetworkVariable<bool> IndoorFogSight { get; private set; } = new();
         internal NetworkVariable<int> RendSnowmen { get; private set; } = new();
         internal NetworkVariable<int> DineSnowmen { get; private set; } = new();
         internal NetworkVariable<int> TitanSnowmen { get; private set; } = new();
@@ -216,6 +218,8 @@ namespace ButteRyBalance.Network
             GirlBreakers.Value = Configuration.girlBreakers.Value;
             VainsShrink.Value = Configuration.vainsShrink.Value;
             VainsIterations.Value = Configuration.vainsIterations.Value;
+            NutcrackerPersistence.Value = Configuration.nutcrackerPersistence.Value;
+            IndoorFogSight.Value = Configuration.indoorFogSight.Value;
 
             OverrideCoordinator.ApplyOnServer();
             OverrideCoordinator.ApplyOnAllClients();

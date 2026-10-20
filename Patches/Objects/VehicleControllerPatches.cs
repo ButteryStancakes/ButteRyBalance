@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ButteRyBalance.Patches
+namespace ButteRyBalance.Patches.Objects
 {
     [HarmonyPatch(typeof(VehicleController))]
     static class VehicleControllerPatches
